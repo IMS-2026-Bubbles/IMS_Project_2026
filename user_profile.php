@@ -13,7 +13,7 @@ echo " This is the user profile page :)";
     <title>Document</title>
 
     <!-- i want nav bar here -->
-    <?php include "navbar.php";?>
+    <?php include "functional_php/navbar.php";?>
    
 </head>
 <body>
