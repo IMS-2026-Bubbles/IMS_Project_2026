@@ -1,9 +1,9 @@
 <?php
 // Retrieve experiment tags
 
-// This script is included to retrieve the MySQL result object with tags for the specified experiment.
+// Retrieve the tags for the specified experiment.
 // It expects the variable $exp_ID to be set before inclusion, which is used to query the database for tags associated with that experiment.
-// Returns an associative array of tags in $exp_tags_array, which can be used to display the tags on the page.
+// Returns an array of tags in $exp_tags_array, which can be used to display the tags on the page.
 
 
 // Retrieve current tags
@@ -19,6 +19,8 @@ if ($stmt_exp_tags->execute()) {
     $result_exp_tags = $stmt_exp_tags->get_result(); // get_result() returns a mysqli_result object
     // Fetch all tags into an associative array
     $exp_tags_array = fetch_assoc($result_exp_tags); // fetch_assoc() fetches all rows as an associative array
+    // Unnest the array to get a simple array of tags
+    $exp_tags_array = $exp_tags_array['Exp_Tag'];
 } else {
     echo "Error retrieving tags for experiment " . $exp_ID . " : " . $stmt_exp_tags->error . "<br>";
 }

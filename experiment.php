@@ -21,12 +21,9 @@ echo "<a href='project.php?proj_ID=" . $proj_ID . "'>Back to parent project</a><
 <!-- tags field/form -->
 <?php
 // Retrieve experiment tags from the database
-include "/Functional_php/exp_fetch_tags.php"; // This script fetches the tags for the specified experiment ID
+include "/Functional_php/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
 // Display current tags
-    // Convert the array of tags into a comma-separated string
-$tag_text = implode(", ", $exp_tags_array['Exp_Tag']);
-    // Display the tags
-echo "Experiment tags: " . $tag_text . "<br><br>";
+echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 ?>
 <form action="Functional_php/exp_edit_tags.php" method="post">
     <input type="text" name="new_tags" placeholder="Add new tags (comma separated)">
