@@ -14,18 +14,8 @@ echo " Experiment :)";
 // Variables from POST (or GET?)
 $exp_ID = $_POST['exp_ID'];
 
-// Retrieve current tags
-    // Create query
-$sql_exp_tags = "SELECT Exp_Tag FROM Exp_Tag WHERE Experiment_ID = ?";
-    // Prepare query
-$stmt_exp_tags = $conn->prepare($sql_exp_tags);
-    // Bind the search term parameter
-$stmt_exp_tags->bind_param("s", $exp_ID);
-    // Execute query
-$stmt_exp_tags->execute();
-    // Get the result set from the executed query
-$result_exp_tags = $stmt_exp_tags->get_result(); // get_result() returns a mysqli_result object
-
+// Retrieve experiment tags from the database
+include "/Functional_php/exp_fetch_tags.php"; // This script fetches the tags for the specified experiment ID
 // Display current tags
     // Fetch all tags into an array
 $exp_tags_array = fetch_assoc($result_exp_tags); // fetch_assoc() fetches all rows as an associative array, needed to access the values
