@@ -5,16 +5,12 @@
 // before redirecting back to experiment.php. Check that tags don't already exist before adding, 
 // and check that tags do exist before removing.
 
-// Link back to experiment.php with the same exp_ID
-if (isset($_POST['exp_ID'])) {
-    echo "<a href='../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
-} else {
-    echo "Error: No experiment ID provided.<br>";
-    echo "<a href='../project_library.php'>Back to project library</a><br><br>";
-}
+// Session initialization
+include "../Session/init.php"; // Make the session available
 
 // Connect to database
 include "../Database_related/db.php";
+
 
 // Remove tags from the database
 if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
@@ -56,7 +52,6 @@ if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
 }
 
 
-
 // Insert new tags into the database
 if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
     // Get user input from POST request
@@ -96,8 +91,22 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
     }
 }
 
+
 // Close connection when done
 include "../Database_related/closeDB.php";
-// Redirect back to experiment.php with the same exp_ID after a short delay
 
+// Store messages in session to display on experiment.php
+
+
+// Redirect back to experiment.php with the same exp_ID
+header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
+
+// Links in case redirect fails
+    // Link back to experiment.php with the same exp_ID
+if (isset($_POST['exp_ID'])) {
+    echo "<a href='../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
+} else {
+    echo "Error: No experiment ID available.<br>";
+    echo "<a href='../project_library.php'>Back to project library</a><br><br>";
+}
 ?>

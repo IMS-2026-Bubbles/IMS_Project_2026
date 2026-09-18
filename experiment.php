@@ -1,5 +1,8 @@
 <?php
-// Variables from POST (or GET?)
+// Session initialization
+include "/Session/init.php"; // Make the session available
+
+// Variables from POST (or GET?) or URL parameters
 $exp_ID = $_POST['exp_ID'];
 
 // Connect to database
