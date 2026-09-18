@@ -1,6 +1,12 @@
 <?php
 // Session initialization
 include "/Session/init.php"; // Make the session available
+    // Retreive messages from exp_edit_tags.php if they exist
+if (isset($_SESSION['messages_exp_edit_tags'])) {
+    $messages_exp_edit_tags = $_SESSION['messages_exp_edit_tags'];
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['messages_exp_edit_tags']);
+}
 
 // Variables from POST (or GET?) or URL parameters
 $exp_ID = $_POST['exp_ID'];
@@ -34,6 +40,15 @@ echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
     <input type="hidden" name="exp_ID" value="<?php echo $exp_ID; ?>">
     <input type="submit" value="Add Tags">
 </form>
+<br>
+<?php
+// Display messages from exp_edit_tags.php if they exist
+if (isset($messages_exp_edit_tags)) {
+    foreach ($messages_exp_edit_tags as $message) {
+        echo $message;
+    }
+}
+?>
 
 <!-- markers for partial/total progress -->
 

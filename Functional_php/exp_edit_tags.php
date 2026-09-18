@@ -7,6 +7,8 @@
 
 // Session initialization
 include "../Session/init.php"; // Make the session available
+    // Create message array
+$messages = array();
 
 // Connect to database
 include "../Database_related/db.php";
@@ -14,6 +16,7 @@ include "../Database_related/db.php";
 
 // Remove tags from the database
 if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
+    $messages[] = "Removing tags:<br>";
     // Get user input from POST request
     $remove_tags = $_POST['remove_tags'];
     $exp_ID = $_POST['exp_ID'];
@@ -28,7 +31,7 @@ if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
         // Compare remove tags with existing tags
     $nonexistent_remove_tags = array_diff($remove_tags_array, $exp_tags_array);
     if (!empty($nonexistent_remove_tags)) {
-        echo "Nonexistant tags: " . implode(", ", $nonexistent_remove_tags) . "<br>";
+        $messages[] = "Nonexistant tags: " . implode(", ", $nonexistent_remove_tags) . "<br>";
         // Remove nonexistent tags from the remove tags array
         $remove_tags_array = array_diff($remove_tags_array, $nonexistent_remove_tags);
     }
@@ -44,16 +47,18 @@ if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
         $stmt_delete_tag->bind_param("ss", $exp_ID, $tag);
         // Execute query
         if ($stmt_delete_tag->execute()) {
-            echo "Tag " . $tag . " removed successfully.<br>";
+            $messages[] = "Tag " . $tag . " removed successfully.<br>";
         } else {
-            echo "Error removing tag " . $tag . " : " . $stmt_delete_tag->error . "<br>";
+            $messages[] = "Error removing tag " . $tag . " : " . $stmt_delete_tag->error . "<br>";
         }
     }
+    $messages[] = "<br>";
 }
 
 
 // Insert new tags into the database
 if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
+    $messages[] = "Adding tags:<br>";
     // Get user input from POST request
     $new_tags = $_POST['new_tags'];
     $exp_ID = $_POST['exp_ID'];
@@ -68,7 +73,7 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
         // Compare new tags with existing tags
     $duplicate_new_tags = array_intersect($new_tags_array, $exp_tags_array);
     if (!empty($duplicate_new_tags)) {
-        echo "Prevoiusly existing tags: " . implode(", ", $duplicate_new_tags) . "<br>";
+        $messages[] = "Prevoiusly existing tags: " . implode(", ", $duplicate_new_tags) . "<br>";
         // Remove duplicate tags from the new tags array
         $new_tags_array = array_diff($new_tags_array, $duplicate_new_tags);
     }
@@ -84,9 +89,9 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
         $stmt_insert_tag->bind_param("ss", $exp_ID, $tag);
         // Execute query
         if ($stmt_insert_tag->execute()) {
-            echo "Tag " . $tag . " added successfully.<br>";
+            $messages[] = "Tag " . $tag . " added successfully.<br>";
         } else {
-            echo "Error adding tag " . $tag . " : " . $stmt_insert_tag->error . "<br>";
+            $messages[] = "Error adding tag " . $tag . " : " . $stmt_insert_tag->error . "<br>";
         }
     }
 }
@@ -96,7 +101,7 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
 include "../Database_related/closeDB.php";
 
 // Store messages in session to display on experiment.php
-
+$_SESSION['messages_exp_edit_tags'] = $messages;
 
 // Redirect back to experiment.php with the same exp_ID
 header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
