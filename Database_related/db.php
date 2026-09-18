@@ -12,5 +12,9 @@ if ($conn->connect_error) {
 die("Connection failed: " . $conn->connect_error);
 }
 // Commenting if successful, not necessary after a while
-// echo " <br> Connected successfully :)<br>";
+if (isset($messages)) {
+    $messages[] = "Connected successfully :) <br>";
+} else {
+    echo "Connected successfully :) <br>";
+}
 ?>

@@ -1,5 +1,9 @@
 <?php
 // Close connection from database
 $conn->close();
-// echo "it died";
+if (isset($messages)) {
+    $messages[] = "Connection closed successfully :) <br>";
+} else {
+    echo "Connection closed successfully :) <br>";
+}
 ?>
