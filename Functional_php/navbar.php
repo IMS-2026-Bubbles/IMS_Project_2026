@@ -25,6 +25,10 @@
             <li class="nav-item">
                 <a class="nav-link active" href="/../user_profile.php">User Profile</a> 
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link active" href="">Log out button??</a> 
+            </li>
         </ul>        
 
     </div>
