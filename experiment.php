@@ -17,6 +17,22 @@ include "Database_related/db.php";
 echo " Experiment :)";
 ?>
 
+<!-- Check for user permission -->
+<?php
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo "You must be logged in to view this page.";
+    exit();
+}
+// Check if the user has permission to view this experiment
+include "Functional_php/user_permission.php"; // Include the user permission check function
+$permission_level = check_user_permission($_SESSION['user_id'], 'experiment', $exp_ID);
+if ($permission_level === 'none') {
+    echo "You do not have permission to view this experiment.";
+    exit();
+}
+?>
+
 <!-- Navbar? -->
 
 <!-- Link back to parent project -->
@@ -26,6 +42,7 @@ include "/Functional_php/exp_helpers/exp_fetch_proj_ID.php"; // This script fetc
 // Create link back to parent project page
 echo "<a href='project.php?proj_ID=" . $proj_ID . "'>Back to parent project</a><br><br>";
 ?>
+
 
 <!-- tags field/form -->
 <?php
@@ -50,6 +67,7 @@ if (isset($messages_exp_edit_tags)) {
 }
 ?>
 
+
 <!-- markers for partial/total progress -->
 <?php
 // Retrieve and display progress flags for the experiment
@@ -62,11 +80,15 @@ echo "<div class='exp_progress_flags'>" // String structured vertically for code
     . exp_progress_flags("Log", $exp_progress_flags['Log_Done'])
     . exp_progress_flags("Result", $exp_progress_flags['Result_Done'])
     . "</div>";
-
+echo "<br><br>";
 ?>
 
 
 <!-- Create links for sub-pages, plan/log/result -->
+<a href="experiment_plan.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Plan</a><br>
+<a href="experiment_log.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Log</a><br>
+<a href="experiment_result.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Result</a><br>
+
 
 <?php
 // Close connection when done

@@ -9,7 +9,7 @@
 
 function exp_progress_badge(string $label, bool $flag): string {
     $class = $flag ? "badge-done" : "badge-open";
-    $symbol = $flag ? "&#9745;" : "&#9744;"; // Checked or empty box
+    $symbol = $flag ? "&#9745;" : "&#9744;"; // Checked or empty box (unicode characters html entities)
     return "<span class='badge $class'>$symbol $label</span>";
 }
 ?>
