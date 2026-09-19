@@ -14,7 +14,7 @@
 // 
 // Return the permission level as an integer or 'error: <error message>'.
 
-function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): string {
+function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): int {
     if ($entity_type === 'experiment') {
         // Check permission for an experiment
             // Create query
@@ -66,11 +66,19 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
                 // Get the result set from the executed query
             $result_exp_permission = $stmt_exp_permission->get_result(); // get_result() returns a mysqli_result object
                 // Fetch the permission level from the result set
-            $exp_permission_level = $result_exp_permission->fetch_assoc()['Access'];
+            $exp_permission_level = $result_exp_permission->fetch_assoc();
+                // Check for null, nrow == 0, or missing 'Access' column
+            if (!array_key_exists('Access', $exp_permission_level)) {
+                // Missing 'Access' column
+                throw new RunTimeException("`Access` column missing");
+            } elseif ($exp_permission_level['Access'] === null) {
+                // 'Access' is null => invalid Experiment_ID
+                throw new RunTimeException("Invalid Experiment_ID: " . $entity_ID);
+            }
                 // Return the permission level
-            return $exp_permission_level;
+            return (int)$exp_permission_level['Access'];
         } else {
-            return 'error: ' . $stmt_exp_permission->error; // Error executing query
+            throw new RunTimeException("Permission query failed: " . $stmt_exp_permission->error); // Error executing query
         }
     } elseif ($entity_type === 'project') {
         // TODO: Check permission for a project
