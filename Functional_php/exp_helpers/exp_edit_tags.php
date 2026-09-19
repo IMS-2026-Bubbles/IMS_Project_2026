@@ -6,12 +6,12 @@
 // and check that tags do exist before removing.
 
 // Session initialization
-include "../Session/init.php"; // Make the session available
+include "../../Session/init.php"; // Make the session available
     // Create message array
 $messages = array();
 
 // Connect to database
-include "../Database_related/db.php";
+include "../../Database_related/db.php";
 
 
 // Remove tags from the database
@@ -98,20 +98,20 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
 
 
 // Close connection when done
-include "../Database_related/closeDB.php";
+include "../../Database_related/closeDB.php";
 
 // Store messages in session to display on experiment.php
 $_SESSION['messages_exp_edit_tags'] = $messages;
 
 // Redirect back to experiment.php with the same exp_ID
-header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
+header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
 
 // Links in case redirect fails
     // Link back to experiment.php with the same exp_ID
 if (isset($_POST['exp_ID'])) {
-    echo "<a href='../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
+    echo "<a href='../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
 } else {
     echo "Error: No experiment ID available.<br>";
-    echo "<a href='../project_library.php'>Back to project library</a><br><br>";
+    echo "<a href='../../project_library.php'>Back to project library</a><br><br>";
 }
 ?>
