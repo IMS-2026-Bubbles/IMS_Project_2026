@@ -8,18 +8,26 @@
 // Return 'admin' or 'none' for Scriba, company, or lab permissions.
 
 function check_user_permission(string $user_ID, string $entity_type, string $entity_ID): string {
+    // Setup database connection
+    include "../Database_related/db.php";
+
     if ($entity_type === 'experiment') {
-        // Check permission for an experiment
+        // TODO: Check permission for an experiment
+        return 'none'; // Placeholder return value
     } elseif ($entity_type === 'project') {
-        // Check permission for a project
+        // TODO: Check permission for a project
+        return 'none'; // Placeholder return value
     } elseif ($entity_type === 'lab') {
-        // Check permission for a lab
+        // TODO: Check permission for a lab
+        return 'none'; // Placeholder return value
     } elseif ($entity_type === 'company') {
-        // Check permission for a company
+        // TODO: Check permission for a company
+        return 'none'; // Placeholder return value
     } elseif ($entity_type === 'scriba') {
-        // Check permission for Scriba
+        // TODO: Check permission for Scriba
+        return 'none'; // Placeholder return value
     } else {
-        return 'none'; // Invalid entity type
+        return 'invalid entity type'; // Invalid entity type
     }
 }
 ?>
