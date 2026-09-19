@@ -11,7 +11,7 @@
 $sql_exp_tags = "SELECT Exp_Tag FROM Exp_Tag WHERE Experiment_ID = ?";
     // Prepare query
 $stmt_exp_tags = $conn->prepare($sql_exp_tags);
-    // Bind the search term parameter
+    // Bind the experiment ID parameter
 $stmt_exp_tags->bind_param("s", $exp_ID);
     // Execute query
 if ($stmt_exp_tags->execute()) {
