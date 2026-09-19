@@ -3,17 +3,75 @@
 
 // Check what permission levels the user (or guest) has.
 // This is a helper function to check if the user has the required permission level 
-// for a specific action or page.
-// Return 'owner', 'editor', 'viewer', or 'none' for projects & experiments.
-// Return 'admin' or 'none' for Scriba, company, or lab permissions.
+// for a specific action or page. Takes the database connection, user ID, entity type
+// (e.g., 'experiment', 'project', 'lab', 'company', 'scriba'), and entity ID as parameters.
+// 
+// Permission levels are defined as follows:
+// - 'owner' (3) => Full access, can edit and manage the entity
+// - 'edit'  (2) => Can edit the entity but not manage it
+// - 'read'  (1) => Can view the entity but not edit it
+// - 'none'  (0) => No access
+// 
+// Return the permission level as an integer or 'error: <error message>'.
 
-function check_user_permission(string $user_ID, string $entity_type, string $entity_ID): string {
-    // Setup database connection
-    include "../Database_related/db.php";
-
+function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): string {
     if ($entity_type === 'experiment') {
-        // TODO: Check permission for an experiment
-        return 'none'; // Placeholder return value
+        // Check permission for an experiment
+            // Create query
+        $sql_exp_permission = 
+            "SELECT MAX(CASE -- Highest permission => access level
+                -- Company admin => edit (Company member -> no access)
+                WHEN Company_Member.Role = 'admin'    THEN 2
+                -- Lab group admin => edit
+                WHEN Lab_Group_Member.Role = 'admin'  THEN 2
+                -- Lab group member => read
+                WHEN Lab_Group_Member.Role = 'member' THEN 1
+                -- Project
+                WHEN Project_Member.Role = 'owner'    THEN 3
+                WHEN Project_Member.Role = 'edit'     THEN 2
+                WHEN Project_Member.Role = 'read'     THEN 1
+                -- Experiment owner is project owner
+                WHEN Experiment_Member.Role = 'edit'  THEN 2
+                WHEN Experiment_Member.Role = 'read'  THEN 1
+                -- None of the above => no access
+                ELSE 0
+                END) AS `Access` -- New column named Access to hold the highest permission level
+            FROM Proj_Experiment 
+            -- Add tables for bridging towards member tables
+            JOIN Project
+                ON Project.Project_ID = Proj_Experiment.Project_ID
+            LEFT JOIN Lab_Group 
+                ON Lab_Group.Lab_Group_ID = Project.Lab_Group_ID
+            -- Add member tables to get roles and filter by user_ID
+            LEFT JOIN Company_Member 
+                ON Company_Member.Company_ID = Lab_Group.Company_ID
+                AND Company_Member.User_ID = ?
+            LEFT JOIN Lab_Group_Member
+                ON Lab_Group_Member.Lab_Group_ID = Lab_Group.Lab_Group_ID
+                AND Lab_Group_Member.User_ID = ?
+            LEFT JOIN Project_Member
+                ON Project_Member.Project_ID = Project.Project_ID
+                AND Project_Member.User_ID = ?
+            LEFT JOIN Experiment_Member
+                ON Experiment_Member.Experiment_ID = Proj_Experiment.Experiment_ID
+                AND Experiment_Member.User_ID = ?
+            -- Filter for the specific experiment
+            WHERE Proj_Experiment.Experiment_ID = ?";
+            // Prepare query
+        $stmt_exp_permission = $conn->prepare($sql_exp_permission);
+            // Bind parameters
+        $stmt_exp_permission->bind_param("sssss", $user_ID, $user_ID, $user_ID, $user_ID, $entity_ID);
+            // Execute query
+        if ($stmt_exp_permission->execute()) {
+                // Get the result set from the executed query
+            $result_exp_permission = $stmt_exp_permission->get_result(); // get_result() returns a mysqli_result object
+                // Fetch the permission level from the result set
+            $exp_permission_level = $result_exp_permission->fetch_assoc()['Access'];
+                // Return the permission level
+            return $exp_permission_level;
+        } else {
+            return 'error: ' . $stmt_exp_permission->error; // Error executing query
+        }
     } elseif ($entity_type === 'project') {
         // TODO: Check permission for a project
         return 'none'; // Placeholder return value
@@ -27,7 +85,7 @@ function check_user_permission(string $user_ID, string $entity_type, string $ent
         // TODO: Check permission for Scriba
         return 'none'; // Placeholder return value
     } else {
-        return 'invalid entity type'; // Invalid entity type
+        return 'error: invalid entity type'; // Invalid entity type
     }
 }
 ?>
