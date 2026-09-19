@@ -55,6 +55,14 @@ if (isset($messages_exp_edit_tags)) {
 // Retrieve and display progress flags for the experiment
 include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress flags as $exp_progress_flags
 
+// Define the progress flag display helper.
+include "Functional_php/exp_helpers/exp_progress_fun.php";
+echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
+    . exp_progress_flags("Plan", $exp_progress_flags['Plan_Done'])
+    . exp_progress_flags("Log", $exp_progress_flags['Log_Done'])
+    . exp_progress_flags("Result", $exp_progress_flags['Result_Done'])
+    . "</div>";
+
 ?>
 
 
