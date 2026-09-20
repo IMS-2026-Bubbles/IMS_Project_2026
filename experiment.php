@@ -3,13 +3,10 @@
 include "Session/init.php"; // Make the session available
 
 // Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo "You must be logged in to view this page.";
-    exit();
-}
+include "Session/check_user_logged_in.php";
 
-// Variables from POST (or GET?) or URL parameters
-$exp_ID = $_POST['exp_ID'];
+// Variables
+// $exp_ID from URL?
 
 // Connect to database
 include "Database_related/db.php";
@@ -41,7 +38,7 @@ echo " Experiment :)";
 // Retrieve project ID for the experiment
 include "/Functional_php/exp_helpers/exp_fetch_proj_ID.php"; // This script fetches the project ID for the specified experiment ID
 // Create link back to parent project page
-echo "<a href='project.php?proj_ID=" . $proj_ID . "'>Back to parent project</a><br><br>";
+echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent project</a><br><br>";
 ?>
 
 
@@ -61,9 +58,9 @@ if ($user_access >= 2) {
     . "<input type='text' name='new_tags' placeholder='Add new tags (comma separated)'>"
     . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
     // Experiment_ID
-    . "<input type='hidden' name='exp_ID' value='" . $exp_ID . "'>"
+    . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
     // Access Level
-    . "<input type='hidden' name='access_level' value='" . $user_access . "'>"
+    . "<input type='hidden' name='access_level' value='" . htmlspecialchars($user_access) . "'>"
     // Submit button
     . "<input type='submit' value='Add Tags'>"
     . "</form>"
@@ -98,9 +95,9 @@ echo "<br><br>";
 
 
 <!-- Create links for sub-pages, plan/log/result -->
-<a href="experiment_plan.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Plan</a><br>
-<a href="experiment_log.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Log</a><br>
-<a href="experiment_result.php?exp_ID=<?php echo $exp_ID; ?>">Experiment Result</a><br>
+<a href="experiment_plan.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Plan</a><br>
+<a href="experiment_log.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Log</a><br>
+<a href="experiment_result.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Result</a><br>
 
 
 <?php
