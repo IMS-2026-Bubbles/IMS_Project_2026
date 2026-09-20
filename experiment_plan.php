@@ -1,3 +1,5 @@
+<!Doctype html>
+<html>
 <?php
 // Session initialization
 include "Session/init.php"; // Make the session available
@@ -9,6 +11,7 @@ include "Session/check_user_logged_in.php";
     // $exp_ID from URL?
     $exp_ID = isset($exp_ID) : NULL; // Initialize $exp_ID to NULL if not set
     // $user_id from session
+    $exp_section = "Plan"; // Set the section to "Plan" for the experiment plan page
 
 // Connect to database
 include "Database_related/db.php";
@@ -21,13 +24,37 @@ if ($user_access < 1) {
     echo "You do not have permission to view this content.";
     exit();
 }
-
-echo " Plan experiment :)";
 ?>
 
+<head>
+<script>
+    <?php
+    include "Functional_php/exp_helpers/exp_progress_toggle.php"; // Include the script to toggle progress
+    ?>
+</script>
+</head>
+
+<body>
 <!-- Link back to main experiment page -->
-<a href="experiment.php?exp_ID=<?php urlencode($exp_ID); ?>">Back to experiment page</a><br><br>
+<a href="experiment.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Back to experiment page</a><br><br>
 
 <!-- Tags (static), Done toggle, save/submit -->
+<?php
+// Display current tags for the experiment
+include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
+echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
+
+// Display the "Done" toggle for the experiment plan
+include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress status for the specified experiment ID
+?>
+
+<form action="">
+    <label for="progress">Mark as done</label>
+    <input type="checkbox" id="progress" name="progress" onchange="toggleProgress('Plan')">
+</form>
 
 <!-- Textbox -->
+
+
+</body>
+</html>
