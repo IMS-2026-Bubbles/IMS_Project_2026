@@ -7,7 +7,7 @@
 
 // Retrieve flags
     // Create query
-$sql_exp_progress = "SELECT Plan_Done, Log_Done, Result_Done FROM Experiments WHERE Exp_ID = ?";
+$sql_exp_progress = "SELECT Plan_Done, Log_Done, Result_Done FROM Proj_Experiments WHERE Exp_ID = ?";
     // Prepare query
 $stmt_exp_progress = $conn->prepare($sql_exp_progress);
     // Bind the experiment ID parameter

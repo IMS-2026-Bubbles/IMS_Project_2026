@@ -22,12 +22,21 @@ if (isset($_POST['exp_ID']) && isset($_POST['section']) && isset($_POST['progres
     include "../../Database_related/db.php";
 
     // Update the progress status in the database
-        // Create query
-    $sql_update_progress = "UPDATE Proj_Experiment SET ? = ? WHERE Experiment_ID = ?";
+        // Create query depending on the section to update
+    if ($exp_section === 'Plan') {
+        $sql_update_progress = "UPDATE Proj_Experiment SET Plan_Done = ? WHERE Experiment_ID = ?";
+    } elseif ($exp_section === 'Log') {
+        $sql_update_progress = "UPDATE Proj_Experiment SET Log_Done = ? WHERE Experiment_ID = ?";
+    } elseif ($exp_section === 'Result') {
+        $sql_update_progress = "UPDATE Proj_Experiment SET Result_Done = ? WHERE Experiment_ID = ?";
+    } else {
+        echo "Invalid section specified";
+        exit();
+    }
         // Prepare query
     $stmt_update_progress = $conn->prepare($sql_update_progress);
         // Bind parameters (boolean is 0 or 1, cast as integer)
-    $stmt_update_progress->bind_param("sis", $exp_section, $progress, $exp_ID);
+    $stmt_update_progress->bind_param("is", $progress, $exp_ID);
         // Execute query
     $stmt_update_progress->execute();
 
