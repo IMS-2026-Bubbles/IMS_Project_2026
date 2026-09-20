@@ -12,7 +12,7 @@
 // - 'read'  (1) => Can view the entity but not edit it
 // - 'none'  (0) => No access
 // 
-// Return the permission level as an integer or 'error: <error message>'.
+// Return the permission level as an integer.
 
 function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): int {
     if ($entity_type === 'experiment') {
@@ -20,6 +20,7 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
             // Create query
         $sql_exp_permission = 
             "SELECT MAX(CASE -- Highest permission => access level
+                -- Scriba admin => no access for privacy reasons
                 -- Company admin => edit (Company member -> no access)
                 WHEN Company_Member.Role = 'admin'    THEN 2
                 -- Lab group admin => edit
@@ -76,22 +77,32 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
                 throw new RunTimeException("Invalid Experiment_ID: " . $entity_ID);
             }
                 // Return the permission level
-            return (int)$exp_permission_level['Access'];
+            return (int)$exp_permission_level['Access']; // Need to use (int) to convert from string to integer
         } else {
             throw new RunTimeException("Permission query failed: " . $stmt_exp_permission->error); // Error executing query
         }
+
+
     } elseif ($entity_type === 'project') {
         // TODO: Check permission for a project
         return 'none'; // Placeholder return value
+
+
     } elseif ($entity_type === 'lab') {
         // TODO: Check permission for a lab
         return 'none'; // Placeholder return value
+
+
     } elseif ($entity_type === 'company') {
         // TODO: Check permission for a company
         return 'none'; // Placeholder return value
+
+
     } elseif ($entity_type === 'scriba') {
         // TODO: Check permission for Scriba
         return 'none'; // Placeholder return value
+
+
     } else {
         return 'error: invalid entity type'; // Invalid entity type
     }

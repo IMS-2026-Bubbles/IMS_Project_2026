@@ -13,6 +13,16 @@ $messages = array();
 // Connect to database
 include "../../Database_related/db.php";
 
+// Check if the user has permission to edit tags for this experiment
+// Is it fine to inherit the access level from experiment.php? Or should we check it again here?
+if (isset($_POST['access_level']) && $_POST['access_level'] < 2) {
+    $messages[] = "You do not have permission to edit tags for this experiment.<br>";
+    // Store messages in session to display on experiment.php
+    $_SESSION['messages_exp_edit_tags'] = $messages;
+    // Redirect back to experiment.php with the same exp_ID
+    header("Location: ../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']));
+    exit();
+}
 
 // Remove tags from the database
 if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {

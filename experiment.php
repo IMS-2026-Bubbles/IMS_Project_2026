@@ -1,11 +1,11 @@
 <?php
 // Session initialization
 include "Session/init.php"; // Make the session available
-    // Retreive messages from exp_edit_tags.php if they exist
-if (isset($_SESSION['messages_exp_edit_tags'])) {
-    $messages_exp_edit_tags = $_SESSION['messages_exp_edit_tags'];
-    // Clear the messages from the session after retrieving them
-    unset($_SESSION['messages_exp_edit_tags']);
+
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo "You must be logged in to view this page.";
+    exit();
 }
 
 // Variables from POST (or GET?) or URL parameters
@@ -14,23 +14,24 @@ $exp_ID = $_POST['exp_ID'];
 // Connect to database
 include "Database_related/db.php";
 
-echo " Experiment :)";
-?>
-
-<!-- Check for user permission -->
-<?php
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo "You must be logged in to view this page.";
-    exit();
-}
 // Check if the user has permission to view this experiment
 include "Functional_php/user_permission.php"; // Include the user permission check function
-$permission_level = check_user_permission($_SESSION['user_id'], 'experiment', $exp_ID);
-if ($permission_level === 'none') {
-    echo "You do not have permission to view this experiment.";
+$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+if ($user_access < 1) {
+    // Access level 0 means no access
+    echo "You do not have permission to view this content.";
     exit();
 }
+
+
+// Retrieve messages from exp_edit_tags.php if they exist
+if (isset($_SESSION['messages_exp_edit_tags'])) {
+    $messages_exp_edit_tags = $_SESSION['messages_exp_edit_tags'];
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['messages_exp_edit_tags']);
+}
+
+echo " Experiment :)";
 ?>
 
 <!-- Navbar? -->
@@ -51,13 +52,25 @@ include "/Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags fo
 // Display current tags
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 ?>
-<form action="Functional_php/exp_helpers/exp_edit_tags.php" method="post">
-    <input type="text" name="new_tags" placeholder="Add new tags (comma separated)">
-    <input type="text" name="remove_tags" placeholder="Remove tags (comma separated)">
-    <input type="hidden" name="exp_ID" value="<?php echo $exp_ID; ?>">
-    <input type="submit" value="Add Tags">
-</form>
-<br>
+
+<?php
+// If user has permission to edit tags, display the form for adding/removing tags
+if ($user_access >= 2) {
+    echo "<form action='Functional_php/exp_helpers/exp_edit_tags.php' method='post'>"
+    // Input fields for new and remove tags
+    . "<input type='text' name='new_tags' placeholder='Add new tags (comma separated)'>"
+    . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
+    // Experiment_ID
+    . "<input type='hidden' name='exp_ID' value='" . $exp_ID . "'>"
+    // Access Level
+    . "<input type='hidden' name='access_level' value='" . $user_access . "'>"
+    // Submit button
+    . "<input type='submit' value='Add Tags'>"
+    . "</form>"
+    . "<br>";
+}
+?>
+
 <?php
 // Display messages from exp_edit_tags.php if they exist
 if (isset($messages_exp_edit_tags)) {
