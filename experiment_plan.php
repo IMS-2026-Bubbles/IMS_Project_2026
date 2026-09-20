@@ -26,15 +26,6 @@ if ($user_access < 1) {
 }
 ?>
 
-<head>
-<script>
-    <?php
-    include "Functional_php/exp_helpers/exp_progress_toggle.php"; // Include the script to toggle progress
-    ?>
-</script>
-</head>
-
-<body>
 <!-- Link back to main experiment page -->
 <a href="experiment.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Back to experiment page</a><br><br>
 
@@ -48,13 +39,8 @@ echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress status for the specified experiment ID
 ?>
 
-<form action="">
-    <label for="progress">Mark as done</label>
-    <input type="checkbox" id="progress" name="progress" onchange="toggleProgress('Plan')">
-</form>
+
 
 <!-- Textbox -->
 
 
-</body>
-</html>
