@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     
@@ -23,22 +22,22 @@
     <h2>Add the following information to create an account</h2>
     
      <!-- Create the action + call function to check if passwords match-->
-    <form action="" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
-
+    <form action="/insert_new_user.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
+        
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
         <label for="first_name">First name</label><br>
-        <input type="text" class="" name="first_name" required><br>
+        <input type="text" class="" name="first_name"  required><br>
 
         <label for="last_name">Last name</label><br>
-        <input type="text" class="" name="last_name" required><br>
+        <input type="text" class="" name="last_name"  required><br>
 
         <label for="email">Email adress</label><br>
-        <input type="email" class="" name="email" required><br> <!-- @ is needed -->
+        <input type="email" class="" name="email"  required><br> <!-- @ is needed -->
 
         
         <label for="text">Swedish social security number</label><br>
-        <input type="text" class="" name="SSSN" placeholder = "YYMMDD-XXXX" pattern = "[0-9]{6}-[0-9]{4}" required><br><br> <!-- fix so that the correct style is used -->
+        <input type="number" class="" name="SSSN" placeholder = "YYMMDD-XXXX" pattern = "[0-9]{6}-[0-9]{4}" required><br><br> <!-- fix so that the correct style is used -->
 
         <!-- fix so it is not hardcoded once database is up!! -->
         <p>this hardcoded approach will be fixed once database is up and we have decided on what approach to labgroups and companies</p>
@@ -72,7 +71,7 @@
         <label for="password2">Repeat password</label><br>
         <input type="password" class="" name="password2" minlength= "8" required><br><br>
 
-        <input type="submit" class="btn btn-dark rounded-pill" name="register" value="Register"><br><br>
+        <input type="submit" class="btn btn-dark rounded-pill" name="register" value="regsiter"><br><br>
     </form>
 
     <!-- https://www.geeksforgeeks.org/javascript/password-matching-using-javascript/ -->
