@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root"; 
 $password = "root";
-$dbname = ""; # add the name of our database here
+$dbname = "scriba"; # add the name of our database here
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
