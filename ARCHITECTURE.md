@@ -11,7 +11,7 @@ patterns the code follows.
 /                           Page scripts (one PHP file per page)
 ├── index.php               Login / start page
 ├── experiment.php          Experiment overview page
-├── experiment_plan.php     Experiment plan section (same pattern for log/result)
+├── experiment_plan.php     Experiment plan section (log/result pages are stubs for now)
 ├── project_library.php     Listing pages, profile pages, etc.
 │
 ├── Session/                Session handling
@@ -56,20 +56,36 @@ variable in its header comment.
 ### POST-Redirect-Get (PRG) with session messages
 Write endpoints (`exp_edit_section.php`, `exp_edit_tags.php`) never render a
 page. They:
-1. Collect feedback strings in a local `$messages` array.
-2. Store it in the session under a page-specific key
+1. Validate the POST input: required fields (e.g. `exp_ID`) get a graceful
+   "missing" message + redirect if absent, and input-driven column names are
+   checked against a whitelist (`Plan` / `Log` / `Result`).
+2. Re-check permission server-side (`>= 2` for writes) — the endpoint never
+   trusts values posted by the form.
+3. Collect feedback strings in a local `$messages` array.
+4. Store it in the session under a page-specific key
    (`$_SESSION['messages_exp_edit_section']`).
-3. `header("Location: ...")` + `exit()` back to the referring page.
+5. `header("Location: ...")` + `exit()` back to the referring page.
 
 The target page retrieves the message array from the session, unsets it, and
 prints it. This keeps refresh/reload from resubmitting forms and gives the
 user simple success/error feedback.
 
+### Defensive null-guards in fetchers
+Fetchers handle the two "no data" cases explicitly: a query that matches no
+row (`fetch_assoc()` returns `null`) and a row whose column is `NULL`.
+Text fetchers default to `''` (empty textarea for a new experiment); the
+timestamp fetcher defaults to `[]` and formats values with `date()`, so a
+missing row degrades to blank output rather than a fatal error. In practice
+`check_user_permission()` throws first for invalid IDs, so these guards are
+defensive.
+
 ### Access levels
 Access levels come from one central query in `user_permission.php` that walks
 the membership hierarchy (company → lab group → project → experiment) and
-returns the highest applicable level. UI adapts to the level: view-only users
-get static text, users with level >= 2 get the edit form.
+returns the highest applicable level. Invalid or unknown IDs make the
+function throw `RuntimeException`; unimplemented entity types ('project',
+'lab', ...) return 0 with a PHP warning. UI adapts to the level: view-only
+users get static text, users with level >= 2 get the edit form.
 
 ### Database access
 All queries use **mysqli prepared statements**. Values are always bound with

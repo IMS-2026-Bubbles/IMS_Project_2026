@@ -28,18 +28,27 @@ each section page shows its own.
 
 ### Last-updated timestamps
 Every section stores when it was last saved, displayed on the section page
-as "Last updated".
+as "Last updated". The experiment overview page also shows when the
+experiment was created and last updated, plus the last-save time of each
+section next to its progress badge. Timestamps are formatted for display
+as `YYYY-MM-DD HH:MM`.
 
 ### Access control
 - All pages re-check permission via `check_user_permission()`: level 1 or
   higher required to view, level 2 or higher to see the edit form.
-- The form-processing endpoint (`exp_edit_section.php`) performs its own
-  permission check (level >= 2), so it cannot be bypassed by posting
-  directly to it.
+- Both form-processing endpoints (`exp_edit_section.php`,
+  `exp_edit_tags.php`) perform their own server-side permission check
+  (level >= 2), so they cannot be bypassed by posting directly to them.
+  An earlier version of the tag form carried the access level in a hidden
+  input; this was replaced with the server-side check.
 - The section name posted by the form is validated against a whitelist
   (Plan / Log / Result), preventing SQL injection through the column names.
+- Both endpoints handle a missing experiment ID gracefully (message +
+  redirect) instead of crashing.
 - All database queries use prepared statements with bound parameters.
 - All user-supplied output is passed through `htmlspecialchars()`.
+- Missing data is handled defensively: a new experiment with no saved text
+  shows an empty textarea rather than an error.
 
 ### User feedback (PRG pattern)
 After saving, the user is redirected back to the section page, and
@@ -47,6 +56,9 @@ success/error messages collected during the save are passed through the
 session and displayed once on the page they land on.
 
 ## Known limitations / future work
+- The log and result section pages (`experiment_log.php`,
+  `experiment_result.php`) are placeholders; only the plan page is
+  implemented so far.
 - `check_user_permission()` only implements the 'experiment' entity type;
   project / lab / company are placeholders.
 - The database connection uses local credentials and an empty database name
