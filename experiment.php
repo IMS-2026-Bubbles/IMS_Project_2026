@@ -6,7 +6,8 @@ include "Session/init.php"; // Make the session available
 include "Session/check_user_logged_in.php";
 
 // Variables
-// $exp_ID from URL?
+    // $exp_ID from URL (URL is always a GET request)
+$exp_ID = $_GET['exp_ID'] ?? NULL;
 
 // Connect to database
 include "Database_related/db.php";
