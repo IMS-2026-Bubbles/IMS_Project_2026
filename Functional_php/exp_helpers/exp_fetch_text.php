@@ -1,7 +1,7 @@
 <?php
 // Retrieve experiment section text
 
-// Retreive the text content for a specific section of an experiment.
+// Retrieve the text content for a specific section of an experiment.
 // Expects an experiment ID as $exp_ID, and a section name as $exp_section.
 // Returns a string of text content in $exp_section_text, which can be used to display the text on the page.
 

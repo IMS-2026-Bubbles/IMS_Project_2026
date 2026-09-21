@@ -7,7 +7,8 @@
 // as $text, and a boolean $done_flag indicating whether the section is done or not.
 // Message history is stored in $messages array and returned to the calling 
 // script in $messages_exp_edit_section.
-// Returns nothing, but redirects back to experiment.php with the same exp_ID after processing.
+// Returns nothing, but redirects back to the experiment section page 
+// with the same exp_ID after processing.
 
 // Session initialization
 include "../../Session/init.php"; // Make the session available
@@ -15,6 +16,14 @@ $messages = array(); // Create message array
 
 // Variables from POST request
 $exp_ID = $_POST['exp_ID'] ?? null;
+if ($exp_ID === null) {
+    $messages[] = "Error: No experiment ID provided.<br>";
+    // Store messages in session to display
+    $_SESSION['messages_exp_edit_section'] = $messages;
+    // Redirect back to project library page
+    header("Location: ../../project_library.php");
+    exit();
+}
 $exp_section = $_POST['section'] ?? null;
 $text = $_POST['text'] ?? null;
 $done_flag = $_POST['done_flag'] ?? 0; // Default to 0 (not done) if not set
@@ -22,7 +31,7 @@ $done_flag = $_POST['done_flag'] ?? 0; // Default to 0 (not done) if not set
 $valid_sections = ['Plan', 'Log', 'Result'];
 if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Invalid section name: " . htmlspecialchars($exp_section) . "<br>";
-    // Store messages in session to display on experiment.php
+    // Store messages in session to display
     $_SESSION['messages_exp_edit_section'] = $messages;
     // Redirect back to experiment.php with the same exp_ID because the section name is invalid
     header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
@@ -37,7 +46,7 @@ include "../../Functional_php/user_permission.php"; // Include the user permissi
 $user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit this experiment section.<br>";
-    // Store messages in session to display on experiment.php
+    // Store messages in session to display
     $_SESSION['messages_exp_edit_section'] = $messages;
     // Redirect back to experiment section with the same exp_ID
     header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
@@ -90,7 +99,7 @@ if ($stmt_update_timestamp->execute()) {
         $messages[] = "Error updating last update timestamp for section " . $exp_section . " : " . $stmt_update_timestamp->error . "<br>";
 }
 
-// Store messages in session to display on experiment.php
+// Store messages in session to display
 $_SESSION['messages_exp_edit_section'] = $messages;
 
 // Close connection when done
