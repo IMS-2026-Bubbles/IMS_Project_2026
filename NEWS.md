@@ -45,8 +45,6 @@ success/error messages collected during the save are passed through the
 session and displayed once on the page they land on.
 
 ## Known limitations / future work
-- `experiment.php` does not yet read `exp_ID` from the URL
-  (`$_GET['exp_ID']`), so the redirect target loses the experiment context.
 - `check_user_permission()` only implements the 'experiment' entity type;
   project / lab / company are placeholders.
 - The database connection uses local credentials and an empty database name
