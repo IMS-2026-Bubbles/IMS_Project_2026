@@ -7,7 +7,7 @@
 // as $text, and a boolean $done_flag indicating whether the section is done or not.
 // Message history is stored in $messages array and returned to the calling 
 // script in $messages_exp_edit_section.
-// Returns true on success, false on failure.
+// Returns nothing, but redirects back to experiment.php with the same exp_ID after processing.
 
 // Session initialization
 include "../../Session/init.php"; // Make the session available
@@ -24,8 +24,8 @@ if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Invalid section name: " . htmlspecialchars($exp_section) . "<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_exp_edit_section'] = $messages;
-    // Redirect back to experiment.php with the same exp_ID
-    header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
+    // Redirect back to experiment.php with the same exp_ID because the section name is invalid
+    header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
     exit();
 }
 
@@ -39,7 +39,7 @@ if ($user_access < 2) {
     $messages[] = "You do not have permission to edit this experiment section.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_exp_edit_section'] = $messages;
-    // Redirect back to experiment.php with the same exp_ID
+    // Redirect back to experiment section with the same exp_ID
     header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
     exit();
 }
@@ -78,7 +78,7 @@ if ($stmt_update_text->execute()) {
 
 // Update the last update timestamp for the experiment and the specified section in the database
     // Create query to update the last update timestamp for the specified section
-$sql_update_timestamp = "UPDATE Proj_Experiment SET " . $exp_section . "_Update = NOW() WHERE Exp_ID = ?";
+$sql_update_timestamp = "UPDATE Proj_Experiment SET " . $exp_section . "_Updated = NOW() WHERE Exp_ID = ?";
     // Prepare query
 $stmt_update_timestamp = $conn->prepare($sql_update_timestamp);
     // Bind parameters
@@ -96,7 +96,7 @@ $_SESSION['messages_exp_edit_section'] = $messages;
 // Close connection when done
 include "../../Database_related/closeDB.php";
 
-// Redirect back to experiment.php with the same exp_ID
+// Redirect back to experiment section with the same exp_ID
 header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
 exit();
 ?>

@@ -57,22 +57,25 @@ echo "<br>";
 
 // Retrieve the text content for the experiment plan section
 include "Functional_php/exp_helpers/exp_fetch_text.php"; // Fetches the text content for the specified experiment ID and section
-?>
-<form action="Functional_php/exp_helpers/exp_edit_section.php" method="post">
-    <!-- Hidden inputs for the experiment ID and section -->
-    <input type="hidden" name="exp_ID" value="<?php echo htmlspecialchars($exp_ID); ?>">
-    <input type="hidden" name="section" value="<?php echo htmlspecialchars($exp_section); ?>">
 
-    <!-- Progress flag -->
-    <input type="checkbox" name="done_flag" value="1" <?php echo ($exp_progress_flags[$exp_section . '_Done'] ? 'checked' : ''); ?>> Mark as Done<br>
+if ($user_access >= 2) {
+    // User has edit permission, display the form for editing the experiment plan
+    echo "<form action='Functional_php/exp_helpers/exp_edit_section.php' method='post'>"
+        // Hidden inputs for the experiment ID and section
+        . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
+        . "<input type='hidden' name='section' value='" . htmlspecialchars($exp_section) . "'>"
+        // Progress flag
+        . "<input type='checkbox' name='done_flag' value='1' " . ($exp_progress_flags[$exp_section . '_Done'] ? 'checked' : '') . "> Mark as Done<br>"
+        // Save button
+        . "<input type='submit' value='Save Changes'>"
+        // Textbox for the experiment plan
+        . "<textarea name='text' rows='10' cols='50'>" . htmlspecialchars($exp_section_text) . "</textarea><br>"
+        . "</form>";
+} elseif ($user_access < 2 && $user_access >= 1) {
+    // User has read only access, display as static text
+    echo "<div class='exp_plan_text'>" . nl2br(htmlspecialchars($exp_section_text)) . "</div>";
+}
 
-    <!-- Save button -->
-    <input type="submit" value="Save Changes">
-
-    <!-- Textbox for the experiment plan -->
-    <textarea name="text" rows="10" cols="50"><?php echo htmlspecialchars($exp_section_text); ?></textarea><br>
-</form>
-<?php
 // Display messages from exp_edit_section.php if they exist
 if (isset($messages_exp_edit_section)) {
     foreach ($messages_exp_edit_section as $message) {

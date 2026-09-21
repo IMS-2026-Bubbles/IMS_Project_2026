@@ -5,11 +5,11 @@
 // It expects $exp_ID which is used to query the database for the last 
 // update timestamps associated with that experiment.
 // Return an associative array $exp_last_update with keys 
-// 'Plan_Update', 'Log_Update', and 'Result_Update'.
+// 'Plan_Updated', 'Log_Updated', and 'Result_Updated'.
 
 // Retrieve last update timestamps
     // Create query
-$sql_exp_last_update = "SELECT Plan_Update, Log_Update, Result_Update FROM Proj_Experiment WHERE Exp_ID = ?";
+$sql_exp_last_update = "SELECT Plan_Updated, Log_Updated, Result_Updated FROM Proj_Experiment WHERE Exp_ID = ?";
     // Prepare query
 $stmt_exp_last_update = $conn->prepare($sql_exp_last_update);
     // Bind the experiment ID parameter
