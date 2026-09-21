@@ -8,8 +8,8 @@ include "Session/init.php"; // Make the session available
 include "Session/check_user_logged_in.php";
 
 // Variables
-    // $exp_ID from URL?
-    $exp_ID = isset($exp_ID) : NULL; // Initialize $exp_ID to NULL if not set
+    // $exp_ID from URL (URL is always a GET request)
+    $exp_ID = $_GET['exp_ID'] ?? NULL;
     // $user_id from session
     $exp_section = "Plan"; // Set the section to "Plan" for the experiment plan page
 
@@ -25,7 +25,7 @@ if ($user_access < 1) {
     exit();
 }
 
-// Retrieve messages from exp_edit_tags.php if they exist
+// Retrieve messages from exp_edit_section.php if they exist
 if (isset($_SESSION['messages_exp_edit_section'])) {
     $messages_exp_edit_section = $_SESSION['messages_exp_edit_section'];
     // Clear the messages from the session after retrieving them
@@ -43,8 +43,8 @@ include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 
 // Display last updated timestamp for the experiment plan section
-include "Functional_php/exp_helpers/exp_fetch_last_updated.php"; // Fetches the last updated timestamp for the specified experiment ID and section
-echo "Last updated: " . $exp_last_update[$exp_section] . "<br><br>";
+include "Functional_php/exp_helpers/exp_fetch_updated.php"; // Fetches the last updated timestamp for the specified experiment ID and section
+echo "Last updated: " . $exp_last_update[$exp_section . '_Updated'] . "<br><br>";
 
 // Display the "Done" toggle for the experiment plan
 include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress status for the specified experiment ID
@@ -54,6 +54,9 @@ echo "<div class='exp_progress_flags'>" // String structured vertically for code
     . exp_progress_flags($exp_section, $exp_progress_flags[$exp_section . '_Done'])
     . "</div>";
 echo "<br>";
+
+// Retrieve the text content for the experiment plan section
+include "Functional_php/exp_helpers/exp_fetch_text.php"; // Fetches the text content for the specified experiment ID and section
 ?>
 <form action="Functional_php/exp_helpers/exp_edit_section.php" method="post">
     <!-- Hidden inputs for the experiment ID and section -->
@@ -67,12 +70,14 @@ echo "<br>";
     <input type="submit" value="Save Changes">
 
     <!-- Textbox for the experiment plan -->
-    <textarea name="text" rows="100" cols="50"><?php echo htmlspecialchars($exp_text[$exp_section]); ?></textarea><br>
+    <textarea name="text" rows="10" cols="50"><?php echo htmlspecialchars($exp_section_text); ?></textarea><br>
 </form>
 <?php
 // Display messages from exp_edit_section.php if they exist
+if (isset($messages_exp_edit_section)) {
     foreach ($messages_exp_edit_section as $message) {
         echo $message . "<br>";
     }
+}
 ?>
 </html>

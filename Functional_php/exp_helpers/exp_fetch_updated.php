@@ -9,7 +9,7 @@
 
 // Retrieve last update timestamps
     // Create query
-$sql_exp_last_update = "SELECT Plan_Update, Log_Update, Result_Update FROM Proj_Experiments WHERE Exp_ID = ?";
+$sql_exp_last_update = "SELECT Plan_Update, Log_Update, Result_Update FROM Proj_Experiment WHERE Exp_ID = ?";
     // Prepare query
 $stmt_exp_last_update = $conn->prepare($sql_exp_last_update);
     // Bind the experiment ID parameter
