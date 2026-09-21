@@ -11,6 +11,7 @@ function exp_progress_badge(string $label, bool $flag): string {
     $label = htmlspecialchars($label); // Sanitize label to prevent XSS
     $class = $flag ? "badge-done" : "badge-open";
     $symbol = $flag ? "&#9745;" : "&#9744;"; // Checked or empty box (unicode characters html entities)
+    // TODO: Consider adding date of last update to the badge, if available, for more context.
     return "<span class='badge $class'>$symbol $label</span>";
 }
 ?>

@@ -37,7 +37,7 @@ echo " Experiment :)";
 <!-- Link back to parent project -->
  <?php
 // Retrieve project ID for the experiment
-include "/Functional_php/exp_helpers/exp_fetch_proj_ID.php"; // This script fetches the project ID for the specified experiment ID
+include "Functional_php/exp_helpers/exp_fetch_proj_ID.php"; // This script fetches the project ID for the specified experiment ID
 // Create link back to parent project page
 echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent project</a><br><br>";
 ?>
@@ -46,7 +46,7 @@ echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent p
 <!-- tags field/form -->
 <?php
 // Retrieve experiment tags from the database
-include "/Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
+include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
 // Display current tags
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 ?>
@@ -79,17 +79,24 @@ if (isset($messages_exp_edit_tags)) {
 ?>
 
 
-<!-- markers for partial/total progress -->
+<!-- markers for partial/total progress and last update -->
 <?php
 // Retrieve and display progress flags for the experiment
 include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress flags as $exp_progress_flags
+// Retrieve the last update timestamp for the experiment
+include "Functional_php/exp_helpers/exp_fetch_updated.php"; // Fetches the last updated timestamp for the experiment as $exp_last_update
+echo "Experiment created: " . $exp_last_update['Date_Created'] . "<br>";
+echo "Experiment updated: " . $exp_last_update['Date_Updated'] . "<br><br>";
 
 // Define the progress flag display helper.
 include "Functional_php/exp_helpers/exp_progress_fun.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
     . exp_progress_flags("Plan", $exp_progress_flags['Plan_Done'])
+    . "(" . $exp_last_update['Plan_Updated'] . ")<br>"
     . exp_progress_flags("Log", $exp_progress_flags['Log_Done'])
+    . "(" . $exp_last_update['Log_Updated'] . ")<br>"
     . exp_progress_flags("Result", $exp_progress_flags['Result_Done'])
+    . "(" . $exp_last_update['Result_Updated'] . ")<br>"
     . "</div>";
 echo "<br><br>";
 ?>
@@ -103,5 +110,5 @@ echo "<br><br>";
 
 <?php
 // Close connection when done
-include "/Database_related/closeDB.php";
+include "Database_related/closeDB.php";
 ?>

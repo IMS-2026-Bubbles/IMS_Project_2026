@@ -1,5 +1,7 @@
 # NEWS — Experiment_pages branch
 
+Date: 2026-09-21
+
 Summary of the website structure implemented on this branch, as a starting
 point for writing your own report. Written in third person; adapt as needed.
 
