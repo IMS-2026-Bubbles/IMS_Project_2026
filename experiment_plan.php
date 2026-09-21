@@ -24,6 +24,13 @@ if ($user_access < 1) {
     echo "You do not have permission to view this content.";
     exit();
 }
+
+// Retrieve messages from exp_edit_tags.php if they exist
+if (isset($_SESSION['messages_exp_edit_section'])) {
+    $messages_exp_edit_section = $_SESSION['messages_exp_edit_section'];
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['messages_exp_edit_section']);
+}
 ?>
 
 <!-- Link back to main experiment page -->
@@ -35,12 +42,37 @@ if ($user_access < 1) {
 include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 
+// Display last updated timestamp for the experiment plan section
+include "Functional_php/exp_helpers/exp_fetch_last_updated.php"; // Fetches the last updated timestamp for the specified experiment ID and section
+echo "Last updated: " . $exp_last_update[$exp_section] . "<br><br>";
+
 // Display the "Done" toggle for the experiment plan
 include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress status for the specified experiment ID
+// Define the progress flag display helper.
+include "Functional_php/exp_helpers/exp_progress_fun.php";
+echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
+    . exp_progress_flags($exp_section, $exp_progress_flags[$exp_section . '_Done'])
+    . "</div>";
+echo "<br>";
 ?>
+<form action="Functional_php/exp_helpers/exp_edit_section.php" method="post">
+    <!-- Hidden inputs for the experiment ID and section -->
+    <input type="hidden" name="exp_ID" value="<?php echo htmlspecialchars($exp_ID); ?>">
+    <input type="hidden" name="section" value="<?php echo htmlspecialchars($exp_section); ?>">
 
+    <!-- Progress flag -->
+    <input type="checkbox" name="done_flag" value="1" <?php echo ($exp_progress_flags[$exp_section . '_Done'] ? 'checked' : ''); ?>> Mark as Done<br>
 
+    <!-- Save button -->
+    <input type="submit" value="Save Changes">
 
-<!-- Textbox -->
-
-
+    <!-- Textbox for the experiment plan -->
+    <textarea name="text" rows="100" cols="50"><?php echo htmlspecialchars($exp_text[$exp_section]); ?></textarea><br>
+</form>
+<?php
+// Display messages from exp_edit_section.php if they exist
+    foreach ($messages_exp_edit_section as $message) {
+        echo $message . "<br>";
+    }
+?>
+</html>
