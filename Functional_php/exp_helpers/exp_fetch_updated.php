@@ -21,11 +21,12 @@ if ($stmt_exp_last_update->execute()) {
     $result_exp_last_update = $stmt_exp_last_update->get_result(); // get_result() returns a mysqli_result object
     // Fetch the last update timestamps into an associative array
     $exp_last_update = $result_exp_last_update->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array
+    $exp_last_update = $exp_last_update ?? []; // Use null coalescing operator to provide a default empty array if the result is null
     // Format the timestamps into a more readable format
     $exp_last_update = array_map(function($timestamp) {
         return $timestamp ? date("Y-m-d H:i", strtotime($timestamp)) : null;
     }, $exp_last_update);
-    } elseif (isset($messages)) {
+} elseif (isset($messages)) {
     $messages[] = "Error retrieving last update timestamps for experiment " . $exp_ID . " : " . $stmt_exp_last_update->error . "<br>";
 } else {
     echo "Error retrieving last update timestamps for experiment " . $exp_ID . " : " . $stmt_exp_last_update->error . "<br>";

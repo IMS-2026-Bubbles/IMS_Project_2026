@@ -18,9 +18,9 @@ if ($stmt_exp_tags->execute()) {
     // Get the result set from the executed query
     $result_exp_tags = $stmt_exp_tags->get_result(); // get_result() returns a mysqli_result object
     // Fetch all tags into an associative array
-    $exp_tags_array = fetch_assoc($result_exp_tags); // fetch_assoc() fetches all rows as an associative array
+    $exp_tags_array = $result_exp_tags->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
     // Unnest the array to get a simple array of tags
-    $exp_tags_array = $exp_tags_array['Exp_Tag'];
+    $exp_tags_array = array_column($exp_tags_array, 'Exp_Tag'); // Extract the 'Exp_Tag' column from the associative array
 } elseif (isset($messages)) {
     $messages[] = "Error retrieving tags for experiment " . $exp_ID . " : " . $stmt_exp_tags->error . "<br>";
 } else {

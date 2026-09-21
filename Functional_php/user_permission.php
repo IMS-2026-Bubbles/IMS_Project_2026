@@ -85,26 +85,28 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
 
     } elseif ($entity_type === 'project') {
         // TODO: Check permission for a project
-        return 'none'; // Placeholder return value
+        return 0; // Placeholder return value
 
 
     } elseif ($entity_type === 'lab') {
         // TODO: Check permission for a lab
-        return 'none'; // Placeholder return value
+        return 0; // Placeholder return value
 
 
     } elseif ($entity_type === 'company') {
         // TODO: Check permission for a company
-        return 'none'; // Placeholder return value
+        return 0; // Placeholder return value
 
 
     } elseif ($entity_type === 'scriba') {
         // TODO: Check permission for Scriba
-        return 'none'; // Placeholder return value
+        return 0; // Placeholder return value
 
 
     } else {
-        return 'error: invalid entity type'; // Invalid entity type
+        // Throw warning for invalid entity type
+        trigger_error("Invalid entity type: " . $entity_type, E_USER_WARNING);
+        return 0; // Invalid entity type => no access
     }
 }
 ?>

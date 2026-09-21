@@ -4,34 +4,51 @@
 // Add and remove tags for an experiment. Gives feedback on the success of the operation 
 // before redirecting back to experiment.php. Check that tags don't already exist before adding, 
 // and check that tags do exist before removing.
+// Return to experiment.php with messages stored in session for display.
 
 // Session initialization
 include "../../Session/init.php"; // Make the session available
     // Create message array
 $messages = array();
 
+// Variables from POST request
+$exp_ID = $_POST['exp_ID'] ?? null;
+if ($exp_ID === null) {
+    $messages[] = "Error: No experiment ID provided.<br>";
+    // Store messages in session to display on experiment.php
+    $_SESSION['messages_exp_edit_tags'] = $messages;
+    // Redirect back to project library page
+    header("Location: ../../project_library.php");
+    exit();
+}
+$exp_tags_add = $_POST['new_tags'] ?? "";
+$exp_tags_remove = $_POST['remove_tags'] ?? "";
+
 // Connect to database
 include "../../Database_related/db.php";
 
 // Check if the user has permission to edit tags for this experiment
-// Is it fine to inherit the access level from experiment.php? Or should we check it again here?
-if (isset($_POST['access_level']) && $_POST['access_level'] < 2) {
+include "../../Functional_php/user_permission.php"; // Include the user permission check function
+$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+if ($user_access < 2) {
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_exp_edit_tags'] = $messages;
     // Redirect back to experiment.php with the same exp_ID
-    header("Location: ../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']));
+    header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
     exit();
 }
 
 // Remove tags from the database
-if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
+if ($exp_tags_remove !== '') {
     $messages[] = "Removing tags:<br>";
-    // Get user input from POST request
-    $remove_tags = $_POST['remove_tags'];
-    $exp_ID = $_POST['exp_ID'];
+
+    // Relevant variables
+        // $exp_ID
+        // $exp_tags_remove
+
     // Convert tags to array and sanitize
-    $remove_tags_array = explode(',', $remove_tags);
+    $remove_tags_array = explode(',', $exp_tags_remove);
     $remove_tags_array = array_map('trim', $remove_tags_array); // Trim whitespace
     $remove_tags_array = array_filter($remove_tags_array); // Remove empty values
 
@@ -41,7 +58,7 @@ if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
         // Compare remove tags with existing tags
     $nonexistent_remove_tags = array_diff($remove_tags_array, $exp_tags_array);
     if (!empty($nonexistent_remove_tags)) {
-        $messages[] = "Nonexistant tags: " . implode(", ", $nonexistent_remove_tags) . "<br>";
+        $messages[] = "Nonexistent tags: " . implode(", ", $nonexistent_remove_tags) . "<br>";
         // Remove nonexistent tags from the remove tags array
         $remove_tags_array = array_diff($remove_tags_array, $nonexistent_remove_tags);
     }
@@ -67,13 +84,15 @@ if (isset($_POST['remove_tags']) && isset($_POST['exp_ID'])) {
 
 
 // Insert new tags into the database
-if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
+if ($exp_tags_add !== '') {
     $messages[] = "Adding tags:<br>";
-    // Get user input from POST request
-    $new_tags = $_POST['new_tags'];
-    $exp_ID = $_POST['exp_ID'];
+
+    // Relevant variables
+        // $exp_ID
+        // $exp_tags_add
+
     // Convert tags to array and sanitize
-    $new_tags_array = explode(',', $new_tags);
+    $new_tags_array = explode(',', $exp_tags_add);
     $new_tags_array = array_map('trim', $new_tags_array); // Trim whitespace
     $new_tags_array = array_filter($new_tags_array); // Remove empty values
 
@@ -83,7 +102,7 @@ if (isset($_POST['new_tags']) && isset($_POST['exp_ID'])) {
         // Compare new tags with existing tags
     $duplicate_new_tags = array_intersect($new_tags_array, $exp_tags_array);
     if (!empty($duplicate_new_tags)) {
-        $messages[] = "Prevoiusly existing tags: " . implode(", ", $duplicate_new_tags) . "<br>";
+        $messages[] = "Previously existing tags: " . implode(", ", $duplicate_new_tags) . "<br>";
         // Remove duplicate tags from the new tags array
         $new_tags_array = array_diff($new_tags_array, $duplicate_new_tags);
     }
@@ -115,13 +134,13 @@ $_SESSION['messages_exp_edit_tags'] = $messages;
 
 // Redirect back to experiment.php with the same exp_ID
 header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
-
-// Links in case redirect fails
-    // Link back to experiment.php with the same exp_ID
-if (isset($_POST['exp_ID'])) {
-    echo "<a href='../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
-} else {
-    echo "Error: No experiment ID available.<br>";
-    echo "<a href='../../project_library.php'>Back to project library</a><br><br>";
-}
+exit();
+// // Links in case redirect fails
+//     // Link back to experiment.php with the same exp_ID
+// if (isset($_POST['exp_ID'])) {
+//     echo "<a href='../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
+// } else {
+//     echo "Error: No experiment ID available.<br>";
+//     echo "<a href='../../project_library.php'>Back to project library</a><br><br>";
+// }
 ?>

@@ -51,7 +51,7 @@ include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the prog
 // Define the progress flag display helper.
 include "Functional_php/exp_helpers/exp_progress_fun.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_flags($exp_section, $exp_progress_flags[$exp_section . '_Done'])
+    . exp_progress_badge($exp_section, $exp_progress_flags[$exp_section . '_Done'])
     . "</div>";
 echo "<br>";
 
@@ -71,7 +71,9 @@ if ($user_access >= 2) {
         // Textbox for the experiment plan
         . "<textarea name='text' rows='10' cols='50'>" . htmlspecialchars($exp_section_text) . "</textarea><br>"
         . "</form>";
-} elseif ($user_access < 2 && $user_access >= 1) {
+} else {
+    // We already check for access level < 1 at the start and >=2 here, 
+    // so only access level = 1 remains, which is read-only access.
     // User has read only access, display as static text
     echo "<div class='exp_plan_text'>" . nl2br(htmlspecialchars($exp_section_text)) . "</div>";
 }

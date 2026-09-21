@@ -17,7 +17,8 @@ if ($stmt_exp_section_text->execute()) {
     // Get the result set from the executed query
     $result_exp_section_text = $stmt_exp_section_text->get_result(); // get_result() returns a mysqli_result object
     // Fetch the text content into a string
-    $exp_section_text = $result_exp_section_text->fetch_assoc()[$exp_section . '_Text']; // fetch_assoc() fetches a single row as an associative array, needed to access the value
+    $exp_section_text = $result_exp_section_text->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array, needed to access the value
+    $exp_section_text = $exp_section_text[$exp_section . '_Text'] ?? ""; // Use null coalescing operator to provide a default value if the key does not exist
 } elseif (isset($messages)) {
     $messages[] = "Error retrieving text for experiment " . $exp_ID . " section " . $exp_section . " : " . $stmt_exp_section_text->error . "<br>";
 } else {

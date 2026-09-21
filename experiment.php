@@ -60,8 +60,6 @@ if ($user_access >= 2) {
     . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
     // Experiment_ID
     . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
-    // Access Level
-    . "<input type='hidden' name='access_level' value='" . htmlspecialchars($user_access) . "'>"
     // Submit button
     . "<input type='submit' value='Add Tags'>"
     . "</form>"
@@ -91,11 +89,11 @@ echo "Experiment updated: " . $exp_last_update['Date_Updated'] . "<br><br>";
 // Define the progress flag display helper.
 include "Functional_php/exp_helpers/exp_progress_fun.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_flags("Plan", $exp_progress_flags['Plan_Done'])
+    . exp_progress_badge("Plan", $exp_progress_flags['Plan_Done'])
     . "(" . $exp_last_update['Plan_Updated'] . ")<br>"
-    . exp_progress_flags("Log", $exp_progress_flags['Log_Done'])
+    . exp_progress_badge("Log", $exp_progress_flags['Log_Done'])
     . "(" . $exp_last_update['Log_Updated'] . ")<br>"
-    . exp_progress_flags("Result", $exp_progress_flags['Result_Done'])
+    . exp_progress_badge("Result", $exp_progress_flags['Result_Done'])
     . "(" . $exp_last_update['Result_Updated'] . ")<br>"
     . "</div>";
 echo "<br><br>";
