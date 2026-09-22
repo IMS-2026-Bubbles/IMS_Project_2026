@@ -63,7 +63,7 @@ CREATE TABLE `Exp_Tag` (
 );
 
 CREATE TABLE `User` (
-  `User_ID` VARCHAR(10),
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
   `Email` VARCHAR(255) NOT NULL UNIQUE,
   `First_Name` VARCHAR(50),
   `Last_Name` VARCHAR(50),
@@ -77,7 +77,7 @@ CREATE TABLE `User` (
 
 CREATE TABLE `Company_Member` (
   `Company_ID` VARCHAR(10),
-  `User_ID` VARCHAR(10),
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
   `Role` ENUM('admin', 'member') NOT NULL,
   PRIMARY KEY (`Company_ID`, `User_ID`),
   FOREIGN KEY (`User_ID`)
@@ -88,7 +88,7 @@ CREATE TABLE `Company_Member` (
 
 CREATE TABLE `Project_Member` (
   `Project_ID` VARCHAR(10),
-  `User_ID` VARCHAR(10),
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
   `Role` ENUM('owner', 'edit', 'read') NOT NULL,
   PRIMARY KEY (`Project_ID`, `User_ID`),
   FOREIGN KEY (`Project_ID`)
@@ -99,7 +99,7 @@ CREATE TABLE `Project_Member` (
 
 CREATE TABLE `Experiment_Member` (
   `Experiment_ID` VARCHAR(10),
-  `User_ID` VARCHAR(10),
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
   `Role` ENUM('edit', 'read') NOT NULL,
   PRIMARY KEY (`Experiment_ID`, `User_ID`),
   FOREIGN KEY (`User_ID`)
@@ -110,7 +110,7 @@ CREATE TABLE `Experiment_Member` (
 
 CREATE TABLE `Lab_Group_Member` (
   `Lab_Group_ID` VARCHAR(10),
-  `User_ID` VARCHAR(10),
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
   `Role` ENUM('admin', 'member') NOT NULL,
   PRIMARY KEY (`Lab_Group_ID`, `User_ID`),
   FOREIGN KEY (`Lab_Group_ID`)
@@ -119,3 +119,12 @@ CREATE TABLE `Lab_Group_Member` (
       REFERENCES `User`(`User_ID`)
 );
 
+CREATE TABLE `Scriba_Member` (
+  `User_ID` INT AUTO_INCREMENT, /* autoincrement only on integers, Tilda changed this */
+  PRIMARY KEY (`User_ID`),
+  FOREIGN KEY (`User_ID`)
+      REFERENCES `User`(`User_ID`)
+);
+
+
+/* Tilda adding test users n*/ 
