@@ -210,13 +210,82 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
 
 
     } elseif ($entity_type === 'company') {
-        // TODO: Check permission for a company
-        return 0; // Placeholder return value
+        // Check permission for a company
+            // Create query
+        $sql_company_permission = 
+        "SELECT MAX(CASE -- Highest permission => access level
+            -- Scriba admin => no access for privacy reasons
+            -- Company admin => edit (Company member -> no access)
+            WHEN Company_Member.Role = 'admin'    THEN 2
+            -- Company member => read
+            WHEN Company_Member.Role = 'member'   THEN 1
+            -- None of the above => no access
+            ELSE 0
+            END) AS `Access`
+        FROM Company
+        -- Add member tables to get roles and filter by user_ID
+        LEFT JOIN Company_Member
+            ON Company_Member.Company_ID = Company.Company_ID
+            AND Company_Member.User_ID = ?
+        -- Filter for the specific company
+        WHERE Company.Company_ID = ?
+        ";
+            // Prepare query
+        $stmt_company_permission = $conn->prepare($sql_company_permission);
+            // Bind parameters
+        $stmt_company_permission->bind_param("ss", $user_ID, $entity_ID);
+            // Execute query
+        if ($stmt_company_permission->execute()) {
+                // Get the result set from the executed query
+            $result_company_permission = $stmt_company_permission->get_result(); // get_result() returns a mysqli_result object
+                // Fetch the permission level from the result set
+            $company_permission_level = $result_company_permission->fetch_assoc();
+                // Check for null, nrow == 0, or missing 'Access' column
+            if (!array_key_exists('Access', $company_permission_level)) {
+                // Missing 'Access' column
+                throw new RunTimeException("`Access` column missing");
+            } elseif ($company_permission_level['Access'] === null) {
+                // 'Access' is null => invalid Company_ID
+                throw new RunTimeException("Invalid Company_ID: " . $entity_ID);
+            }
+                // Return the permission level
+            return (int)$company_permission_level['Access']; // Need to use (int) to convert from string to integer
+        } else {
+            throw new RunTimeException("Permission query failed: " . $stmt_company_permission->error); // Error executing query
+        }
 
 
     } elseif ($entity_type === 'scriba') {
-        // TODO: Check permission for Scriba
-        return 0; // Placeholder return value
+        // Check permission for Scriba
+            // Create query
+        $sql_scriba_permission =
+        "SELECT COUNT(User_ID) AS `Access` -- 1 if user is Scriba admin, 0 otherwise
+        FROM Scriba_Member
+        WHERE User_ID = ?
+        ";
+            // Prepare query
+        $stmt_scriba_permission = $conn->prepare($sql_scriba_permission);
+            // Bind parameters
+        $stmt_scriba_permission->bind_param("s", $user_ID);
+            // Execute query
+        if ($stmt_scriba_permission->execute()) {
+                // Get the result set from the executed query
+            $result_scriba_permission = $stmt_scriba_permission->get_result(); // get_result() returns a mysqli_result object
+                // Fetch the permission level from the result set
+            $scriba_permission_level = $result_scriba_permission->fetch_assoc();
+                // Check for null, nrow == 0, or missing 'Access' column
+            if (!array_key_exists('Access', $scriba_permission_level)) {
+                // Missing 'Access' column
+                throw new RunTimeException("`Access` column missing");
+            } elseif ($scriba_permission_level['Access'] === null) {
+                // 'Access' is null => invalid User_ID
+                throw new RunTimeException("Invalid User_ID: " . $user_ID);
+            }
+                // Return the permission level
+            return (int)$scriba_permission_level['Access']; // Need to use (int) to convert from string to integer
+        } else {
+            throw new RunTimeException("Permission query failed: " . $stmt_scriba_permission->error); // Error executing query
+        }
 
 
     } else {
