@@ -60,8 +60,18 @@ if (isset($_SESSION['messages_exp_edit_section'])) {
 }
 ?>
 
+<?php
+// Display project name, experiment name, and experiment section name
+include "Functional_php/exp_helpers/exp_fetch_name.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
+
+// Diplay the project, experiment, and section name
+echo "Project: " . htmlspecialchars($proj_exp_name_array['Project_Name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($proj_exp_name_array['Experiment_Name']) . "<br>";
+echo "Section: " . htmlspecialchars($exp_section) . "<br><br>";
+?>
+
 <!-- Link back to main experiment page -->
-<a href="experiment.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Back to experiment page</a><br><br>
+<a href="experiment.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Back to <?php echo htmlspecialchars($proj_exp_name_array['Experiment_Name']); ?></a><br><br>
 
 <!-- Tags (static), Done toggle, save/submit -->
 <?php

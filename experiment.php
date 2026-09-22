@@ -34,6 +34,15 @@ echo " Experiment :)";
 
 <!-- Navbar? -->
 
+<?php
+// Display project name, experiment name, and experiment section name
+include "Functional_php/exp_helpers/exp_fetch_name.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
+
+// Diplay the project, experiment, and section name
+echo "Project: " . htmlspecialchars($proj_exp_name_array['Project_Name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($proj_exp_name_array['Experiment_Name']) . "<br><br>";
+?>
+
 <!-- Link back to parent project -->
  <?php
 // Retrieve project ID for the experiment
