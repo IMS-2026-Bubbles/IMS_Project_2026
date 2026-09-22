@@ -101,9 +101,9 @@ echo "<br><br>";
 
 
 <!-- Create links for sub-pages, plan/log/result -->
-<a href="experiment_plan.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Plan</a><br>
-<a href="experiment_log.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Log</a><br>
-<a href="experiment_result.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Experiment Result</a><br>
+<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Plan">Experiment Plan</a><br>
+<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Log">Experiment Log</a><br>
+<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Result">Experiment Result</a><br>
 
 
 <?php

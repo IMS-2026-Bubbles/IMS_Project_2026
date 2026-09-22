@@ -8,10 +8,37 @@ include "Session/init.php"; // Make the session available
 include "Session/check_user_logged_in.php";
 
 // Variables
-    // $exp_ID from URL (URL is always a GET request)
-    $exp_ID = $_GET['exp_ID'] ?? NULL;
     // $user_id from session
-    $exp_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
+    // $exp_ID from URL (URL is always a GET request)
+$exp_ID = $_GET['exp_ID'] ?? NULL;
+if ($exp_ID === null) {
+    $messages[] = "Error: No experiment ID provided.<br>";
+    // Store messages in session to display
+    $_SESSION['messages_exp_edit_section'] = $messages;
+    // Redirect back to project library page
+    header("Location: ../../project_library.php");
+    exit();
+}
+$exp_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
+    // Check for NULL section name
+if ($exp_section === null) {
+    $messages[] = "Error: No experiment section provided.<br>";
+    // Store messages in session to display
+    $_SESSION['messages_exp_edit_section'] = $messages;
+    // Redirect back to experiment.php with the same exp_ID
+    header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
+    exit();
+}
+    // Whitelist section names
+$valid_sections = ['Plan', 'Log', 'Result'];
+if (!in_array($exp_section, $valid_sections)) {
+    $messages[] = "Error: Invalid experiment section provided.<br>";
+    // Store messages in session to display
+    $_SESSION['messages_exp_edit_section'] = $messages;
+    // Redirect back to experiment.php with the same exp_ID
+    header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
+    exit();
+}
 
 // Connect to database
 include "Database_related/db.php";
@@ -42,7 +69,7 @@ if (isset($_SESSION['messages_exp_edit_section'])) {
 include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 
-// Display last updated timestamp for the experiment plan section
+// Display last updated timestamp for the experiment section
 include "Functional_php/exp_helpers/exp_fetch_updated.php"; // Fetches the last updated timestamp for the specified experiment ID and section
 echo "Last updated: " . $exp_last_update[$exp_section . '_Updated'] . "<br><br>";
 
