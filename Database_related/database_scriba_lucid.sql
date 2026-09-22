@@ -1,4 +1,6 @@
 
+/*Correct database SQL code*/ 
+
 CREATE TABLE `Company` (
   `Company_ID` VARCHAR(10),
   `Comp_Name` VARCHAR(100),
@@ -74,6 +76,11 @@ CREATE TABLE `User` (
   `Streak` INT,
   PRIMARY KEY (`User_ID`)
 );
+
+/* can be admin?
+CREATE TABLE `Scriba_Member`(
+    PRIMARY KEY User_ID VARCHAR(10)
+); */
 
 CREATE TABLE `Company_Member` (
   `Company_ID` VARCHAR(10),
