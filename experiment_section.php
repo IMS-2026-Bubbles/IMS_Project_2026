@@ -11,7 +11,7 @@ include "Session/check_user_logged_in.php";
     // $exp_ID from URL (URL is always a GET request)
     $exp_ID = $_GET['exp_ID'] ?? NULL;
     // $user_id from session
-    $exp_section = "Plan"; // Set the section to "Plan" for the experiment plan page
+    $exp_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
 
 // Connect to database
 include "Database_related/db.php";
