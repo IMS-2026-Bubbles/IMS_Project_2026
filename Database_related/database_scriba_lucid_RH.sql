@@ -143,8 +143,8 @@ SELECT
     `User_ID`,
     COALESCE(`Changes_Saved`, 0)
       + COALESCE(`Streak`, 0)
-      + 10 * COALESCE(`Proj_Experiment`.`Experiment_Done_Count`, 0)
-      + 100 * COALESCE(`Project`.`Project_Done_Count`, 0) 
+      + 100 * COALESCE(`done_projects`.`Project_Done_Count`, 0) 
+      + 10 * COALESCE(`done_experiments`.`Experiment_Done_Count`, 0)
       AS `Scriba_Points`
 FROM `User`
 LEFT JOIN ( -- Count the number of completed projects for each user who is an owner
@@ -156,7 +156,7 @@ LEFT JOIN ( -- Count the number of completed projects for each user who is an ow
     AND `Project`.`Project_Done` = TRUE
   GROUP BY `Project_Member`.`User_ID`
 ) `done_projects` -- name of this new subquery table 
-  ON `User`.`User_ID` = `Project`.`User_ID`
+  ON `User`.`User_ID` = `done_projects`.`User_ID`
 LEFT JOIN ( -- Count the number of completed experiments for each user who is an owner
   SELECT `Project_Member`.`User_ID`, COUNT(*) AS `Experiment_Done_Count`
   FROM `Project_Member`
@@ -166,4 +166,4 @@ LEFT JOIN ( -- Count the number of completed experiments for each user who is an
     AND `Proj_Experiment`.`Experiment_Done` = TRUE
   GROUP BY `Project_Member`.`User_ID`
 ) `done_experiments` -- name of this new subquery table
-  ON `User`.`User_ID` = `Proj_Experiment`.`User_ID`;
+  ON `User`.`User_ID` = `done_experiments`.`User_ID`;
