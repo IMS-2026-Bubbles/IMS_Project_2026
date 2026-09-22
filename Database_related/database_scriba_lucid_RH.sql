@@ -18,7 +18,7 @@ CREATE TABLE `Project` (
   `Project_Name` VARCHAR(255) NOT NULL,
   `Lab_Group_ID` VARCHAR(10) NOT NULL,
   `Date_Created` TIMESTAMP,
-  `Date_Updated` TIMESTAMP,
+  `Date_Updated` TIMESTAMP, -- Make this based on the most recent update time of any experiment in the project? Would have to be a separate VIEW table in that case
   `Project_Done` BOOLEAN,
   PRIMARY KEY (`Project_ID`),
   FOREIGN KEY (`Lab_Group_ID`)

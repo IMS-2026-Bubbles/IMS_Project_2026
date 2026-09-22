@@ -28,8 +28,6 @@ if (isset($_SESSION['messages_exp_edit_tags'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['messages_exp_edit_tags']);
 }
-
-echo " Experiment :)";
 ?>
 
 <!-- Navbar? -->
