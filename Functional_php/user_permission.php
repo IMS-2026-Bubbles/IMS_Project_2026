@@ -13,8 +13,6 @@
 // - 'none'  (0) => No access (admin for Scriba = 0 for privacy reasons)
 // 
 // Permission levels for admin pages:
-// - Scriba
-//     - 'admin' (2) => Full access to manage Scriba
 // - Company
 //     - 'admin' (2) => Add users to company; create and manage labs, projects, and users within the company
 //     - 'member' (1) => View labs within the company (not projects or users?)
@@ -22,6 +20,10 @@
 //     - 'admin' (2) => Add users from company to lab group; manage projects
 //     - 'member' (1) => View projects + users within the lab group
 // - None (0) => No access
+// 
+// Permission levels for Scriba admin pages:
+// - Scriba
+//     - 'admin' (1) => Full access to manage Scriba (0 = no access)
 // 
 // Return the permission level as an integer. (split into different functions?)
 
