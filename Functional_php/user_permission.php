@@ -95,7 +95,7 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
 
 
     } elseif ($entity_type === 'project') {
-        // TODO: Check permission for a project
+        // Check permission for a project
             // Create query
         $sql_proj_permission = 
             "SELECT MAX(CASE -- Highest permission => access level
@@ -138,6 +138,7 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
         if ($stmt_proj_permission->execute()) {
                 // Get the result set from the executed query
             $result_proj_permission = $stmt_proj_permission->get_result(); // get_result() returns a mysqli_result object
+                // Fetch the permission level from the result set
             $proj_permission_level = $result_proj_permission->fetch_assoc();
                 // Check for null, nrow == 0, or missing 'Access' column
             if (!array_key_exists('Access', $proj_permission_level)) {
@@ -155,8 +156,57 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
 
 
     } elseif ($entity_type === 'lab') {
-        // TODO: Check permission for a lab
-        return 0; // Placeholder return value
+        // Check permission for a lab
+            // Create query
+        $sql_lab_permission = 
+        "SELECT MAX(CASE -- Highest permission => access level
+            -- Scriba admin => no access for privacy reasons
+            -- Company admin => edit (Company member -> no access)
+            WHEN Company_Member.Role = 'admin'    THEN 2
+            -- Lab group admin => edit
+            WHEN Lab_Group_Member.Role = 'admin'  THEN 2
+            -- Lab group member => read
+            WHEN Lab_Group_Member.Role = 'member' THEN 1
+            -- None of the above => no access
+            ELSE 0
+            END) AS `Access`
+        FROM Lab_Group
+        -- Add tables for bridging towards member tables
+        LEFT JOIN Company
+            ON Company.Company_ID = Lab_Group.Company_ID
+        -- Add member tables to get roles and filter by user_ID
+        LEFT JOIN Company_Member
+            ON Company_Member.Company_ID = Company.Company_ID
+            AND Company_Member.User_ID = ?
+        LEFT JOIN Lab_Group_Member
+            ON Lab_Group_Member.Lab_Group_ID = Lab_Group.Lab_Group_ID
+            AND Lab_Group_Member.User_ID = ?
+        -- Filter for the specific lab
+        WHERE Lab_Group.Lab_Group_ID = ?
+        ";
+            // Prepare query
+        $stmt_lab_permission = $conn->prepare($sql_lab_permission);
+            // Bind parameters
+        $stmt_lab_permission->bind_param("sss", $user_ID, $user_ID, $entity_ID);
+            // Execute query
+        if ($stmt_lab_permission->execute()) {
+                // Get the result set from the executed query
+            $result_lab_permission = $stmt_lab_permission->get_result(); // get_result() returns a mysqli_result object
+                // Fetch the permission level from the result set
+            $lab_permission_level = $result_lab_permission->fetch_assoc();
+                // Check for null, nrow == 0, or missing 'Access' column
+            if (!array_key_exists('Access', $lab_permission_level)) {
+                // Missing 'Access' column
+                throw new RunTimeException("`Access` column missing");
+            } elseif ($lab_permission_level['Access'] === null) {
+                // 'Access' is null => invalid Lab_Group_ID
+                throw new RunTimeException("Invalid Lab_Group_ID: " . $entity_ID);
+            }
+                // Return the permission level
+            return (int)$lab_permission_level['Access']; // Need to use (int) to convert from string to integer
+        } else {
+            throw new RunTimeException("Permission query failed: " . $stmt_lab_permission->error); // Error executing query
+        }
 
 
     } elseif ($entity_type === 'company') {
