@@ -6,13 +6,24 @@
 // for a specific action or page. Takes the database connection, user ID, entity type
 // (e.g., 'experiment', 'project', 'lab', 'company', 'scriba'), and entity ID as parameters.
 // 
-// Permission levels are defined as follows:
+// Permission levels for experiment/project:
 // - 'owner' (3) => Full access, can edit and manage the entity
-// - 'edit'  (2) => Can edit the entity but not manage it
+// - 'edit'  (2) => Can edit the entity but not manage it (admin for company/lab = 2)
 // - 'read'  (1) => Can view the entity but not edit it
-// - 'none'  (0) => No access
+// - 'none'  (0) => No access (admin for Scriba = 0 for privacy reasons)
 // 
-// Return the permission level as an integer.
+// Permission levels for admin pages:
+// - Scriba
+//     - 'admin' (2) => Full access to manage Scriba
+// - Company
+//     - 'admin' (2) => Add users to company; create and manage labs, projects, and users within the company
+//     - 'member' (1) => View labs within the company (not projects or users?)
+// - Lab group
+//     - 'admin' (2) => Add users from company to lab group; manage projects
+//     - 'member' (1) => View projects + users within the lab group
+// - None (0) => No access
+// 
+// Return the permission level as an integer. (split into different functions?)
 
 function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): int {
     if ($entity_type === 'experiment') {
@@ -85,7 +96,62 @@ function check_user_permission(mysqli $conn, string $user_ID, string $entity_typ
 
     } elseif ($entity_type === 'project') {
         // TODO: Check permission for a project
-        return 0; // Placeholder return value
+            // Create query
+        $sql_proj_permission = 
+            "SELECT MAX(CASE -- Highest permission => access level
+                -- Scriba admin => no access for privacy reasons
+                -- Company admin => edit (Company member -> no access)
+                WHEN Company_Member.Role = 'admin'    THEN 2
+                -- Lab group admin => edit
+                WHEN Lab_Group_Member.Role = 'admin'  THEN 2
+                -- Lab group member => read
+                WHEN Lab_Group_Member.Role = 'member' THEN 1
+                -- Project
+                WHEN Project_Member.Role = 'owner'    THEN 3
+                WHEN Project_Member.Role = 'edit'     THEN 2
+                WHEN Project_Member.Role = 'read'     THEN 1
+                -- None of the above => no access
+                ELSE 0
+                END) AS `Access`
+            FROM Project
+            -- Add tables for bridging towards member tables
+            LEFT JOIN Lab_Group
+                ON Lab_Group.Lab_Group_ID = Project.Lab_Group_ID
+            -- Add member tables to get roles and filter by user_ID
+            LEFT JOIN Company_Member
+                ON Company_Member.Company_ID = Lab_Group.Company_ID
+                AND Company_Member.User_ID = ?
+            LEFT JOIN Lab_Group_Member
+                ON Lab_Group_Member.Lab_Group_ID = Lab_Group.Lab_Group_ID
+                AND Lab_Group_Member.User_ID = ?
+            LEFT JOIN Project_Member
+                ON Project_Member.Project_ID = Project.Project_ID
+                AND Project_Member.User_ID = ?
+            -- Filter for the specific project
+            WHERE Project.Project_ID = ?
+            ";
+            // Prepare query
+        $stmt_proj_permission = $conn->prepare($sql_proj_permission);
+            // Bind parameters
+        $stmt_proj_permission->bind_param("ssss", $user_ID, $user_ID, $user_ID, $entity_ID);
+            // Execute query
+        if ($stmt_proj_permission->execute()) {
+                // Get the result set from the executed query
+            $result_proj_permission = $stmt_proj_permission->get_result(); // get_result() returns a mysqli_result object
+            $proj_permission_level = $result_proj_permission->fetch_assoc();
+                // Check for null, nrow == 0, or missing 'Access' column
+            if (!array_key_exists('Access', $proj_permission_level)) {
+                // Missing 'Access' column
+                throw new RunTimeException("`Access` column missing");
+            } elseif ($proj_permission_level['Access'] === null) {
+                // 'Access' is null => invalid Project_ID
+                throw new RunTimeException("Invalid Project_ID: " . $entity_ID);
+            }
+                // Return the permission level
+            return (int)$proj_permission_level['Access']; // Need to use (int) to convert from string to integer
+        } else {
+            throw new RunTimeException("Permission query failed: " . $stmt_proj_permission->error); // Error executing query
+        }
 
 
     } elseif ($entity_type === 'lab') {
