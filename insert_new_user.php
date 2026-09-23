@@ -1,36 +1,63 @@
 <?php
+    include 'Database_related/db.php';
 
-if (isset($_POST["register"])) {
-    //Checking if the person was accually clicking the submit button
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    //Generate the primary userID here
+    $message = "";
+    $toastClass = "";
+
+    # if button to register new:
+    if(isset($_POST['register']))
+    {
+        # fetch data from POST request
+        $First_Name = $_POST['First_Name'];
+        $Last_Name = $_POST['Last_Name'];
+        $Email = $_POST['Email'];
+        //generate salt and add to database
+        $Password = $_POST['Password1']; # IMPLEMENT SECURITY HERE
+        $hashedPassword = Password_hash($Password, Password_DEFAULT); # ???
+
+        // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
+        // Check if Email already exists
+        $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
+        $checkEmailStmt->bind_param("s", $Email);
+        $checkEmailStmt->execute();
+        $checkEmailStmt->store_result();
+        error_log("Checking Email [$Email], num_rows = " . $checkEmailStmt->num_rows);
+
+
+        // check if the number of rows are more than 0 => Email exists
+        if ($checkEmailStmt->num_rows > 0) {
+            $message = "Email ID already exists";
+            $toastClass = "#007bff"; // Primary color
+        } 
     
-    //Require will throw an error if unreachable unlike include
-    require_once 'Database_related/db.php';
-    require_once 'Functional_php/functions.php';
+        else {
+            # use placeholders to protect against sql injection
+            $sql = "INSERT INTO User(First_Name, Last_Name, Email, Password) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $First_Name, $Last_Name, $Email, $hashedPassword);
+            $result = $stmt->execute();
 
-    //Here all error-handeling functions will be
 
-    //Unsure if needed, we have "required" on html-form
-    //If the HTML-form was empty, then direct them back to the form
-    if (emptyInputSignup($first_name, $last_name, $email, $password) !== False) {
-        //should it be emptyinputsignup or emptyinputregister
-        header("location: register_user_page.php?error=emptyinput");
-        exit();
+            if ($result) {
+                    $message = "Account created successfully";
+                    $toastClass = "#28a745"; // Success color
+                }
+                    
+                    else {
+                        $message = "Error: " . $stmt->error;
+                        $toastClass = "#dc3545"; // Danger color
+                    }
+
+                    $stmt->close();
+            }
+  
+        $checkEmailStmt->close();
+        include 'Database_related/closeDB.php';
+    
+        # redirect here instead of in the form down below
+        # now the form is sent as a post, it would not be otherwise
+        if (isset($result) && $result) {
+            header("Location: user_profile.php");
+            exit;
+        }
     }
-
-    if (emailExists($connection, $email) !== False) {
-        header("location: register_user_page.php?error=usedemail");
-        exit();
-    }
-
-    createUser($connection, $first_name, $last_name, $email, $password)
-}
-else {//Send person back, should not be here
-    header("location: register_user_page.php");
-    die();
-}
-?>
