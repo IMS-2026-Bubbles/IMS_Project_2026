@@ -180,12 +180,14 @@ usort($users, function ($a, $b) {
 
     <!-- Leaderboard -->
 
+    
+    <!-- Leaderboard -->
+
     <main class="leaderboard-container">
 
         <h1 class="leaderboard-title">
             LEADERBOARD
         </h1>
-
 
         <!-- Leaderboard filters -->
 
@@ -205,22 +207,16 @@ usort($users, function ($a, $b) {
 
         </div>
 
-
         <!-- Ranking table -->
 
         <table class="leaderboard-table">
 
             <thead>
-
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
-                    <th>Email</th>
-                    <th>Company</th>
-                    <th>Lab Group</th>
                     <th>Points</th>
                 </tr>
-
             </thead>
 
             <tbody>
@@ -237,18 +233,6 @@ usort($users, function ($a, $b) {
                             <?php echo htmlspecialchars($user["name"]); ?>
                         </td>
 
-                        <td>
-                            <?php echo htmlspecialchars($user["email"]); ?>
-                        </td>
-
-                        <td>
-                            <?php echo htmlspecialchars($user["company"]); ?>
-                        </td>
-
-                        <td>
-                            <?php echo htmlspecialchars($user["lab_group"]); ?>
-                        </td>
-
                         <td class="points">
                             <?php echo $user["points"]; ?>
                         </td>
@@ -262,7 +246,6 @@ usort($users, function ($a, $b) {
         </table>
 
     </main>
-
 </body>
 
 </html>
