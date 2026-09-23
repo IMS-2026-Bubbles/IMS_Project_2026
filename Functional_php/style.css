@@ -1,0 +1,9 @@
+/* We can write our own style in here so that all pages will have same fonts, colours etc 
+Add this to the HTML part
+    <link rel="stylesheet" href="functional_php/style.css"> <!-- We can define our own design in this -->
+*/
+
+body {background-color: #e3f2fd;}
+
+p, h1, h2 {
+    font-family: "Times New Roman", Times, serif} /* these fonts can be changed! */

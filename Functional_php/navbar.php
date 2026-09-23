@@ -4,6 +4,28 @@
     
 <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;" data-bs-theme="light">
 
+<!-- Create special style for log out button 
+ https://www.w3schools.com/howto/howto_css_outline_buttons.asp -->
+<style>
+
+.logout {
+    border: 1px solid black;
+    background-color: #9acaed;
+    color: black;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+/* This is for when you "touch" the button */
+.logout:hover {
+    border: 1px solid black;
+    background-color: #33709c;
+    color: black;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+</style>
 
     
     <!-- Adds an image, here we can add scriba logo later on -->
@@ -17,13 +39,17 @@
         <!-- Add buttons for all pages -->
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page"href="/../project_library.php">Home Page/Projects</a>
+                <a class="nav-link active" href="/../project_library.php">Home Page/Projects</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/../leaderboard.php">Leaderboard</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/../user_profile.php">User Profile</a> 
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link active logout" href="Functional_php/logout.php">Log out</a> 
             </li>
         </ul>        
 
