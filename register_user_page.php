@@ -7,56 +7,60 @@
     # if button to register new:
     if(isset($_POST['register']))
     {
-    # fetch data from POST request
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
-    $password = $_POST['password1']; # IMPLEMENT SECURITY HERE
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); # ???
+        # fetch data from POST request
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $email = $_POST['email'];
+        //generate salt and add to database
+        $password = $_POST['password1']; # IMPLEMENT SECURITY HERE
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); # ???
 
-    // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
-    // Check if email already exists
-    $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
-    $checkEmailStmt->bind_param("s", $email);
-    $checkEmailStmt->execute();
-    $checkEmailStmt->store_result();
-    error_log("Checking email [$email], num_rows = " . $checkEmailStmt->num_rows);
+        // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
+        // Check if email already exists
+        $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
+        $checkEmailStmt->bind_param("s", $email);
+        $checkEmailStmt->execute();
+        $checkEmailStmt->store_result();
+        error_log("Checking email [$email], num_rows = " . $checkEmailStmt->num_rows);
 
 
-    // check if the number of rows are more than 0 => email exists
-    if ($checkEmailStmt->num_rows > 0) {
-        $message = "Email ID already exists";
-        $toastClass = "#007bff"; // Primary color
-    } 
+        // check if the number of rows are more than 0 => email exists
+        if ($checkEmailStmt->num_rows > 0) {
+            $message = "Email ID already exists";
+            $toastClass = "#007bff"; // Primary color
+        } 
     
-    else {
-        # use placeholders to protect against sql injection
-        $sql = "INSERT INTO User(First_Name, Last_Name, Email, Password) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $first_name, $last_name, $email, $hashedPassword);
-        $result = $stmt->execute();
+        else {
+            # use placeholders to protect against sql injection
+            $sql = "INSERT INTO User(First_Name, Last_Name, Email, Password) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $first_name, $last_name, $email, $hashedPassword);
+            $result = $stmt->execute();
 
-    if ($result) {
-            $message = "Account created successfully";
-            $toastClass = "#28a745"; // Success color
-        } else {
-            $message = "Error: " . $stmt->error;
-            $toastClass = "#dc3545"; // Danger color
-        }
 
-        $stmt->close();
-    }
+            if ($result) {
+                    $message = "Account created successfully";
+                    $toastClass = "#28a745"; // Success color
+                }
+                    
+                    else {
+                        $message = "Error: " . $stmt->error;
+                        $toastClass = "#dc3545"; // Danger color
+                    }
+
+                    $stmt->close();
+            }
   
-    $checkEmailStmt->close();
-    include 'Database_related/closeDB.php';
+        $checkEmailStmt->close();
+        include 'Database_related/closeDB.php';
     
-    # redirect here instead of in the form down below
-    # now the form is sent as a post, it would not be otherwise
-    if (isset($result) && $result) {
-    header("Location: user_profile.php");
-    exit;
-}
-}
+        # redirect here instead of in the form down below
+        # now the form is sent as a post, it would not be otherwise
+        if (isset($result) && $result) {
+            header("Location: user_profile.php");
+            exit;
+        }
+    }
 ?>
 
 
