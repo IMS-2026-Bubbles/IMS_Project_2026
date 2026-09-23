@@ -1,5 +1,3 @@
-<?php
-include 'insert_new_user.php';
 
 
 <!DOCTYPE html>
@@ -26,15 +24,16 @@ include 'insert_new_user.php';
     <h2>Add the following information to create an account</h2>
 
 
-     <!-- These are for error messages: 
-    code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
+    <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
     <?php if ($message): ?>
     <div style="background-color: <?php echo htmlspecialchars($toastClass); ?>; 
                 color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
         <?php echo htmlspecialchars($message); ?>
     </div>
     
-    <?php endif; ?>
+    <?php include 'insert_new_user.php';
+    endif;
+    ?>
 
     
      <!-- Create the action + call function to check if Passwords match-->
