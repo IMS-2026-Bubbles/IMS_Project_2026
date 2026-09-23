@@ -8,23 +8,23 @@
     if(isset($_POST['register']))
     {
         # fetch data from POST request
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
-        $email = $_POST['email'];
+        $First_Name = $_POST['First_Name'];
+        $Last_Name = $_POST['Last_Name'];
+        $Email = $_POST['Email'];
         //generate salt and add to database
-        $password = $_POST['password1']; # IMPLEMENT SECURITY HERE
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); # ???
+        $Password = $_POST['Password1']; # IMPLEMENT SECURITY HERE
+        $hashedPassword = Password_hash($Password, Password_DEFAULT); # ???
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
-        // Check if email already exists
+        // Check if Email already exists
         $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
-        $checkEmailStmt->bind_param("s", $email);
+        $checkEmailStmt->bind_param("s", $Email);
         $checkEmailStmt->execute();
         $checkEmailStmt->store_result();
-        error_log("Checking email [$email], num_rows = " . $checkEmailStmt->num_rows);
+        error_log("Checking Email [$Email], num_rows = " . $checkEmailStmt->num_rows);
 
 
-        // check if the number of rows are more than 0 => email exists
+        // check if the number of rows are more than 0 => Email exists
         if ($checkEmailStmt->num_rows > 0) {
             $message = "Email ID already exists";
             $toastClass = "#007bff"; // Primary color
@@ -34,7 +34,7 @@
             # use placeholders to protect against sql injection
             $sql = "INSERT INTO User(First_Name, Last_Name, Email, Password) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssss", $first_name, $last_name, $email, $hashedPassword);
+            $stmt->bind_param("ssss", $First_Name, $Last_Name, $Email, $hashedPassword);
             $result = $stmt->execute();
 
 
@@ -66,8 +66,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -100,36 +98,36 @@
     <?php endif; ?>
 
     
-     <!-- Create the action + call function to check if passwords match-->
+     <!-- Create the action + call function to check if Passwords match-->
     <form action="" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="first_name">First name</label><br>
-        <input type="text" class="" name="first_name" required><br>
+        <label for="First_Name">First name</label><br>
+        <input type="text" class="" name="First_Name" required><br>
 
-        <label for="last_name">Last name</label><br>
-        <input type="text" class="" name="last_name" required><br>
+        <label for="Last_Name">Last name</label><br>
+        <input type="text" class="" name="Last_Name" required><br>
 
-        <label for="email">Email adress</label><br>
-        <input type="email" class="" name="email" required><br> <!-- @ is needed -->
+        <label for="Email">Email adress</label><br>
+        <input type="Email" class="" name="Email" required><br> <!-- @ is needed -->
 
-        <!-- setting type as password makes characters hidden + supports password control -->
-        <label for="password">Password</label><br>
-        <input type="password" class="" name="password1" minlength= "8" required> <br> <!-- must use 8 characters -->
+        <!-- setting type as Password makes characters hidden + supports Password control -->
+        <label for="Password">Password</label><br>
+        <input type="Password" class="" name="Password1" minlength= "8" required> <br> <!-- must use 8 characters -->
 
-        <label for="password2">Repeat password</label><br>
-        <input type="password" class="" name="password2" minlength= "8" required><br><br>
+        <label for="Password2">Repeat Password</label><br>
+        <input type="Password" class="" name="Password2" minlength= "8" required><br><br>
 
-        <!-- https://www.geeksforgeeks.org/javascript/password-matching-using-javascript/ -->
+        <!-- https://www.geeksforgeeks.org/javascript/Password-matching-using-javascript/ -->
         <script>
-            // Function to check Whether both passwords is same or not.
+            // Function to check Whether both Passwords is same or not.
             function checkPassword(form) {
-                password1 = form.password1.value;
-                password2 = form.password2.value;
+                Password1 = form.Password1.value;
+                Password2 = form.Password2.value;
 
                 // If Not same return False.    
-                if (password1 != password2) {
+                if (Password1 != Password2) {
                     // This pops up and the request is not submitted
                     alert("\nPassword did not match: Please try again...")
                     return false;
