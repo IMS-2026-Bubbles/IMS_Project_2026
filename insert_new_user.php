@@ -2,12 +2,12 @@
 
 if (isset($_POST["register"])) {
     //Checking if the person was accually clicking the submit button
-
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-
+    //Generate the primary userID here
+    
     //Require will throw an error if unreachable unlike include
     require_once 'Database_related/db.php';
     require_once 'Functional_php/functions.php';
