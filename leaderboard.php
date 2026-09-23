@@ -126,17 +126,29 @@ usort($users, function ($a, $b) {
             background-color: #cbd8f2;
             color: #263c55;
             padding: 15px;
-            text-align: left;
+            text-align: center;
         }
 
         .leaderboard-table td {
             padding: 15px;
             border-top: 1px solid #d5dce8;
+            text-align: center;
         }
 
-        .leaderboard-table tr:hover {
-            background-color: #f4f7fc;
-        }
+.leaderboard-table th:nth-child(1),
+.leaderboard-table td:nth-child(1) {
+    width: 20%;
+}
+
+.leaderboard-table th:nth-child(2),
+.leaderboard-table td:nth-child(2) {
+    width: 50%;
+}
+
+.leaderboard-table th:nth-child(3),
+.leaderboard-table td:nth-child(3) {
+    width: 30%;
+}
 
 
         /* Rank and points */
