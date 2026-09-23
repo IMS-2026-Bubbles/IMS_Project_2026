@@ -27,7 +27,7 @@ if ($exp_ID === null) {
 $exp_section = $_POST['section'] ?? null;
 $text = $_POST['text'] ?? null;
 $done_flag = $_POST['done_flag'] ?? 0; // Default to 0 (not done) if not set
-    // Sanitize section name ('Plan', 'Log', 'Result')
+    // Whitelist the section name ('Plan', 'Log', 'Result')
 $valid_sections = ['Plan', 'Log', 'Result'];
 if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Invalid section name: " . htmlspecialchars($exp_section) . "<br>";
