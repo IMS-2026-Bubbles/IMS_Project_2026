@@ -90,7 +90,7 @@ if ($search != "") {
 
         body {
             min-height: 100vh;
-            background: linear-gradient(110deg, #e7eefc, #ffffff);
+             background: linear-gradient(120deg, #7794b6, #d4f6fd);
             color: #263c55;
         }
 
