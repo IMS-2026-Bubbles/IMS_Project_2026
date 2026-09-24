@@ -146,6 +146,9 @@ The schema follows [Database naming standards](https://dev.to/ovid/database-nami
 
 - snake_case everywhere; plural table names, singular column names.
 - Generic column names per table: `name`, `created_at`, `updated_at`, `is_done`.
+- Content tables use `created_at`/`updated_at` (row lifecycle); log tables name
+  the timestamp after the event instead — `login_log.login_at`,
+  `activity_log.acted_at` — since the row's creation *is* the event.
 - FKs are named after the PK they reference (`profile_id` in every table).
 - PKs are auto-increment `INT`, except `company_id`/`lab_id` which are
   prefixed `VARCHAR(10)` (`c1`, `l1`, ...) to avoid collisions.

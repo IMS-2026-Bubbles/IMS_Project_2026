@@ -226,7 +226,7 @@ CREATE TABLE `lab_members` (
 CREATE TABLE `activity_log` (
   `activity_id` INT AUTO_INCREMENT, -- PK id
   `profile_id` INT NOT NULL, -- who did the action
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the action happened
+  `acted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the action happened
   `entity_type` ENUM( -- what was the action performed on (project/experiment/profile/company/lab)
       'project', 'experiment', 
       'profile', 'company', 'lab'
@@ -251,13 +251,13 @@ CREATE TABLE `activity_log` (
   -- FROM `activity_log`
   -- WHERE `entity_type` = ? AND `entity_id` = ? 
 CREATE INDEX `idx_activity_log_entity` 
-  ON `activity_log` (`entity_type`, `entity_id`, `created_at`);
+  ON `activity_log` (`entity_type`, `entity_id`, `acted_at`);
 -- Index for activity by profile
   -- SELECT *
   -- FROM `activity_log`
   -- WHERE `profile_id` = ?
 CREATE INDEX `idx_activity_log_profile` 
-  ON `activity_log` (`profile_id`, `created_at`);
+  ON `activity_log` (`profile_id`, `acted_at`);
 
 
 -- Login log table to track user login (success & failure)
