@@ -14,9 +14,9 @@ echo " This is the user profile page :)";
     <title>Document</title>
 
     <!-- i want nav bar here -->
-    <?php include "functional_php/navbar.php";?>
+    <?php include "includes/navbar.php";?>
 
-    <body style="background-image: url('website_background.jpg');">
+    <body style="background-image: url('assets/website_background.jpg');">
 
 <title>User Page</title>
 

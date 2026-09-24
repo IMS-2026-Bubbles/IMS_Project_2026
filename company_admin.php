@@ -32,7 +32,7 @@
     
     <?php
     // connect to database
-    include "database_related/db.php";
+    include "database/db.php";
 
     
     $admin_ID = ""; // FIX THIS: track this from the login session somehow
@@ -78,7 +78,7 @@
 
     
     // disconnect from database
-    include "database_related/closeDB.php";
+    include "database/close_db.php";
     ?>
     </table>
 

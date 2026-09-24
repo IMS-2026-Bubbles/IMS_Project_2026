@@ -2,10 +2,10 @@
 <html>
 <?php
 // Session initialization
-include "Session/init.php"; // Make the session available
+include "session/init.php"; // Make the session available
 
 // Check if the user is logged in
-include "Session/check_user_logged_in.php";
+include "session/check_user_logged_in.php";
 
 // Variables
     // $user_id from session
@@ -14,7 +14,7 @@ $exp_ID = $_GET['exp_ID'] ?? NULL;
 if ($exp_ID === null) {
     $messages[] = "Error: No experiment ID provided.<br>";
     // Store messages in session to display
-    $_SESSION['messages_exp_edit_section'] = $messages;
+    $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to project library page
     header("Location: ../../project_library.php");
     exit();
@@ -24,7 +24,7 @@ $exp_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always
 if ($exp_section === null) {
     $messages[] = "Error: No experiment section provided.<br>";
     // Store messages in session to display
-    $_SESSION['messages_exp_edit_section'] = $messages;
+    $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to experiment.php with the same exp_ID
     header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
     exit();
@@ -36,17 +36,17 @@ $valid_sections = ['Plan', 'Log', 'Result'];
 if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Error: Invalid experiment section provided.<br>";
     // Store messages in session to display
-    $_SESSION['messages_exp_edit_section'] = $messages;
+    $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to experiment.php with the same exp_ID
     header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
     exit();
 }
 
 // Connect to database
-include "Database_related/db.php";
+include "database/db.php";
 
 // Check if the user has permission to view this experiment
-include "Functional_php/user_permission.php"; // Include the user permission check function
+include "includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
 // $exp_ID becomes $experiment_id; the array keys used below
 // ($proj_exp_name_array, $exp_progress_flags, $exp_last_update) follow the new
@@ -58,17 +58,17 @@ if ($user_access < 1) {
     exit();
 }
 
-// Retrieve messages from exp_edit_section.php if they exist
-if (isset($_SESSION['messages_exp_edit_section'])) {
-    $messages_exp_edit_section = $_SESSION['messages_exp_edit_section'];
+// Retrieve messages from save_experiment_section.php if they exist
+if (isset($_SESSION['messages_save_experiment_section'])) {
+    $messages_save_experiment_section = $_SESSION['messages_save_experiment_section'];
     // Clear the messages from the session after retrieving them
-    unset($_SESSION['messages_exp_edit_section']);
+    unset($_SESSION['messages_save_experiment_section']);
 }
 ?>
 
 <?php
 // Display project name, experiment name, and experiment section name
-include "Functional_php/exp_helpers/exp_fetch_name.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
+include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
 
 // Diplay the project, experiment, and section name
 echo "Project: " . htmlspecialchars($proj_exp_name_array['Project_Name']) . "<br>";
@@ -82,28 +82,28 @@ echo "Section: " . htmlspecialchars($exp_section) . "<br><br>";
 <!-- Tags (static), Done toggle, save/submit -->
 <?php
 // Display current tags for the experiment
-include "Functional_php/exp_helpers/exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
+include "includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
 echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 
 // Display last updated timestamp for the experiment section
-include "Functional_php/exp_helpers/exp_fetch_updated.php"; // Fetches the last updated timestamp for the specified experiment ID and section
+include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the specified experiment ID and section
 echo "Last updated: " . $exp_last_update[$exp_section . '_Updated'] . "<br><br>";
 
 // Display the "Done" toggle for the experiment plan
-include "Functional_php/exp_helpers/exp_fetch_progress.php"; // Fetches the progress status for the specified experiment ID
+include "includes/fetch_experiment_progress.php"; // Fetches the progress status for the specified experiment ID
 // Define the progress flag display helper.
-include "Functional_php/exp_helpers/exp_progress_fun.php";
+include "includes/render_progress_badge.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
     . exp_progress_badge($exp_section, $exp_progress_flags[$exp_section . '_Done'])
     . "</div>";
 echo "<br>";
 
 // Retrieve the text content for the experiment plan section
-include "Functional_php/exp_helpers/exp_fetch_text.php"; // Fetches the text content for the specified experiment ID and section
+include "includes/fetch_experiment_section_text.php"; // Fetches the text content for the specified experiment ID and section
 
 if ($user_access >= 2) {
     // User has edit permission, display the form for editing the experiment plan
-    echo "<form action='Functional_php/exp_helpers/exp_edit_section.php' method='post'>"
+    echo "<form action='actions/save_experiment_section.php' method='post'>"
         // Hidden inputs for the experiment ID and section
         . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($exp_section) . "'>"
@@ -121,9 +121,12 @@ if ($user_access >= 2) {
     echo "<div class='exp_plan_text'>" . nl2br(htmlspecialchars($exp_section_text)) . "</div>";
 }
 
-// Display messages from exp_edit_section.php if they exist
-if (isset($messages_exp_edit_section)) {
-    foreach ($messages_exp_edit_section as $message) {
+// Close the database connection when done
+include "database/close_db.php";
+
+// Display messages from save_experiment_section.php if they exist
+if (isset($messages_save_experiment_section)) {
+    foreach ($messages_save_experiment_section as $message) {
         echo $message . "<br>";
     }
 }

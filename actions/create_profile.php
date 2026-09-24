@@ -1,5 +1,5 @@
 <?php
-    require_once 'Database_related/db.php';
+    require_once '../database/db.php';
 
     $message = "";
     $toastClass = "";
@@ -60,12 +60,12 @@
             }
   
         $checkEmailStmt->close();
-        include 'Database_related/closeDB.php';
+        include '../database/close_db.php';
     
         # redirect here instead of in the form down below
         # now the form is sent as a post, it would not be otherwise
         if (isset($result) && $result) {
-            header("Location: user_profile.php");
+            header("Location: ../user_profile.php");
             exit;
         }
     } ?>

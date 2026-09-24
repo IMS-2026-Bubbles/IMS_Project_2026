@@ -187,7 +187,7 @@ usort($users, function ($a, $b) {
 
     <!-- Navigation -->
 
-    <?php include "functional_php/navbar.php"; ?>
+    <?php include "includes/navbar.php"; ?>
 
 
     <!-- Leaderboard -->

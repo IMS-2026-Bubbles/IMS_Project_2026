@@ -18,7 +18,8 @@ a single set of helper scripts serves all sections.
 ### Section editing
 On the plan page, users with edit permission (access level >= 2) get a form
 with a textarea and a "Mark as Done" checkbox. Submitting posts to
-`exp_edit_section.php`, which saves the text, updates the done flag, and
+`save_experiment_section.php` (formerly `exp_edit_section.php`), which saves
+the text, updates the done flag, and
 refreshes the "last updated" timestamp for that section. Users with read-only
 access see the text as static content instead of the form.
 
@@ -37,8 +38,8 @@ as `YYYY-MM-DD HH:MM`.
 ### Access control
 - All pages re-check permission via `check_user_permission()`: level 1 or
   higher required to view, level 2 or higher to see the edit form.
-- Both form-processing endpoints (`exp_edit_section.php`,
-  `exp_edit_tags.php`) perform their own server-side permission check
+- Both form-processing endpoints (`save_experiment_section.php`,
+  `save_experiment_tags.php`) perform their own server-side permission check
   (level >= 2), so they cannot be bypassed by posting directly to them.
   An earlier version of the tag form carried the access level in a hidden
   input; this was replaced with the server-side check.
@@ -63,4 +64,4 @@ session and displayed once on the page they land on.
 - `check_user_permission()` only implements the 'experiment' entity type;
   project / lab / company are placeholders.
 - The database connection uses local credentials and an empty database name
-  in `Database_related/db.php`; this needs configuration before deployment.
+  in `database/db.php`; this needs configuration before deployment.

@@ -22,47 +22,64 @@ patterns the code follows.
 ├── experiment_section.php Experiment section page (plan/log/result via ?section=)
 ├── project_library.php     Listing pages, profile pages, etc.
 │
-├── Session/                Session handling
+├── session/                Session handling
 │   ├── init.php            Starts the session (guarded, safe to include anywhere)
 │   └── check_user_logged_in.php
 │
-├── Database_related/       Database connection
+├── database/               Database connection
 │   ├── db.php              Opens $conn (mysqli)
-│   └── closeDB.php         Closes $conn
+│   ├── close_db.php        Closes $conn
+│   └── database_schema.sql The MySQL schema (canonical)
 │
-└── Functional_php/         Shared functionality
-    ├── user_permission.php     check_user_permission(): access level per entity
-    ├── navbar.php, style.css   Layout and styling
-    └── exp_helpers/         Experiment-related includes, split by purpose:
-        ├── exp_fetch_*.php      Fetch data (tags, progress, text, timestamps)
-        ├── exp_edit_*.php      Process form POSTs and redirect
-        └── exp_progress_fun.php Helper function returning HTML for a progress badge
+├── includes/               Reusable includes
+│   ├── check_user_permission.php  check_user_permission(): access level per entity
+│   ├── navbar.php          Layout (included on every page)
+│   ├── fetch_project_experiment_names.php   Fetchers: included inline, expect
+│   ├── fetch_experiment_project_id.php       input variables ($experiment_id),
+│   ├── fetch_experiment_progress.php         leave their result in a named
+│   ├── fetch_experiment_tags.php             variable ($exp_tags_array, ...)
+│   ├── fetch_experiment_section_text.php
+│   ├── fetch_experiment_timestamps.php
+│   └── render_progress_badge.php Helper function returning HTML for a progress badge
+│
+├── actions/                Write endpoints (PRG POST handlers, never render)
+│   ├── create_profile.php          Registration handler
+│   ├── logout.php                  Destroys session, redirects
+│   ├── save_experiment_section.php Section text/done-flag handler
+│   └── save_experiment_tags.php    Tag add/remove handler
+│
+└── assets/                 Static files
+    ├── style.css           Global stylesheet
+    ├── placeholder.avif    Logo shown in the navbar
+    ├── user_profile.css    (currently empty)
+    └── website_background.jpg
 ```
 
 ## Request flow
 
 Every page script follows the same order:
 
-1. **Session**: include `Session/init.php` (and the logged-in check where needed).
+1. **Session**: include `session/init.php` (and the logged-in check where needed).
 2. **Input**: read parameters from `$_GET` / `$_POST` with `??` defaults.
-3. **Database**: include `Database_related/db.php` to get `$conn`.
+3. **Database**: include `database/db.php` to get `$conn`.
 4. **Permission check**: `check_user_permission($conn, $_SESSION['user_id'], <type>, <ID>)`
    returns an access level: 0 = none, 1 = read, 2 = edit, 3 = owner.
    Pages block on `< 1`; write endpoints block on `< 2`.
-5. **Fetch and render**: include `exp_fetch_*.php` helpers to load data, then
-   echo the HTML for the page.
+5. **Fetch and render**: include `fetch_experiment_*.php` helpers to load
+   data, then echo the HTML for the page.
 
 ## Patterns
 
 ### Includes as data-fetch steps
-Fetcher files (`exp_fetch_*.php`) are not functions. They are included inline,
+Fetcher files (`fetch_experiment_*.php`) are not functions. They are included inline,
 expect variables like `$exp_ID` to already exist, and leave their result in a
 named variable (`$exp_tags_array`, `$exp_progress_flags`, `$exp_section_text`,
 `$exp_last_update`). Each file documents the expected input and returned
 variable in its header comment.
 
 ### POST-Redirect-Get (PRG) with session messages
-Write endpoints (`exp_edit_section.php`, `exp_edit_tags.php`) never render a
+Write endpoints (`actions/save_experiment_section.php`,
+`actions/save_experiment_tags.php`) never render a
 page. They:
 1. Validate the POST input: required fields (e.g. `exp_ID`) get a graceful
    "missing" message + redirect if absent, and input-driven column names are
@@ -71,7 +88,7 @@ page. They:
    trusts values posted by the form.
 3. Collect feedback strings in a local `$messages` array.
 4. Store it in the session under a page-specific key
-   (`$_SESSION['messages_exp_edit_section']`).
+   (`$_SESSION['messages_save_experiment_section']`).
 5. `header("Location: ...")` + `exit()` back to the referring page.
 
 The target page retrieves the message array from the session, unsets it, and
@@ -151,8 +168,8 @@ is for — not what technology is inside:
 
 ## File naming migration plan
 
-The codebase predates these conventions. The renames below are **planned but
-not yet executed**; nothing has been moved. The plan is a pure rename pass —
+The codebase predates these conventions. The renames below were **executed
+on 2026-09-24** as a pure rename pass —
 file/folder names and `include` paths only. It is independent of (and can be
 done before or after) the schema migration listed in the TODO section, which
 changes names *inside* the files.
@@ -185,10 +202,9 @@ changes names *inside* the files.
 | `Functional_php/exp_helpers/exp_edit_tags.php` | `actions/save_experiment_tags.php` | verb-first write endpoint |
 | `register_user_page.php` | `register_user.php` | drop redundant `_page` |
 | `insert_new_user.php` | `actions/create_profile.php` | verb-first, matches schema (`profiles`) |
-| `Assets/` | `assets/` | lowercase |
-| `Assets/placeholder.jpg.avif` | `assets/placeholder.avif` | single, correct extension |
-| `Assets/user_profile.css` | *(delete or fill)* | empty file; either remove it or give it content when profile styling is implemented |
-| `Assets/website_background.jpg` | `assets/website_background.jpg` | folder only |
+| *(root)* `placeholder.jpg.avif` | `assets/placeholder.avif` | single, correct extension (assets lived at the root) |
+| *(root)* `user_profile.css` | `assets/user_profile.css` | empty file; either remove it or give it content when profile styling is implemented |
+| *(root)* `website_background.jpg` | `assets/website_background.jpg` | move into `assets/` |
 | `ARCHITECTURE.md`, `NEWS.md`, `README.md` | `docs/` *(optional)* | only if the root should hold nothing but pages |
 
 Root page scripts (`index.php`, `project_library.php`, `experiment.php`,
@@ -397,7 +413,7 @@ in the code during the pass, so the changes stay reviewable and greppable.
 ## Database schema
 
 The canonical schema lives in
-[Database_related/database_schema.sql](Database_related/database_schema.sql)
+[database/database_schema.sql](database/database_schema.sql)
 (MySQL). It defines the core entity tables (`companies`, `labs`, `projects`,
 `experiments`, `profiles`), membership/tag junction tables, an audit layer
 (`activity_log`, `login_log`), and two views (`project_updates`,
@@ -482,10 +498,9 @@ member pickers/search); **render as "Deleted"** where they are historical
 
 ## TODO: front-end / back-end implementation items
 
-- [ ] **File naming migration**: execute the rename plan in the
-      [File naming migration plan](#file-naming-migration-plan) section —
-      folders, then files, then all include/link references, in one
-      pure-rename commit.
+- [x] **File naming migration**: executed 2026-09-24 — folders, files, and
+      all include/link references updated in one pure-rename commit (see the
+      [File naming migration plan](#file-naming-migration-plan) section).
 - [ ] `anonymize_profile($profile_id)` — implements the GDPR flow above.
 - [ ] `log_activity(...)` helper — writes `activity_log` rows in the same
       transaction as the change they describe (the DB cannot know the actor).

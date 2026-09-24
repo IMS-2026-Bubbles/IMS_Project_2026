@@ -1,5 +1,5 @@
 <?php
-    include 'Database_related/db.php';
+    include 'database/db.php';
 
     # if button to register new:
     if(isset($_POST['register_company']))
@@ -52,7 +52,7 @@
 
     
     // disconnect from database
-    include "database_related/closeDB.php";
+    include "database/close_db.php";
     ?>
 
 <!DOCTYPE html>

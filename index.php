@@ -5,7 +5,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <link rel="stylesheet" href="functional_php/style.css"> <!-- We can define our own design in this -->
+    <link rel="stylesheet" href="assets/style.css"> <!-- We can define our own design in this -->
     <!-- To get premade buttons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     
@@ -35,7 +35,7 @@
         <div class="b"> 
         <h3>Register new user</h3>
 
-        <a href="register_user_page.php" class="btn btn-dark rounded-pill"> Register new user</a>
+        <a href="register_user.php" class="btn btn-dark rounded-pill"> Register new user</a>
         <br><br>
         
         <h3>Log in</h3>

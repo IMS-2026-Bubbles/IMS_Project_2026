@@ -7,7 +7,7 @@
 // Return to experiment.php with messages stored in session for display.
 
 // Session initialization
-include "../../Session/init.php"; // Make the session available
+include "../session/init.php"; // Make the session available
     // Create message array
 $messages = array();
 
@@ -16,27 +16,27 @@ $exp_ID = $_POST['exp_ID'] ?? null;
 if ($exp_ID === null) {
     $messages[] = "Error: No experiment ID provided.<br>";
     // Store messages in session to display on experiment.php
-    $_SESSION['messages_exp_edit_tags'] = $messages;
+    $_SESSION['messages_save_experiment_tags'] = $messages;
     // Redirect back to project library page
-    header("Location: ../../project_library.php");
+    header("Location: ../project_library.php");
     exit();
 }
 $exp_tags_add = $_POST['new_tags'] ?? "";
 $exp_tags_remove = $_POST['remove_tags'] ?? "";
 
 // Connect to database
-include "../../Database_related/db.php";
+include "../database/db.php";
 
 // Check if the user has permission to edit tags for this experiment
-include "../../Functional_php/user_permission.php"; // Include the user permission check function
+include "../includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
 $user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
-    $_SESSION['messages_exp_edit_tags'] = $messages;
+    $_SESSION['messages_save_experiment_tags'] = $messages;
     // Redirect back to experiment.php with the same exp_ID
-    header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
+    header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
     exit();
 }
 
@@ -55,7 +55,7 @@ if ($exp_tags_remove !== '') {
 
     // Check if tags exist before removing
         // Fetch existing tags for the experiment
-    include "exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
+    include "../includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
         // Compare remove tags with existing tags
     $nonexistent_remove_tags = array_diff($remove_tags_array, $exp_tags_array);
     if (!empty($nonexistent_remove_tags)) {
@@ -101,7 +101,7 @@ if ($exp_tags_add !== '') {
 
     // Check if tags already exist
         // Fetch existing tags for the experiment
-    include "exp_fetch_tags.php"; // Fetches the tags for the specified experiment ID
+    include "../includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
         // Compare new tags with existing tags
     $duplicate_new_tags = array_intersect($new_tags_array, $exp_tags_array);
     if (!empty($duplicate_new_tags)) {
@@ -132,20 +132,20 @@ if ($exp_tags_add !== '') {
 
 
 // Close connection when done
-include "../../Database_related/closeDB.php";
+include "../database/close_db.php";
 
 // Store messages in session to display on experiment.php
-$_SESSION['messages_exp_edit_tags'] = $messages;
+$_SESSION['messages_save_experiment_tags'] = $messages;
 
 // Redirect back to experiment.php with the same exp_ID
-header("Location: ../../experiment.php?exp_ID=" . urlencode($exp_ID));
+header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
 exit();
 // // Links in case redirect fails
 //     // Link back to experiment.php with the same exp_ID
 // if (isset($_POST['exp_ID'])) {
-//     echo "<a href='../../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
+//     echo "<a href='../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
 // } else {
 //     echo "Error: No experiment ID available.<br>";
-//     echo "<a href='../../project_library.php'>Back to project library</a><br><br>";
+//     echo "<a href='../project_library.php'>Back to project library</a><br><br>";
 // }
 ?>
