@@ -97,3 +97,175 @@ against a whitelist (`$valid_sections`) before being used in SQL.
 Anything echoed into HTML goes through `htmlspecialchars()` to prevent XSS
 (this includes hidden input values, textarea content, and badge labels).
 `urlencode()` is used when building query strings in links/redirects.
+
+## Database schema
+
+The canonical schema lives in
+[Database_related/database_scriba_lucid_RH.sql](Database_related/database_scriba_lucid_RH.sql)
+(MySQL). It defines the core entity tables (`companies`, `labs`, `projects`,
+`experiments`, `profiles`), membership/tag junction tables, an audit layer
+(`activity_log`, `login_log`), and two views (`project_updates`,
+`profile_points`).
+
+### Entity-relationship overview
+
+```mermaid
+erDiagram
+    companies ||--o{ labs : "contains"
+    labs ||--o{ projects : "contains"
+    projects ||--o{ experiments : "contains"
+
+    companies ||--o{ company_members : "has"
+    labs ||--o{ lab_members : "has"
+    projects ||--o{ project_members : "has"
+    experiments ||--o{ experiment_members : "has"
+    profiles ||--o{ company_members : "joins"
+    profiles ||--o{ lab_members : "joins"
+    profiles ||--o{ project_members : "joins"
+    profiles ||--o{ experiment_members : "joins"
+
+    projects ||--o{ project_tags : "tagged"
+    experiments ||--o{ experiment_tags : "tagged"
+
+    profiles ||--o{ activity_log : "acts"
+    profiles ||--o{ login_log : "logs in"
+
+    companies {
+        varchar company_id PK "prefixed, e.g. c1"
+        varchar name
+    }
+    labs {
+        varchar lab_id PK "prefixed, e.g. l1"
+        varchar company_id FK
+        varchar name
+    }
+    projects {
+        int project_id PK
+        varchar name
+        varchar lab_id FK
+        timestamp created_at
+        timestamp updated_at
+        boolean is_done
+    }
+    experiments {
+        int experiment_id PK
+        varchar name
+        int project_id FK
+        text plan_text
+        text log_text
+        text result_text
+        boolean is_done "generated: plan AND log AND result"
+        datetime updated_at "generated: max(section timestamps)"
+    }
+    profiles {
+        int profile_id PK
+        varchar email UK
+        varchar password
+        binary salt
+        boolean is_scriba_admin
+        boolean is_deleted
+    }
+    activity_log {
+        int activity_id PK
+        int profile_id FK
+        varchar entity_id "polymorphic"
+        varchar activity_type
+        varchar detail
+    }
+    login_log {
+        int login_id PK
+        int profile_id FK "nullable"
+        varchar email
+        varchar ip_address
+        boolean success
+    }
+
+    style companies fill:#dae8fc,stroke:#6c8ebf
+    style labs fill:#dae8fc,stroke:#6c8ebf
+    style projects fill:#d5e8d4,stroke:#82b366
+    style experiments fill:#d5e8d4,stroke:#82b366
+    style profiles fill:#e1d5e7,stroke:#9673a6
+    style company_members fill:#f5f5f5,stroke:#666666
+    style lab_members fill:#f5f5f5,stroke:#666666
+    style project_members fill:#f5f5f5,stroke:#666666
+    style experiment_members fill:#f5f5f5,stroke:#666666
+    style project_tags fill:#f5f5f5,stroke:#666666
+    style experiment_tags fill:#f5f5f5,stroke:#666666
+    style activity_log fill:#ffe6cc,stroke:#d79b00
+    style login_log fill:#ffe6cc,stroke:#d79b00
+```
+
+Color key: **blue** = organization entities, **green** = research content,
+**purple** = user accounts, **gray** = junction tables, **orange** = audit
+tables. The views (`project_updates`, `profile_points`) are derived data and
+not shown.
+
+### Naming and conventions
+
+The schema follows [Database naming standards](https://dev.to/ovid/database-naming-standards-2061):
+
+- snake_case everywhere; plural table names, singular column names.
+- Generic column names per table: `name`, `created_at`, `updated_at`, `is_done`.
+- FKs are named after the PK they reference (`profile_id` in every table).
+- PKs are auto-increment `INT`, except `company_id`/`lab_id` which are
+  prefixed `VARCHAR(10)` (`c1`, `l1`, ...) to avoid collisions.
+- `*_updated_at` columns are `DEFAULT CURRENT_TIMESTAMP ON UPDATE
+  CURRENT_TIMESTAMP`; `is_done` flags default to `FALSE`.
+- `experiments.updated_at` and `experiments.is_done` are **stored generated
+  columns** derived from the plan/log/result sections, so an experiment's
+  status can never disagree with its sections. `experiments.updated_at` is
+  `DATETIME` (MySQL does not allow generated `TIMESTAMP` columns).
+
+### Delete behavior
+
+- Deleting a company with labs, or a lab with projects, is `RESTRICT`ed —
+  handle in application code, in explicit order, in one transaction.
+- Deleting a project cascades to its experiments, memberships, and tags.
+  The UI must show a strong confirmation before deleting a project with
+  experiments.
+- Membership/tag junctions cascade on deletion of either side.
+
+### GDPR compliance
+
+Profile "deletion" is **anonymization, never a hard delete**:
+
+1. Set `is_deleted = TRUE` (login checks this flag *before* password
+   verification).
+2. Overwrite: `email` → `deleted_<profile_id>@example.com`,
+   names → `Deleted`, `salt` → fresh random bytes, `password` → a random,
+   discarded hash.
+3. Anonymize the user's email in `login_log` rows (including failed logins,
+   matched by email).
+4. Memberships are **intentionally kept** — they reference the anonymized
+   profile, preserving authorship/audit history without personal data.
+5. Ownership transfer for projects whose only owner is deleted is handled by
+   the company/lab admin.
+
+Retention: `activity_log` and `login_log` are purged daily after 90 days
+(scheduled job). `profile_points` excludes deleted profiles
+(`WHERE is_deleted = FALSE`).
+
+Deleted-profile display rule: **hide** where they would be actionable (login,
+member pickers/search); **render as "Deleted"** where they are historical
+(member lists, activity timelines, admin ownership views).
+
+## TODO: front-end / back-end implementation items
+
+- [ ] `anonymize_profile($profile_id)` — implements the GDPR flow above.
+- [ ] `log_activity(...)` helper — writes `activity_log` rows in the same
+      transaction as the change they describe (the DB cannot know the actor).
+- [ ] Daily cron job purging `activity_log` / `login_log` rows older than
+      90 days.
+- [ ] Login flow: check `is_deleted` before password verification; use
+      `login_log` (email + 15-minute window) for rate limiting / lockout.
+- [ ] Admin page: display project ownership, flagging projects owned by
+      deleted profiles so admins can transfer them.
+- [ ] Member management UI: exclude deleted profiles from pickers; show
+      them as "Deleted" in existing member lists.
+- [ ] Project deletion UI: strong confirmation when the project contains
+      experiments.
+- [ ] **Migration**: the current PHP code uses the old schema's names
+      (`exp_ID`, `Plan`/`Log`/`Result` columns, etc.). All fetchers, edit
+      endpoints, and `user_permission.php` must be updated to the new
+      snake_case schema (`experiment_id`, `plan_text`, ...) and to key on
+      `profile_id` (sessions currently store `user_id`).

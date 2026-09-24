@@ -357,4 +357,5 @@ LEFT JOIN ( -- Count the number of completed experiments for each user who is an
     AND `experiments`.`is_done` = TRUE
   GROUP BY `project_members`.`profile_id`
 ) `done_experiments` -- name of this new subquery table
-  ON `profiles`.`profile_id` = `done_experiments`.`profile_id`;
+  ON `profiles`.`profile_id` = `done_experiments`.`profile_id`
+WHERE `profiles`.`is_deleted` = FALSE; -- Exclude deleted profiles from the points view
