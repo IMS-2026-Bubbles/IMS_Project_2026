@@ -13,11 +13,44 @@
   -- Timestamps are used for created and updated columns, with default value of CURRENT_TIMESTAMP
   -- Boolean columns are used for done columns, with default value of FALSE
 
+-- Delete restrictions/cascades:
+  -- Restrict deletion of company with labs, and labs with projects
+  -- Allow deletion of projects with experiments, and experiments
+  -- Membership tables cascade on deletion of the parent entity 
+    -- (project, experiment, lab, company) or the profile (only hard delete
+    -- of the profile is allowed, but not recommended). 
+    -- Profile "deletion" = anonymization/deactivation, not hard deletion (see below).
+  -- Profile deletion is restricted if there are activity_log or login_log 
+    -- entries, to comply with GDPR guidelines for user data deletion. 
+    -- Instead, the profile should be anonymized or deactivated, 
+    -- but not deleted. 
+    -- Email -> <deleted>_<profile_id>@example.com
+    -- First name -> Deleted
+    -- Last name -> Deleted
+    -- Salt -> *new* randomly generated 16 bytes
+    -- Password -> *new* randomly generated password (hashed with the new salt)
+    -- is_deleted -> TRUE
+  -- Activity log and login log restrict deletion of the profile, 
+    -- to comply with GDPR guidelines for user data deletion. 
+    -- Instead, the profile should be anonymized or deactivated, 
+    -- but not deleted.
+    -- Email -> <deleted>_<profile_id>@example.com
+  -- Use a function for anonymizing/deleting a profile, which will 
+    -- also update the activity_log and login_log entries to anonymize 
+    -- the email (including failed logins, search on email).
+  -- Memberships are intentionally kept, referencing the anonymized profile.
+  -- If a project's only owner is a deleted profile, the company/lab admin
+    -- handles ownership transfer. The admin page must display project
+    -- ownership (including projects owned by deleted profiles).
+  -- Add (to the report) a funtion that runs every day to delete 
+    -- activity_log and login_log entries older than 90 days
+
 CREATE TABLE `companies` (
   `company_id` VARCHAR(10) UNIQUE,
   `name` VARCHAR(255),
   PRIMARY KEY (`company_id`)
 );
+
 
 CREATE TABLE `labs` (
   `lab_id` VARCHAR(10) UNIQUE,
@@ -26,7 +59,10 @@ CREATE TABLE `labs` (
   PRIMARY KEY (`lab_id`),
   FOREIGN KEY (`company_id`)
       REFERENCES `companies`(`company_id`)
+      ON UPDATE CASCADE -- if the company_id changes, update the lab's company_id
+      ON DELETE RESTRICT -- can't delete a company if it has labs
 );
+
 
 CREATE TABLE `projects` (
   `project_id` INT AUTO_INCREMENT,
@@ -40,7 +76,10 @@ CREATE TABLE `projects` (
   PRIMARY KEY (`project_id`),
   FOREIGN KEY (`lab_id`)
       REFERENCES `labs`(`lab_id`)
+      ON UPDATE CASCADE -- if the lab_id changes, update the project's lab_id
+      ON DELETE RESTRICT -- can't delete a lab if it has projects
 );
+
 
 CREATE TABLE `profiles` (
   `profile_id` INT AUTO_INCREMENT,
@@ -49,12 +88,17 @@ CREATE TABLE `profiles` (
   `last_name` VARCHAR(255),
   `salt` BINARY(16) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
+  `agreed_to_toc` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
   `saved_changes` INT,
   `last_login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on login
   `streak` INT,
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
+  `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
+  -- see delete restrictions/cascades above.
+  -- Check for this before checking password on login
   PRIMARY KEY (`profile_id`)
 );
+
 
 CREATE TABLE `project_members` (
   `project_id` INT,
@@ -62,10 +106,13 @@ CREATE TABLE `project_members` (
   `role` ENUM('owner', 'edit', 'read') NOT NULL,
   PRIMARY KEY (`project_id`, `profile_id`),
   FOREIGN KEY (`project_id`)
-      REFERENCES `projects`(`project_id`),
+      REFERENCES `projects`(`project_id`)
+      ON DELETE CASCADE, -- if the project is deleted, delete all its members
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
+      ON DELETE CASCADE -- if the profile is deleted, delete all its project memberships
 );
+
 
 CREATE TABLE `project_tags` (
   `project_id` INT,
@@ -73,12 +120,14 @@ CREATE TABLE `project_tags` (
   PRIMARY KEY (`project_id`, `tag`),
   FOREIGN KEY (`project_id`)
       REFERENCES `projects`(`project_id`)
+      ON DELETE CASCADE -- if the project is deleted, delete all its tags
 );
+
 
 CREATE TABLE `experiments` (
   `experiment_id` INT AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  `project_id` INT,
+  `project_id` INT NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `plan_text` TEXT,
@@ -107,7 +156,10 @@ CREATE TABLE `experiments` (
   PRIMARY KEY (`experiment_id`),
   FOREIGN KEY (`project_id`)
       REFERENCES `projects`(`project_id`)
+      ON DELETE CASCADE -- if the project is deleted, delete all its experiments
+      -- Add a confirmation box/big warning before deleting a project with experiments
 );
+
 
 CREATE TABLE `experiment_tags` (
   `experiment_id` INT,
@@ -115,7 +167,9 @@ CREATE TABLE `experiment_tags` (
   PRIMARY KEY (`experiment_id`, `tag`),
   FOREIGN KEY (`experiment_id`)
       REFERENCES `experiments`(`experiment_id`)
+      ON DELETE CASCADE -- if the experiment is deleted, delete all its tags
 );
+
 
 CREATE TABLE `company_members` (
   `company_id` VARCHAR(10),
@@ -123,10 +177,15 @@ CREATE TABLE `company_members` (
   `role` ENUM('admin', 'member') NOT NULL,
   PRIMARY KEY (`company_id`, `profile_id`),
   FOREIGN KEY (`profile_id`)
-      REFERENCES `profiles`(`profile_id`),
+      REFERENCES `profiles`(`profile_id`)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE, -- if the profile is deleted, delete all its company memberships
   FOREIGN KEY (`company_id`)
       REFERENCES `companies`(`company_id`)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE -- if the company is deleted, delete all its members
 );
+
 
 CREATE TABLE `experiment_members` (
   `experiment_id` INT,
@@ -134,10 +193,14 @@ CREATE TABLE `experiment_members` (
   `role` ENUM('edit', 'read') NOT NULL,
   PRIMARY KEY (`experiment_id`, `profile_id`),
   FOREIGN KEY (`profile_id`)
-      REFERENCES `profiles`(`profile_id`),
+      REFERENCES `profiles`(`profile_id`)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE, -- if the profile is deleted, delete all its experiment memberships
   FOREIGN KEY (`experiment_id`)
       REFERENCES `experiments`(`experiment_id`)
+      ON DELETE CASCADE -- if the experiment is deleted, delete all its members
 );
+
 
 CREATE TABLE `lab_members` (
   `lab_id` VARCHAR(10),
@@ -145,10 +208,14 @@ CREATE TABLE `lab_members` (
   `role` ENUM('admin', 'member') NOT NULL,
   PRIMARY KEY (`lab_id`, `profile_id`),
   FOREIGN KEY (`lab_id`)
-      REFERENCES `labs`(`lab_id`),
+      REFERENCES `labs`(`lab_id`)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE, -- if the lab is deleted, delete all its members
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
+      ON DELETE CASCADE -- if the profile is deleted, delete all its lab memberships
 );
+
 
 -- Activity log table to track user actions (when logged in)
 -- Track: 
@@ -176,6 +243,8 @@ CREATE TABLE `activity_log` (
   PRIMARY KEY (`activity_id`),
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
+      ON DELETE RESTRICT -- if the profile is deleted, prevent deletion of activity_log entries
+      -- See GDPR profile "deletion" guidelines at the top
 );
 -- Index for activity on project/experiment
   -- SELECT *
@@ -189,6 +258,7 @@ CREATE INDEX `idx_activity_log_entity`
   -- WHERE `profile_id` = ?
 CREATE INDEX `idx_activity_log_profile` 
   ON `activity_log` (`profile_id`, `created_at`);
+
 
 -- Login log table to track user login (success & failure)
 -- Track:
@@ -207,6 +277,8 @@ CREATE TABLE `login_log` (
   PRIMARY KEY (`login_id`),
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
+      ON DELETE RESTRICT -- if the profile is deleted, prevent deletion of login_log entries
+      -- See GDPR profile "deletion" guidelines at the top
 );
 -- Check failed attempts for rate limit/lockout (last 15 minutes)
   -- SELECT COUNT(*) 
@@ -220,6 +292,7 @@ CREATE INDEX `idx_login_log_attempt`
   -- WHERE `profile_id` = ?
 CREATE INDEX `idx_login_log_profile`
   ON `login_log` (`profile_id`, `login_at`);
+
 
 -- Table = project_updates, 
 -- Columns = project_id,
@@ -243,6 +316,7 @@ FROM `projects`
 LEFT JOIN `experiments`
     ON `projects`.`project_id` = `experiments`.`project_id`
 GROUP BY `projects`.`project_id`;
+
 
 -- Table = profile_points, 
 -- Columns = profile_id, 
