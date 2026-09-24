@@ -1,5 +1,5 @@
 <?php
-    include 'Database_related/db.php';
+    require_once 'Database_related/db.php';
 
     $message = "";
     $toastClass = "";
@@ -11,9 +11,9 @@
         $First_Name = $_POST['First_Name'];
         $Last_Name = $_POST['Last_Name'];
         $Email = $_POST['Email'];
-        //generate salt and add to database
-        $Password = $_POST['Password1']; # IMPLEMENT SECURITY HERE
-        $hashedPassword = Password_hash($Password, Password_DEFAULT); # ???
+        $Password = $_POST['Password1']; //Also unsure of how to send password
+
+        
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
         // Check if Email already exists
@@ -32,9 +32,12 @@
     
         else {
             # use placeholders to protect against sql injection
-            $sql = "INSERT INTO User(First_Name, Last_Name, Email, Password) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO user(Email, First_Name, Last_Name, Salt, Password) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssss", $First_Name, $Last_Name, $Email, $hashedPassword);
+            $Salt = random_bytes($numberOfDesiredBytes); 
+            $hashedPassword = password_hash($Password, PASSWORD_BCRYPT, $Salt);
+            echo "It came here"
+            $stmt->bind_param("sssss", $Email, $First_Name, $Last_Name, $Salt, $hashedPassword);
             $result = $stmt->execute();
 
 
@@ -60,4 +63,4 @@
             header("Location: user_profile.php");
             exit;
         }
-    }
+    } ?>
