@@ -1,9 +1,5 @@
 <?php
-<<<<<<< Updated upstream:actions/create_profile.php
     require_once '../database/db.php';
-=======
-require 'Database_related/db.php';
->>>>>>> Stashed changes:insert_new_user.php
 
     $message = "";
     $toastClass = "";
@@ -21,12 +17,8 @@ require 'Database_related/db.php';
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
         // Check if Email already exists
-<<<<<<< Updated upstream:actions/create_profile.php
         // TODO(schema-migration): User table becomes profiles; Email becomes email
-        $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
-=======
         $checkEmailStmt = $conn->prepare("SELECT Email FROM users WHERE Email = ?");
->>>>>>> Stashed changes:insert_new_user.php
         $checkEmailStmt->bind_param("s", $Email);
         $checkEmailStmt->execute();
         $checkEmailStmt->store_result();
@@ -41,15 +33,7 @@ require 'Database_related/db.php';
     
         else {
             # use placeholders to protect against sql injection
-<<<<<<< Updated upstream:actions/create_profile.php
-            // TODO(schema-migration): becomes INSERT INTO profiles
-            // (email, first_name, last_name, salt, password) — also decide values
-            // for the new columns (agreed_to_toc, saved_changes, streak) and write
-            // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-            $sql = "INSERT INTO user(Email, First_Name, Last_Name, Salt, Password) VALUES (?, ?, ?, ?, ?)";
-=======
             $sql = "INSERT INTO users (Email, First_Name, Last_Name, Password) VALUES (?, ?, ?, ?)";
->>>>>>> Stashed changes:insert_new_user.php
             $stmt = $conn->prepare($sql);
             //$Salt = random_bytes($numberOfDesiredBytes); 
             $hashedPassword = password_hash($Password, PASSWORD_BCRYPT);
@@ -76,11 +60,7 @@ require 'Database_related/db.php';
         # redirect here instead of in the form down below
         # now the form is sent as a post, it would not be otherwise
         if (isset($result) && $result) {
-<<<<<<< Updated upstream:actions/create_profile.php
             header("Location: ../user_profile.php");
-=======
-            header("Location: /index.php");
->>>>>>> Stashed changes:insert_new_user.php
             exit;
         }
     }
