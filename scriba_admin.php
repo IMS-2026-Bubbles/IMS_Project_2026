@@ -25,7 +25,6 @@ session_start(); # should this be here?
 
 
 
-    # ---- OBS THIS DOESNT WORK ------
     # if button to register new:
     if(isset($_POST['register_company']))
     {
@@ -77,17 +76,15 @@ session_start(); # should this be here?
 
 
     # DISPLAY TABLE WITH USERS AND COMPANIES
-    $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name, profiles.email, companies.name, labs.name, lab_members.lab_id, company_members.role
+    $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name, companies.name, company_members.role
             FROM profiles
             LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
             LEFT JOIN companies ON company_members.company_id = companies.company_id
-            LEFT JOIN lab_members ON profiles.profile_id = lab_members.profile_id
-            LEFT JOIN labs ON lab_members.lab_id = labs.lab_id";
+            ORDER BY companies.name ASC";
     
     $result = $conn->query($sql);
 
     $rows_to_display = "";
-    # need to implement button on each row - so in while loop
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
             $role = htmlspecialchars($row["role"] ?? '');
@@ -148,6 +145,8 @@ session_start(); # should this be here?
     include "database/close_db.php";
     ?>
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,6 +154,7 @@ session_start(); # should this be here?
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
 </head>
+
 <body>
     <h1>Admin Page</h1>
     <!-- Makes sure that the message is actually displayed -->
@@ -164,29 +164,62 @@ session_start(); # should this be here?
         </div>
     <?php endif; ?>
 
+    <!-- When improving front end, this is where updates can be made -->
+    <style>
+        /* For tables */
+        table{
+            text-align: left;
+            border-collapse: collapse; /* Make underline to be connected */
+            padding: 10px;
+        }
+        
+        /* For table header and data */
+        th, td {
+            text-align: left;
+            border-bottom: 1px solid #ddd; /* Have underlines */
+            padding: 10px;
+        }
+
+        /* Hover is so that if you have your mouse on row, colour changes on that row */
+        tr:hover {background-color: #D6EEEE;}
+
+        /* If div class = container, the tables will be next to each other */
+        .container{ 
+            display: flex; 
+            justify-content: center;  /* the tables are in the center of page */
+            gap: 50px;}
+
+        /* I don't manage to make this look nice, but this is the start :) */
+        .register_form{
+            padding: 50px ; /* adds 50px of space between the content of the container and its edges */
+            margin: 0 auto; /* centers the container in the web browser */ 
+        } 
+        
+    </style>
+
 
     <p>This is the page that ONLY Scriba admin (superadmin) will be able to see. This is also the only page this type of admin will have access to. </p>
-    <p>Functions: <br>
-        - View all users on Scriba and see the companies and so - DONE<br>
-        - Create new companies - DONE<br>
-        - Create unique code for companies - DONE <br>
-        - Make a person a companies admin - DONE <br>
 
         Look at this link on how you sort a table by clicking on header:<br> 
         https://www.w3schools.com/howto/howto_js_sort_table.asp
     </p>
 
-    <!-- HTML form for adding a companies -->
-    <form action="" method= "POST"> 
+
+    <!-- adding a company -->
+     
+    <form action="" method= "POST" class = "register_form"> 
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="companies">Register a new companies</label><br>
+        <label for="companies">Register a new company</label><br>
         <input type="text" class="" name="name" required><br>
 
     <input type="submit" class="btn btn-dark rounded-pill" name="register_company" value="Register"><br><br>
     </form>
-    <div style="display: flex; gap: 50px;">
+
+
+    <!-- Table 1 -->
+    <div class = "container">
     <div>
         <table class = "table table-striped"> <!-- update to another class maybe -->
             <thead>
@@ -204,7 +237,8 @@ session_start(); # should this be here?
         
         </table>
     </div>
-
+    
+    <!-- Table 2 -->
     <div>
         <table class = "table table-striped"> <!-- update to another class maybe -->
             <thead>
