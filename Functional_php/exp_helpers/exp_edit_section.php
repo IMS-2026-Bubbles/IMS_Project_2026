@@ -49,7 +49,7 @@ if ($user_access < 2) {
     // Store messages in session to display
     $_SESSION['messages_exp_edit_section'] = $messages;
     // Redirect back to experiment section with the same exp_ID
-    header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
+    header("Location: ../../experiment_section.php?exp_ID=" . urlencode($exp_ID) . "&section=" . urlencode($exp_section));
     exit();
 }
 
@@ -105,7 +105,7 @@ $_SESSION['messages_exp_edit_section'] = $messages;
 // Close connection when done
 include "../../Database_related/closeDB.php";
 
-// Redirect back to experiment section with the same exp_ID
-header("Location: ../../experiment_" . strtolower($exp_section) . ".php?exp_ID=" . urlencode($exp_ID));
+// Redirect back to experiment section with the same exp_ID and section
+header("Location: ../../experiment_section.php?exp_ID=" . urlencode($exp_ID) . "&section=" . urlencode($exp_section));
 exit();
 ?>

@@ -8,11 +8,12 @@ point for writing your own report. Written in third person; adapt as needed.
 ## What was added
 
 ### Experiment section pages: Plan / Log / Result
-Each experiment has three content sections (plan, log, result) with their own
-page (`experiment_plan.php`, `experiment_log.php`, `experiment_result.php`).
-All three follow the same structure, with the section name
-(`Plan` / `Log` / `Result`) as the only difference, so a single set of helper
-scripts serves all pages.
+Each experiment has three content sections (plan, log, result). They were
+originally separate pages (`experiment_plan.php`,
+`experiment_log.php`, `experiment_result.php`), which have since been
+consolidated into a single `experiment_section.php` page that takes the
+section name (`Plan` / `Log` / `Result`) as a `section` query parameter, so
+a single set of helper scripts serves all sections.
 
 ### Section editing
 On the plan page, users with edit permission (access level >= 2) get a form
@@ -56,9 +57,9 @@ success/error messages collected during the save are passed through the
 session and displayed once on the page they land on.
 
 ## Known limitations / future work
-- The log and result section pages (`experiment_log.php`,
-  `experiment_result.php`) are placeholders; only the plan page is
-  implemented so far.
+- ~~The log and result section pages are placeholders; only the plan page
+  is implemented so far.~~ Resolved: the section pages were consolidated
+  into `experiment_section.php`, which serves all three sections.
 - `check_user_permission()` only implements the 'experiment' entity type;
   project / lab / company are placeholders.
 - The database connection uses local credentials and an empty database name

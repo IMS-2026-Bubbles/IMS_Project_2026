@@ -19,7 +19,7 @@ patterns the code follows.
 /                           Page scripts (one PHP file per page)
 ├── index.php               Login / start page
 ├── experiment.php          Experiment overview page
-├── experiment_plan.php     Experiment plan section (log/result pages are stubs for now)
+├── experiment_section.php Experiment section page (plan/log/result via ?section=)
 ├── project_library.php     Listing pages, profile pages, etc.
 │
 ├── Session/                Session handling
@@ -105,6 +105,294 @@ against a whitelist (`$valid_sections`) before being used in SQL.
 Anything echoed into HTML goes through `htmlspecialchars()` to prevent XSS
 (this includes hidden input values, textarea content, and badge labels).
 `urlencode()` is used when building query strings in links/redirects.
+
+## File and folder naming conventions
+
+The file system follows the same philosophy as the database schema
+([Database naming standards](https://dev.to/ovid/database-naming-standards-2061)):
+lowercase snake_case everywhere, no abbreviations, names describe *what the
+file is*, with verbs reserved for endpoints that *do* something.
+
+### Folders
+
+Folder names are lowercase, singular-free role names that say what the folder
+is for — not what technology is inside:
+
+| Folder | Role |
+|---|---|
+| `/` (root) | Page scripts (one PHP file per page) |
+| `session/` | Session bootstrap and auth guards |
+| `database/` | DB connection helpers and the schema file |
+| `includes/` | Reusable includes: functions, layout, data fetchers |
+| `actions/` | Write endpoints (PRG POST handlers that redirect) |
+| `assets/` | Static files: CSS, images |
+| `docs/` | Markdown documentation |
+
+### Files
+
+- **Pages** (root): noun, named after what the user sees —
+  `experiment_section.php`, `leaderboard.php`.
+- **Write endpoints** (`actions/`): verb first, describing the state change —
+  `save_experiment_section.php`, `create_profile.php`. Never render HTML.
+- **Fetchers** (`includes/`): `fetch_<entity>_<what>.php` —
+  `fetch_experiment_tags.php`. Included inline; each documents its expected
+  input variable and the result variable it sets.
+- **Function files** (`includes/`): one file per function, named after the
+  function it defines — `render_progress_badge.php` defines
+  `render_progress_badge()`.
+- **Assets**: no double extensions; the extension states the actual format
+  (`placeholder.avif`, not `placeholder.jpg.avif`).
+- **No abbreviations**: `exp` → `experiment`, `proj` → `project`,
+  `fun` → nothing (the file is named after its function). IDs are lowercase:
+  `project_id`, never `proj_ID`.
+- Schema and code share one vocabulary: files and variables use the same
+  snake_case names as the database (`experiment_id`, `plan_text`), so the
+  mapping between code and schema is obvious.
+
+## File naming migration plan
+
+The codebase predates these conventions. The renames below are **planned but
+not yet executed**; nothing has been moved. The plan is a pure rename pass —
+file/folder names and `include` paths only. It is independent of (and can be
+done before or after) the schema migration listed in the TODO section, which
+changes names *inside* the files.
+
+### Mapping
+
+| Current | Target | Reason |
+|---|---|---|
+| `Session/` | `session/` | lowercase role name |
+| `Session/init.php` | `session/init.php` | folder only |
+| `Session/check_user_logged_in.php` | `session/check_user_logged_in.php` | folder only |
+| `Database_related/` | `database/` | role name, no `_related` suffix |
+| `Database_related/db.php` | `database/db.php` | folder only |
+| `Database_related/closeDB.php` | `database/close_db.php` | camelCase → snake_case |
+| `Database_related/database_schema.sql` | `database/database_schema.sql` | folder only |
+| `Functional_php/` | `includes/` | role name, no `_php` suffix |
+| `Functional_php/user_permission.php` | `includes/check_user_permission.php` | named after the function it defines |
+| `Functional_php/navbar.php` | `includes/navbar.php` | folder only |
+| `Functional_php/style.css` | `assets/style.css` | it is an asset |
+| `Functional_php/logout.php` | `actions/logout.php` | write endpoint (destroys session, redirects) |
+| `Functional_php/exp_helpers/` | `includes/` (fetchers), `actions/` (endpoints) | split by role |
+| `Functional_php/exp_helpers/exp_fetch_name.php` | `includes/fetch_project_experiment_names.php` | it fetches both names |
+| `Functional_php/exp_helpers/exp_fetch_proj_ID.php` | `includes/fetch_experiment_project_id.php` | no abbreviation, lowercase `id` |
+| `Functional_php/exp_helpers/exp_fetch_progress.php` | `includes/fetch_experiment_progress.php` | spell out `experiment` |
+| `Functional_php/exp_helpers/exp_fetch_tags.php` | `includes/fetch_experiment_tags.php` | spell out `experiment` |
+| `Functional_php/exp_helpers/exp_fetch_text.php` | `includes/fetch_experiment_section_text.php` | it fetches one section's text |
+| `Functional_php/exp_helpers/exp_fetch_updated.php` | `includes/fetch_experiment_timestamps.php` | says what it actually returns |
+| `Functional_php/exp_helpers/exp_progress_fun.php` | `includes/render_progress_badge.php` | named after the function, no `fun` |
+| `Functional_php/exp_helpers/exp_edit_section.php` | `actions/save_experiment_section.php` | verb-first write endpoint |
+| `Functional_php/exp_helpers/exp_edit_tags.php` | `actions/save_experiment_tags.php` | verb-first write endpoint |
+| `register_user_page.php` | `register_user.php` | drop redundant `_page` |
+| `insert_new_user.php` | `actions/create_profile.php` | verb-first, matches schema (`profiles`) |
+| `Assets/` | `assets/` | lowercase |
+| `Assets/placeholder.jpg.avif` | `assets/placeholder.avif` | single, correct extension |
+| `Assets/user_profile.css` | *(delete or fill)* | empty file; either remove it or give it content when profile styling is implemented |
+| `Assets/website_background.jpg` | `assets/website_background.jpg` | folder only |
+| `ARCHITECTURE.md`, `NEWS.md`, `README.md` | `docs/` *(optional)* | only if the root should hold nothing but pages |
+
+Root page scripts (`index.php`, `project_library.php`, `experiment.php`,
+`experiment_section.php`, `experiment_library.php`, `leaderboard.php`,
+`user_profile.php`, `company_admin.php`, `scriba_admin.php`) already follow
+the conventions and stay put.
+
+### Variable-built and depth-dependent paths
+
+Not every reference is a literal string. The following cases fall outside a
+plain find-and-replace and must be handled explicitly:
+
+- **Section-page references (now consolidated)**: the former
+  `experiment_<section>.php` pages were removed in favor of the single
+  `experiment_section.php?section=...` page. `exp_edit_section.php`
+  previously built redirect URLs dynamically from the section name; its
+  redirects now point at `experiment_section.php` with an explicit
+  `section` parameter. No page-name mapping is needed for section pages,
+  but the `section` parameter's values (`Plan`/`Log`/`Result`) will change
+  to lowercase in the schema migration (`plan`/`log`/`result`) — the
+  whitelist and the links in `experiment.php` must be updated together.
+- **Folder-depth prefixes**: the write endpoints live two levels deep
+  (`Functional_php/exp_helpers/`) and use `../../` in includes and
+  redirects. Moving them to `actions/` (one level) changes every `../../`
+  prefix to `../`, and their same-directory includes
+  (`exp_fetch_progress.php`, `exp_fetch_tags.php`) break because those
+  fetchers move to `includes/` — they become
+  `../includes/fetch_experiment_progress.php`, etc. Same-directory includes
+  are invisible to a path-string grep, so audit each moved file's `include`
+  lines individually.
+- **Case-inconsistent paths**: several files already include
+  `database_related/db.php` / `functional_php/navbar.php` in lowercase.
+  This works on Windows (case-insensitive filesystem) but breaks on Linux,
+  so the reference search must be **case-insensitive**, and the rename pass
+  is the right moment to normalize every path to the canonical spelling.
+- **`/../` root-relative links**: `navbar.php` uses `href="/../project_library.php"`
+  (etc.) and `logout.php` redirects to `/../index.php`. These are fragile
+  even today; fix them to proper relative paths as part of the same pass.
+- **Commented-out links**: `exp_edit_tags.php` contains commented-out
+  `href`/redirect code referencing old paths — update or delete it so a
+  future un-commenting can't resurrect dead paths.
+- **Posts-to-self forms** (`action=""` in `index.php`, `project_library.php`,
+  `experiment_library.php`, `register_user_page.php`, `scriba_admin.php`,
+  `company_admin.php`) are unaffected by renames, but note that
+  `index.php` and `register_user_page.php` carry a "change action so you
+  end up somewhere!" comment — their POST handling should be routed to an
+  `actions/` endpoint when that work happens.
+
+### Execution steps
+
+1. **Rename with `git mv`** so history follows the files. Order: folders
+   first (`Session/`, `Database_related/`, `Functional_php/`, `Assets/`),
+   then the files inside them (including the `exp_helpers/` split into
+   `includes/` vs `actions/`).
+2. **Update references in the same commit**: every `include`/`require` path,
+   navbar `href`s and `<link>`/`src` URLs (navbar references the stylesheet
+   and logo), form `action` attributes, and redirect targets in the PRG
+   endpoints. Grep the whole tree for each old path segment (`Session/`,
+   `Functional_php/`, `exp_helpers/`, `Database_related/`, `closeDB`,
+   `insert_new_user`, `.jpg.avif`) to confirm none remain.
+3. **Update this document**: the folder-layout tree and any path mentions.
+4. **Manual test sweep**: login → project library → experiment → section
+   edit → tag add/remove → logout, plus registration. All navigation, POST
+   targets, and assets must load without 404s.
+5. **Commit as a single pure-rename commit**, separate from any schema
+   migration, so `git log --follow` and review stay clean.
+
+## Schema-name migration plan
+
+The PHP code queries the **old** schema. The mapping below renames every
+table and column reference to the new snake_case schema. Like the file
+renames, this is **planned but not yet executed**. It is a separate pass
+from the file-naming migration: do that one first (pure renames), then this
+one, so each commit diffs cleanly.
+
+### Table mapping
+
+| Old table | New table | Used in |
+|---|---|---|
+| `Proj_Experiment` (also misspelled `Proj_Experiments` in `exp_fetch_progress.php`) | `experiments` | fetchers, `exp_edit_section.php`, `user_permission.php` |
+| `Project` | `projects` | `exp_fetch_name.php`, `user_permission.php` |
+| `Exp_Tag` | `experiment_tags` | `exp_fetch_tags.php`, `exp_edit_tags.php` |
+| `User` | `profiles` | registration, admin pages, `user_permission.php` |
+| `Company` | `companies` | admin pages, `user_permission.php` |
+| `Lab_Group` | `labs` | admin pages, `user_permission.php` |
+| `Company_Member` | `company_members` | admin pages, `user_permission.php` |
+| `Lab_Group_Member` | `lab_members` | admin pages, `user_permission.php` |
+| `Project_Member` | `project_members` | `user_permission.php` |
+| `Experiment_Member` | `experiment_members` | `user_permission.php` |
+| `Scriba_Member` | *(dissolved)* — query `profiles.is_scriba_admin = TRUE` instead | `user_permission.php` |
+
+The last row is **TODO: a rewrite, not a rename**: the Scriba-admin check
+becomes `SELECT is_scriba_admin FROM profiles WHERE profile_id = ?`
+(level 3 if `TRUE`, 0 otherwise).
+
+### Column mapping
+
+| Old column | New column |
+|---|---|
+| `Exp_ID` / `Experiment_ID` (both spellings occur) | `experiment_id` |
+| `Proj_ID` / `Project_ID` | `project_id` |
+| `User_ID` | `profile_id` |
+| `Exp_Name` / `Proj_Name` / `Lab_Name` / `Comp_Name` | `name` |
+| `Email`, `First_Name`, `Last_Name`, `Salt`, `Password` | `email`, `first_name`, `last_name`, `salt`, `password` |
+| `Experiment_ID` (in `Exp_Tag`) | `experiment_id` |
+| `Exp_Tag` (column) | `tag` |
+| `Plan_Text` / `Log_Text` / `Result_Text` | `plan_text` / `log_text` / `result_text` |
+| `Plan_Done` / `Log_Done` / `Result_Done` | `plan_is_done` / `log_is_done` / `result_is_done` |
+| `Plan_Updated` / `Log_Updated` / `Result_Updated` | `plan_updated_at` / `log_updated_at` / `result_updated_at` |
+| `Date_Created` / `Date_Updated` | `created_at` / `updated_at` |
+
+### Section values go lowercase
+
+The section whitelist and query-parameter values change from
+`Plan`/`Log`/`Result` to `plan`/`log`/`result`, which changes every
+string-concatenated column name built from `$exp_section`:
+
+- `$valid_sections` in `experiment_section.php` and `exp_edit_section.php`.
+- Column interpolation: `"... SET " . $exp_section . "_Text"` becomes
+  `$exp_section . '_text'`; likewise `_Done` → `_is_done` and
+  `_Updated` → `_updated_at`.
+- Array keys from `fetch_assoc()` (`$exp_progress_flags[$exp_section .
+  '_Done']`, `$exp_last_update[...]`) follow the new column names.
+- Links in `experiment.php` (`&section=Plan`) and the redirects in
+  `exp_edit_section.php`.
+- Display labels may stay capitalized ("Experiment Plan"); only the
+  machine values change.
+
+### Application-level identifiers
+
+Code should share the schema's vocabulary, so variables and session keys
+migrate too:
+
+| Old | New |
+|---|---|
+| `$_SESSION['user_id']` (set at login, checked in `check_user_logged_in.php`) | `$_SESSION['profile_id']` |
+| `$exp_ID` | `$experiment_id` |
+| `$proj_ID` | `$project_id` |
+| `$user_ID` parameter of `check_user_permission()` | `$profile_id` |
+| `$proj_exp_name_array` keys `Project_Name`, `Experiment_Name`, `Proj_ID`, `Exp_ID` | `project_name`, `experiment_name`, `project_id`, `experiment_id` |
+| `$exp_last_update` keys `Date_Created`, `Date_Updated`, `Plan_Updated`, ... | `created_at`, `updated_at`, `plan_updated_at`, ... |
+| `$exp_progress_flags` keys `Plan_Done`, ... | `plan_is_done`, ... |
+
+### TODO: changes beyond direct renaming
+
+Everything below is a code change over and above substituting new names.
+Each item must be marked with a `// TODO(schema-migration): ...` comment
+in the code during the pass, so the changes stay reviewable and greppable.
+
+- **TODO — delete the manual timestamp update**: `exp_edit_section.php`
+  runs `UPDATE ... SET <section>_Updated = NOW()`. In the new schema the
+  `*_updated_at` columns have `ON UPDATE CURRENT_TIMESTAMP` (they update
+  automatically when the row's text changes) and `experiments.updated_at`
+  is a **generated column** — writing it raises an error. The whole
+  timestamp-update statement goes away.
+- **TODO — rework `exp_fetch_updated.php`**: it should not select
+  `updated_at` for display via the generated column — it derives from the
+  `*_updated_at` columns and defaults to the epoch sentinel
+  (`1970-01-01`) when none exist; prefer showing `created_at` and the
+  section timestamps.
+- **TODO — fix `exp_fetch_progress.php`**: it has a typo table name
+  (`Proj_Experiments`) and fails against both old and new schemas; this
+  pass fixes it, which is a fix, not a rename.
+- **TODO — fix `exp_fetch_proj_ID.php`**: it selects `Project_ID` while
+  the same query's `WHERE` uses `Experiment_ID` and the join keys use
+  `Proj_ID`/`Exp_ID` — the old code is internally inconsistent; resolving
+  that is a fix beyond the rename.
+- **`check_user_permission()`**: the entity-type strings (`'experiment'`,
+  `'project'`, `'lab'`, `'company'`) already match the new schema and stay;
+  only the table/column names in the five queries change (pure rename).
+- **TODO — admin pages**: `company_admin.php` and `scriba_admin.php` run
+  against the old tables; beyond the table/column mapping, the
+  `company_admin.php` `$admin_ID = ""` placeholder must be resolved from
+  the session (`$_SESSION['profile_id']`).
+- **TODO — registration**: `insert_new_user.php` and
+  `register_user_page.php` (which duplicate the same query) need the new
+  `profiles` columns (`agreed_to_toc`, and defaults for `saved_changes` /
+  `streak` — decide the values at registration time), and should set
+  `last_login_at` or write a `login_log` row per the TODO items.
+- **TODO — mock-data pages**: `leaderboard.php`, `project_library.php`,
+  `experiment_library.php` use hardcoded arrays with keys `id`/`name`;
+  they need no rename but will adopt the schema vocabulary when converted
+  to real queries (the `profile_points` and `project_updates` views are
+  designed for them).
+- **TODO — `db.php`**: the database name must match the schema-loaded
+  database.
+
+### Execution steps
+
+1. Run **after** the file-naming migration, in its own commit(s).
+2. Update each file's queries, interpolated column names, whitelist,
+   and array keys per the mapping above; keep the display copy
+   capitalized as needed. Every change listed in the
+   "TODO: changes beyond direct renaming" subsection gets a
+   `// TODO(schema-migration): ...` comment in the code at the point of
+   change, so reviewers can distinguish renames from behavior changes.
+3. Load the new schema into a fresh database and adjust `db.php`.
+4. Grep case-insensitively for every old identifier
+   (`Proj_`, `Exp_`, `User_ID`, `Company_Member`, `Lab_Group`,
+   `Scriba_Member`, `_Done`, `_Updated`, `Date_`, `user_id`) — none may
+   remain outside comments/history.
+5. Test sweep: register → login → library → experiment → section edit
+   (text + done flag, verify timestamps auto-update) → tag add/remove →
+   logout; plus a permission check for a read-only user.
 
 ## Database schema
 
@@ -194,6 +482,10 @@ member pickers/search); **render as "Deleted"** where they are historical
 
 ## TODO: front-end / back-end implementation items
 
+- [ ] **File naming migration**: execute the rename plan in the
+      [File naming migration plan](#file-naming-migration-plan) section —
+      folders, then files, then all include/link references, in one
+      pure-rename commit.
 - [ ] `anonymize_profile($profile_id)` — implements the GDPR flow above.
 - [ ] `log_activity(...)` helper — writes `activity_log` rows in the same
       transaction as the change they describe (the DB cannot know the actor).
@@ -207,8 +499,8 @@ member pickers/search); **render as "Deleted"** where they are historical
       them as "Deleted" in existing member lists.
 - [ ] Project deletion UI: strong confirmation when the project contains
       experiments.
-- [ ] **Migration**: the current PHP code uses the old schema's names
-      (`exp_ID`, `Plan`/`Log`/`Result` columns, etc.). All fetchers, edit
-      endpoints, and `user_permission.php` must be updated to the new
-      snake_case schema (`experiment_id`, `plan_text`, ...) and to key on
-      `profile_id` (sessions currently store `user_id`).
+- [ ] **Schema-name migration**: execute the plan in the
+      [Schema-name migration plan](#schema-name-migration-plan) section —
+      tables, columns, lowercase section values, application identifiers,
+      and the behavioral changes (drop the manual timestamp update,
+      fix the broken table names) — after the file-naming migration.
