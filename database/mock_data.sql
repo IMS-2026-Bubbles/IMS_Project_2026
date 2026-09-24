@@ -6,7 +6,6 @@
   -- log in. To make demo accounts usable, generate real hashes and paste
   -- them into the profiles INSERT below, e.g.:
   --   php -r "echo password_hash('ChangeMe!2026', PASSWORD_BCRYPT);"
-  -- The salt column is BINARY(16): distinct dummy values via UNHEX().
   -- The dataset intentionally covers documented edge cases:
     -- profile 5 is GDPR-anonymized (is_deleted, kept memberships, still
     --    owns project 3 -> admin ownership-transfer case)
@@ -39,40 +38,32 @@ INSERT INTO `labs` (`lab_id`, `company_id`, `name`) VALUES
 -- Placeholder hash (not a real bcrypt digest of anything):
 --   $2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM
 INSERT INTO `profiles`
-    (`profile_id`, `email`, `first_name`, `last_name`, `salt`, `password`,
+    (`profile_id`, `email`, `first_name`, `last_name`, `password`,
      `agreed_to_toc`, `saved_changes`, `last_login_at`, `streak`,
      `is_scriba_admin`, `is_deleted`)
 VALUES
     (1, 'alice.chen@example.com', 'Alice', 'Chen',
-     UNHEX('0011223344556677889900aabbccdde0'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 128, '2026-09-23 08:30:00', 12, TRUE,  FALSE),
     (2, 'bob.martinez@example.com', 'Bob', 'Martinez',
-     UNHEX('11223344556677889900aabbccdde0f0'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 86,  '2026-09-23 09:10:00', 7,  FALSE, FALSE),
     (3, 'carla.rossi@example.com', 'Carla', 'Rossi',
-     UNHEX('223344556677889900aabbccdde0f001'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 210, '2026-09-22 14:05:00', 21, FALSE, FALSE),
     (4, 'david.kim@example.com', 'David', 'Kim',
-     UNHEX('3344556677889900aabbccdde0f00112'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 64,  '2026-09-23 11:45:00', 3,  FALSE, FALSE),
     (5, 'deleted_5@example.com', 'Deleted', 'Deleted',
-     UNHEX('44556677889900aabbccdde0f0011223'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKK',
      TRUE, 95,  '2026-09-20 16:00:00', 0,  FALSE, TRUE),  -- anonymized (GDPR)
     (6, 'eva.novak@example.com', 'Eva', 'Novak',
-     UNHEX('0a0b0c0d0e0f10111213141516171819'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 142, '2026-09-23 10:20:00', 15, FALSE, FALSE),
     (7, 'grace.liu@example.com', 'Grace', 'Liu',
-     UNHEX('1a1b1c1d1e1f20212223242526272829'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 38,  '2026-09-22 08:55:00', 5,  FALSE, FALSE),
     (8, 'henry.adams@example.com', 'Henry', 'Adams',
-     UNHEX('2a2b2c2d2e2f30313233343536373839'),
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 9,   '2026-09-21 13:30:00', 1,  FALSE, FALSE);
 

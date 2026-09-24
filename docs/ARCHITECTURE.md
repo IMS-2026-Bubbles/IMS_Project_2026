@@ -311,7 +311,7 @@ becomes `SELECT is_scriba_admin FROM profiles WHERE profile_id = ?`
 | `Proj_ID` / `Project_ID` | `project_id` |
 | `User_ID` | `profile_id` |
 | `Exp_Name` / `Proj_Name` / `Lab_Name` / `Comp_Name` | `name` |
-| `Email`, `First_Name`, `Last_Name`, `Salt`, `Password` | `email`, `first_name`, `last_name`, `salt`, `password` |
+| `Email`, `First_Name`, `Last_Name`, `Password` | `email`, `first_name`, `last_name`,`password` |
 | `Experiment_ID` (in `Exp_Tag`) | `experiment_id` |
 | `Exp_Tag` (column) | `tag` |
 | `Plan_Text` / `Log_Text` / `Result_Text` | `plan_text` / `log_text` / `result_text` |
@@ -488,7 +488,7 @@ Profile "deletion" is **anonymization, never a hard delete**:
 1. Set `is_deleted = TRUE` (login checks this flag *before* password
    verification).
 2. Overwrite: `email` → `deleted_<profile_id>@example.com`,
-   names → `Deleted`, `salt` → fresh random bytes, `password` → a random,
+   names → `Deleted`, `password` → a random,
    discarded hash.
 3. Anonymize the user's email in `login_log` rows (including failed logins,
    matched by email).

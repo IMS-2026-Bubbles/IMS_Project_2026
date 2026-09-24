@@ -27,8 +27,7 @@
     -- Email -> <deleted>_<profile_id>@example.com
     -- First name -> Deleted
     -- Last name -> Deleted
-    -- Salt -> *new* randomly generated 16 bytes
-    -- Password -> *new* randomly generated password (hashed with the new salt)
+    -- Password -> *new* randomly generated password
     -- is_deleted -> TRUE
   -- Activity log and login log restrict deletion of the profile, 
     -- to comply with GDPR guidelines for user data deletion. 
@@ -89,7 +88,6 @@ CREATE TABLE `profiles` (
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `first_name` VARCHAR(255),
   `last_name` VARCHAR(255),
-  `salt` BINARY(16) NOT NULL UNIQUE,
   `password` VARCHAR(255) NOT NULL,
   `agreed_to_toc` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
   `saved_changes` INT,
