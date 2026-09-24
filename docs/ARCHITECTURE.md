@@ -48,11 +48,14 @@ patterns the code follows.
 │   ├── save_experiment_section.php Section text/done-flag handler
 │   └── save_experiment_tags.php    Tag add/remove handler
 │
-└── assets/                 Static files
-    ├── style.css           Global stylesheet
-    ├── placeholder.avif    Logo shown in the navbar
-    ├── user_profile.css    (currently empty)
-    └── website_background.jpg
+├── assets/                 Static files
+│   ├── style.css           Global stylesheet
+│   ├── placeholder.avif    Logo shown in the navbar
+│   └── website_background.jpg
+└── docs/                   Documentation (README.md stays at the root)
+    ├── ARCHITECTURE.md     This document (rendered to ARCHITECTURE.pdf)
+    ├── NEWS.md             Feature changelog
+    └── 20260924_ERD_Scriba.png  Database ER diagram
 ```
 
 ## Request flow
@@ -203,9 +206,9 @@ changes names *inside* the files.
 | `register_user_page.php` | `register_user.php` | drop redundant `_page` |
 | `insert_new_user.php` | `actions/create_profile.php` | verb-first, matches schema (`profiles`) |
 | *(root)* `placeholder.jpg.avif` | `assets/placeholder.avif` | single, correct extension (assets lived at the root) |
-| *(root)* `user_profile.css` | `assets/user_profile.css` | empty file; either remove it or give it content when profile styling is implemented |
+| *(root)* `user_profile.css` | *(deleted 2026-09-24)* | empty and unreferenced; recreate in `assets/` when profile styling is implemented |
 | *(root)* `website_background.jpg` | `assets/website_background.jpg` | move into `assets/` |
-| `ARCHITECTURE.md`, `NEWS.md`, `README.md` | `docs/` *(optional)* | only if the root should hold nothing but pages |
+| `ARCHITECTURE.md`, `NEWS.md`, `20260924_ERD_Scriba.png` | `docs/` | done 2026-09-24; `README.md` stays at the root |
 
 Root page scripts (`index.php`, `project_library.php`, `experiment.php`,
 `experiment_section.php`, `experiment_library.php`, `leaderboard.php`,
@@ -413,7 +416,7 @@ in the code during the pass, so the changes stay reviewable and greppable.
 ## Database schema
 
 The canonical schema lives in
-[database/database_schema.sql](database/database_schema.sql)
+[../database/database_schema.sql](../database/database_schema.sql)
 (MySQL). It defines the core entity tables (`companies`, `labs`, `projects`,
 `experiments`, `profiles`), membership/tag junction tables, an audit layer
 (`activity_log`, `login_log`), and two views (`project_updates`,
