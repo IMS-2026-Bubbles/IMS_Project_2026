@@ -12,7 +12,8 @@
     <p>This is the page that the company admin will be able to see. </p>
     <p>Functions: <br>
         - View all users in the company and the lab groups <br>
-        - Create new lab groups? <br>
+        - Create new lab groups <br>
+        - Create the unique codes <br>
         - See the unique codes connected to a lab group (PK for Lab_group)
     </p>
 
