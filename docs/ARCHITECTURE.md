@@ -420,7 +420,11 @@ The canonical schema lives in
 (MySQL). It defines the core entity tables (`companies`, `labs`, `projects`,
 `experiments`, `profiles`), membership/tag junction tables, an audit layer
 (`activity_log`, `login_log`), and two views (`project_updates`,
-`profile_points`).
+`profile_points`). A mock dataset for development/testing lives in
+[../database/mock_data.sql](../database/mock_data.sql) — load it after the
+schema; it deliberately includes edge cases (an anonymized profile that
+still owns a project, an empty lab, a read-only user, failed and
+rate-limited logins).
 
 ### Entity-relationship overview
 

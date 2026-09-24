@@ -45,6 +45,9 @@
   -- Add (to the report) a funtion that runs every day to delete 
     -- activity_log and login_log entries older than 90 days
 
+CREATE DATABASE scriba_db;
+USE scriba_db;
+
 CREATE TABLE `companies` (
   `company_id` VARCHAR(10) UNIQUE,
   `name` VARCHAR(255),
@@ -129,7 +132,6 @@ CREATE TABLE `experiments` (
   `name` VARCHAR(255) NOT NULL,
   `project_id` INT NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `plan_text` TEXT,
   `plan_updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `plan_is_done` BOOLEAN NOT NULL DEFAULT FALSE,
