@@ -6,6 +6,9 @@
 // Returns a string of text content in $exp_section_text, which can be used to display the text on the page.
 
 // Retrieve the text content for the specified section
+// TODO(schema-migration): old table/column names. Section values become lowercase
+// (plan/log/result), so the interpolated column becomes $exp_section . '_text',
+// the table becomes experiments, and the WHERE key becomes experiment_id.
     // Create query
 $sql_exp_section_text = "SELECT " . $exp_section . "_Text FROM Proj_Experiment WHERE Exp_ID = ?";
     // Prepare query

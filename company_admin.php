@@ -42,6 +42,10 @@
     // select all those that share company with the person logged in as admin
 
     // OBS i don't know if this works
+    // TODO(schema-migration): old table/column names throughout — becomes
+    // profiles/companies/labs/lab_members/company_members with profile_id, name,
+    // email; the row keys used below (First_Name, ...) change with them.
+    // Also resolve $admin_ID above from $_SESSION['profile_id'] instead of "".
     $sql = "SELECT User.User_ID, User.First_Name, User.Last_Name, User.Email, Company.Comp_Name, Lab_Group.Lab_Name, Lab_Group_Member.Lab_Group_ID
             FROM User
             JOIN Company_Member ON User.User_ID = Company_Member.User_ID

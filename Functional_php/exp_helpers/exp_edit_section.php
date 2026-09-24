@@ -28,6 +28,8 @@ $exp_section = $_POST['section'] ?? null;
 $text = $_POST['text'] ?? null;
 $done_flag = $_POST['done_flag'] ?? 0; // Default to 0 (not done) if not set
     // Whitelist the section name ('Plan', 'Log', 'Result')
+// TODO(schema-migration): section values become lowercase ('plan', 'log', 'result'),
+// matching the new column names plan_text/plan_is_done/plan_updated_at, etc.
 $valid_sections = ['Plan', 'Log', 'Result'];
 if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Invalid section name: " . htmlspecialchars($exp_section) . "<br>";
@@ -43,6 +45,7 @@ include "../../Database_related/db.php";
 
 // Check if the user has permission to edit progress for this experiment
 include "../../Functional_php/user_permission.php"; // Include the user permission check function
+// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
 $user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit this experiment section.<br>";
@@ -60,6 +63,9 @@ include "exp_fetch_progress.php"; // Fetches the progress status for the specifi
     $done_flag = (int)$done_flag; // Cast to int for comparison
     $exp_progress_flags = array_map('intval', $exp_progress_flags); // Ensure all values are integers
 if ($done_flag !== $exp_progress_flags[$exp_section . '_Done']) {
+    // TODO(schema-migration): old table/column names and old array key. Becomes
+    // UPDATE experiments SET <section>_is_done = ? WHERE experiment_id = ?
+    // and the key above becomes $exp_section . '_is_done'
     // Update the progress flag in the database
     $sql_update_progress = "UPDATE Proj_Experiment SET " . $exp_section . "_Done = ? WHERE Exp_ID = ?";
     $stmt_update_progress = $conn->prepare($sql_update_progress);
@@ -73,6 +79,8 @@ if ($done_flag !== $exp_progress_flags[$exp_section . '_Done']) {
 
 // Update the text content for the specified section in the database
     // Create query to update the text content for the specified section
+// TODO(schema-migration): old table/column names. Becomes
+// UPDATE experiments SET <section>_text = ? WHERE experiment_id = ?
 $sql_update_text = "UPDATE Proj_Experiment SET " . $exp_section . "_Text = ? WHERE Exp_ID = ?";
     // Prepare query
 $stmt_update_text = $conn->prepare($sql_update_text);
@@ -85,7 +93,10 @@ if ($stmt_update_text->execute()) {
         $messages[] = "Error updating text content for section " . $exp_section . " : " . $stmt_update_text->error . "<br>";
 }
 
-// Update the last update timestamp for the experiment and the specified section in the database
+// TODO(schema-migration): DELETE this whole timestamp update — the new schema's
+// *_updated_at columns have ON UPDATE CURRENT_TIMESTAMP (they update automatically
+// when the text changes) and experiments.updated_at is a generated column that
+// cannot be written. Remove this statement and its messages block.
     // Create query to update the last update timestamp for the specified section
 $sql_update_timestamp = "UPDATE Proj_Experiment SET " . $exp_section . "_Updated = NOW() WHERE Exp_ID = ?";
     // Prepare query

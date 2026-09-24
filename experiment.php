@@ -14,6 +14,9 @@ include "Database_related/db.php";
 
 // Check if the user has permission to view this experiment
 include "Functional_php/user_permission.php"; // Include the user permission check function
+// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
+// $exp_ID becomes $experiment_id; the $proj_exp_name_array / $exp_progress_flags /
+// $exp_last_update keys used below follow the new column names
 $user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
 if ($user_access < 1) {
     // Access level 0 means no access

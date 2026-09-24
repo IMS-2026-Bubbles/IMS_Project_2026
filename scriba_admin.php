@@ -8,6 +8,8 @@
     $company_name = $_POST['company_name'];
 
     # use placeholders to protect against sql injection
+    # TODO(schema-migration): becomes INSERT INTO companies (name) — also generate
+    # the prefixed VARCHAR(10) company_id ("c1", "c2", ...) per the new schema
     $sql = "INSERT INTO Company(Company_Name) VALUES (?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $company_name);
@@ -27,6 +29,9 @@
 
     // OBS i don't know if this works
     // the idea is that all info regarding a user will be saved?
+    # TODO(schema-migration): old table/column names throughout — becomes
+    # profiles/companies/labs/lab_members with profile_id, name, email; the row
+    # keys used below (First_Name, Comp_Name, ...) change with them
     $sql = "SELECT User.User_ID, User.First_Name, User.Last_Name, User.Email, Company.Comp_Name, Lab_Group.Lab_Name, Lab_Group_Member.Lab_Group_ID
             FROM User
             LEFT JOIN Company_Member ON User.User_ID = Company_Member.User_ID

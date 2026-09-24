@@ -6,6 +6,9 @@
 // Returns an associative array $exp_progress_flags with keys 'Plan_Done', 'Log_Done', and 'Result_Done'.
 
 // Retrieve flags
+// TODO(schema-migration): table name is a typo (Proj_Experiments) and columns are
+// old style. Becomes: SELECT plan_is_done, log_is_done, result_is_done FROM experiments
+// WHERE experiment_id = ? — so the $exp_progress_flags keys become plan_is_done, etc.
     // Create query
 $sql_exp_progress = "SELECT Plan_Done, Log_Done, Result_Done FROM Proj_Experiments WHERE Exp_ID = ?";
     // Prepare query

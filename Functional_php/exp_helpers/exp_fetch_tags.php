@@ -7,6 +7,9 @@
 
 
 // Retrieve current tags
+// TODO(schema-migration): old table/column names. Becomes:
+// SELECT tag FROM experiment_tags WHERE experiment_id = ? — the array_column key
+// below ('Exp_Tag') becomes 'tag'.
     // Create query
 $sql_exp_tags = "SELECT Exp_Tag FROM Exp_Tag WHERE Experiment_ID = ?";
     // Prepare query

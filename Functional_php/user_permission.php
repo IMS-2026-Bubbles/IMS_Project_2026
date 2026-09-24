@@ -26,6 +26,14 @@
 //     - 'admin' (1) => Full access to manage Scriba (0 = no access)
 // 
 // Return the permission level as an integer. (split into different functions?)
+//
+// TODO(schema-migration): all five queries below use the OLD schema's table and
+// column names (User, Company, Lab_Group, Project, Proj_Experiment, *_Member,
+// User_ID, ...). Update to the new schema: profiles, companies, labs, projects,
+// experiments, company_members, lab_members, project_members, experiment_members,
+// profile_id. The Scriba check is a rewrite, not a rename: Scriba_Member no longer
+// exists — query profiles.is_scriba_admin instead. The $user_ID parameter and
+// callers' $_SESSION['user_id'] become $profile_id / $_SESSION['profile_id'].
 
 function check_user_permission(mysqli $conn, string $user_ID, string $entity_type, string $entity_ID): int {
     if ($entity_type === 'experiment') {

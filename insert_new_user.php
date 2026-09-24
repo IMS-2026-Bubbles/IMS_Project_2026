@@ -17,6 +17,7 @@
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
         // Check if Email already exists
+        // TODO(schema-migration): User table becomes profiles; Email becomes email
         $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
         $checkEmailStmt->bind_param("s", $Email);
         $checkEmailStmt->execute();
@@ -32,6 +33,10 @@
     
         else {
             # use placeholders to protect against sql injection
+            // TODO(schema-migration): becomes INSERT INTO profiles
+            // (email, first_name, last_name, salt, password) — also decide values
+            // for the new columns (agreed_to_toc, saved_changes, streak) and write
+            // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
             $sql = "INSERT INTO user(Email, First_Name, Last_Name, Salt, Password) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $Salt = random_bytes($numberOfDesiredBytes); 

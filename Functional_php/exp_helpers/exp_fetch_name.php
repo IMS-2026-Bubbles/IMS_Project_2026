@@ -6,8 +6,11 @@
 // Returns an associative array with keys 'Project_ID', 'Project_Name', 
 // 'Experiment_ID', and 'Experiment_Name' in $proj_exp_name_array
 
+// TODO(schema-migration): old table/column names. Tables Proj_Experiment/Project
+// become experiments/projects; columns Exp_ID/Exp_Name/Proj_ID/Proj_Name become
+// experiment_id/name/project_id/name. The $proj_exp_name_array keys change with them.
 // Create query
-$sql_proj_exp_name = 
+$sql_proj_exp_name =
     "SELECT 
         Proj_Experiment.Exp_ID, 
         Proj_Experiment.Exp_Name, 

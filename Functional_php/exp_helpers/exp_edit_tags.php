@@ -29,6 +29,7 @@ include "../../Database_related/db.php";
 
 // Check if the user has permission to edit tags for this experiment
 include "../../Functional_php/user_permission.php"; // Include the user permission check function
+// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
 $user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
@@ -64,6 +65,8 @@ if ($exp_tags_remove !== '') {
     }
 
     // Remove tags from the database
+// TODO(schema-migration): old table/column names. Becomes
+// DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?
         // Create query to delete tag
     $sql_delete_tag = "DELETE FROM Exp_Tag WHERE Experiment_ID = ? AND Exp_Tag = ?";
         // Prepare query
@@ -108,6 +111,8 @@ if ($exp_tags_add !== '') {
     }
 
     // Insert new tags into the database
+// TODO(schema-migration): old table/column names. Becomes
+// INSERT INTO experiment_tags (experiment_id, tag) VALUES (?, ?)
         // Create query to insert tag
     $sql_insert_tag = "INSERT INTO Exp_Tag (Experiment_ID, Exp_Tag) VALUES (?, ?)";
         // Prepare query

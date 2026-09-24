@@ -381,10 +381,10 @@ in the code during the pass, so the changes stay reviewable and greppable.
 1. Run **after** the file-naming migration, in its own commit(s).
 2. Update each file's queries, interpolated column names, whitelist,
    and array keys per the mapping above; keep the display copy
-   capitalized as needed. Every change listed in the
-   "TODO: changes beyond direct renaming" subsection gets a
-   `// TODO(schema-migration): ...` comment in the code at the point of
-   change, so reviewers can distinguish renames from behavior changes.
+   capitalized as needed. Each spot needing change is already marked in
+   the code with a `// TODO(schema-migration): ...` comment stating what
+   it becomes — resolve each marker while updating the names, so the
+   comments can be grepped to track remaining work.
 3. Load the new schema into a fresh database and adjust `db.php`.
 4. Grep case-insensitively for every old identifier
    (`Proj_`, `Exp_`, `User_ID`, `Company_Member`, `Lab_Group`,

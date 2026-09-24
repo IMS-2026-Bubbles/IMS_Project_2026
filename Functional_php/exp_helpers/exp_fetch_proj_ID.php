@@ -6,6 +6,9 @@
 // Returns the project ID in $proj_ID, which can be used to link back to the parent project page.
 
 //  Retieve project ID
+// TODO(schema-migration): old table/column names and internally inconsistent
+// (Project_ID selected, Experiment_ID in WHERE, Proj_ID/Exp_ID in the table).
+// Becomes: SELECT project_id FROM experiments WHERE experiment_id = ?
     // Create query
 $sql_exp_parent = "SELECT Project_ID FROM Proj_Experiment WHERE Experiment_ID = ?";
     // Prepare query

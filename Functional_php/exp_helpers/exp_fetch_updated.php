@@ -9,6 +9,10 @@
 // 'Date_Created', 'Date_Updated', 'Plan_Updated', 'Log_Updated', and 'Result_Updated'.
 
 // Retrieve last update timestamps
+// TODO(schema-migration): old column names. Becomes created_at, updated_at,
+// plan_updated_at, log_updated_at, result_updated_at (keys of $exp_last_update too).
+// Do not display the generated experiments.updated_at — it defaults to the
+// 1970-01-01 sentinel until a section is edited.
     // Create query
 $sql_exp_last_update = "SELECT Date_Created, Date_Updated, Plan_Updated, Log_Updated, Result_Updated FROM Proj_Experiment WHERE Exp_ID = ?";
     // Prepare query
