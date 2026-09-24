@@ -1,4 +1,12 @@
-# Architecture
+---
+title: "ARCHITECTURE"
+subtitle: "Scriba architecture documentation"
+format:
+  typst:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
 
 IMS (Inventory/Experiment Management System) is a plain PHP website with no
 framework. Every page is a PHP script that runs top-to-bottom and renders its
@@ -101,7 +109,7 @@ Anything echoed into HTML goes through `htmlspecialchars()` to prevent XSS
 ## Database schema
 
 The canonical schema lives in
-[Database_related/database_scriba_lucid_RH.sql](Database_related/database_scriba_lucid_RH.sql)
+[Database_related/database_schema.sql](Database_related/database_schema.sql)
 (MySQL). It defines the core entity tables (`companies`, `labs`, `projects`,
 `experiments`, `profiles`), membership/tag junction tables, an audit layer
 (`activity_log`, `login_log`), and two views (`project_updates`,
@@ -109,96 +117,28 @@ The canonical schema lives in
 
 ### Entity-relationship overview
 
-```mermaid
-erDiagram
-    companies ||--o{ labs : "contains"
-    labs ||--o{ projects : "contains"
-    projects ||--o{ experiments : "contains"
+```text
+companies ── labs ── projects ── experiments
 
-    companies ||--o{ company_members : "has"
-    labs ||--o{ lab_members : "has"
-    projects ||--o{ project_members : "has"
-    experiments ||--o{ experiment_members : "has"
-    profiles ||--o{ company_members : "joins"
-    profiles ||--o{ lab_members : "joins"
-    profiles ||--o{ project_members : "joins"
-    profiles ||--o{ experiment_members : "joins"
+profiles ──┬─ company_members ──── companies
+           ├─ lab_members ──────── labs
+           ├─ project_members ──── projects
+           └─ experiment_members ─ experiments
 
-    projects ||--o{ project_tags : "tagged"
-    experiments ||--o{ experiment_tags : "tagged"
+projects ──── project_tags          (project_id, tag)
+experiments ── experiment_tags       (experiment_id, tag)
 
-    profiles ||--o{ activity_log : "acts"
-    profiles ||--o{ login_log : "logs in"
+profiles ──── activity_log          (who did what, entity_type + entity_id)
+profiles ──── login_log             (nullable: failed logins have no profile)
 
-    companies {
-        varchar company_id PK "prefixed, e.g. c1"
-        varchar name
-    }
-    labs {
-        varchar lab_id PK "prefixed, e.g. l1"
-        varchar company_id FK
-        varchar name
-    }
-    projects {
-        int project_id PK
-        varchar name
-        varchar lab_id FK
-        timestamp created_at
-        timestamp updated_at
-        boolean is_done
-    }
-    experiments {
-        int experiment_id PK
-        varchar name
-        int project_id FK
-        text plan_text
-        text log_text
-        text result_text
-        boolean is_done "generated: plan AND log AND result"
-        datetime updated_at "generated: max(section timestamps)"
-    }
-    profiles {
-        int profile_id PK
-        varchar email UK
-        varchar password
-        binary salt
-        boolean is_scriba_admin
-        boolean is_deleted
-    }
-    activity_log {
-        int activity_id PK
-        int profile_id FK
-        varchar entity_id "polymorphic"
-        varchar activity_type
-        varchar detail
-    }
-    login_log {
-        int login_id PK
-        int profile_id FK "nullable"
-        varchar email
-        varchar ip_address
-        boolean success
-    }
-
-    style companies fill:#dae8fc,stroke:#6c8ebf
-    style labs fill:#dae8fc,stroke:#6c8ebf
-    style projects fill:#d5e8d4,stroke:#82b366
-    style experiments fill:#d5e8d4,stroke:#82b366
-    style profiles fill:#e1d5e7,stroke:#9673a6
-    style company_members fill:#f5f5f5,stroke:#666666
-    style lab_members fill:#f5f5f5,stroke:#666666
-    style project_members fill:#f5f5f5,stroke:#666666
-    style experiment_members fill:#f5f5f5,stroke:#666666
-    style project_tags fill:#f5f5f5,stroke:#666666
-    style experiment_tags fill:#f5f5f5,stroke:#666666
-    style activity_log fill:#ffe6cc,stroke:#d79b00
-    style login_log fill:#ffe6cc,stroke:#d79b00
+views: project_updates (project + latest experiment update),
+       profile_points  (points per profile, excludes deleted profiles)
 ```
 
-Color key: **blue** = organization entities, **green** = research content,
-**purple** = user accounts, **gray** = junction tables, **orange** = audit
-tables. The views (`project_updates`, `profile_points`) are derived data and
-not shown.
+Containment is strict: a company holds labs, a lab holds projects, a project
+holds experiments. Memberships connect a profile to exactly one entity each,
+with a per-level `role` (`owner`/`edit`/`read` on projects and experiments,
+`admin`/`member` on labs and companies).
 
 ### Naming and conventions
 
