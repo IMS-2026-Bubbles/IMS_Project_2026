@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:register_user.php
 <?php
     require 'database/db.php';
 
@@ -69,6 +70,9 @@
         }
     }
     
+=======
+<?php require "insert_new_user.php"
+>>>>>>> Stashed changes:register_user_page.php
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +105,10 @@
                 color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
         <?php echo htmlspecialchars($message); ?>
     </div>
+<<<<<<< Updated upstream:register_user.php
     
+=======
+>>>>>>> Stashed changes:register_user_page.php
     <?php endif;?>
 
     
@@ -137,7 +144,7 @@
                 // If Not same return False.    
                 if (Password1 != Password2) {
                     // This pops up and the request is not submitted
-                    alert("\nPassword did not match: Please try again...")
+                    alert("\nPassword did not match: Please try again");
                     return false;
                 }
 
