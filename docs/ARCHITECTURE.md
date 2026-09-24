@@ -428,6 +428,8 @@ rate-limited logins).
 
 ### Entity-relationship overview
 
+![ERD for Scriba](20260924_ERD_Scriba.png "Scriba ERD")
+
 ```text
 companies ── labs ── projects ── experiments
 
