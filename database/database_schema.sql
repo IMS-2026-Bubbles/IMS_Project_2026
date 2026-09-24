@@ -90,6 +90,7 @@ CREATE TABLE `profiles` (
   `last_name` VARCHAR(255),
   `password` VARCHAR(255) NOT NULL,
   `agreed_to_toc` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
+    -- Typo! Change to 'tos' = terms of service, not 'toc' = table of contents
   `saved_changes` INT,
   `last_login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on login
   `streak` INT,
