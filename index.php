@@ -1,6 +1,12 @@
 
 
-
+<?php 
+    ini_set('display_errors', true);
+    ini_set('log_errors', true);
+    error_reporting(E_ALL);
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    require "login_verification.php"
+?>
 
 
 <!DOCTYPE html>
@@ -41,7 +47,7 @@
         <h3>Log in</h3>
         <!-- Create the action-->
 
-        <form action="" method= "POST">  <!-- change action so you end up somewhere! -->
+        <form action="/project_library.php" method= "POST" onsubmit ="return checkLoginInformation(this)">  <!-- change action so you end up somewhere! -->
 
                     <!-- Throws an error if something is wrong -->
              <?php 
@@ -56,17 +62,18 @@
             <!-- forms for all free text info that is needed-->
             
             <!-- required so that the field is mandatory before registering -->
-            <label for="email">Email adress</label><br>
-            <input type="email" class="" name="email" required value="<?=isset($_POST['email']) ? $_POST['email'] : '';?>"><br>
+            <label for="Email">Email adress</label><br>
+            <input type="Email" class="" name="Email" required ><br>
 
             <label for="password">Password</label><br>
-            <input type="password" class="" name="password" minlength="8"  required value="<?=isset($_POST['password']) ? $_POST['password'] : '';?>"><br><br>
-            
-            
+            <input type="password" class="" name="password" minlength="8"  required><br><br>
             <input type="submit" class="btn btn-dark rounded-pill" name="Log in" value="Log in"><br><br>
     
         </div>
     </form>
+
+            
+
 
     
 </body>
