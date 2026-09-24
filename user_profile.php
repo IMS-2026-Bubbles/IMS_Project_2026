@@ -3,6 +3,20 @@
 echo " This is the user profile page :)";
 ?>
 
+<?php
+// starts the session? needed i dont know 
+require_once 'Session/init.php';
+//check youre logged in 
+require_once 'Session/check_user_logged_in.php';
+//kopplad till databasen? 
+require_once 'Database_related/db.php';
+
+$user_id = $_SESSION['user_id'];
+echo $user_id
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,16 +34,52 @@ echo " This is the user profile page :)";
 
 <title>User Page</title>
 
+
 <style>
+
+.welcome {
+  background-color: lightblue;
+  color: white;
+  border: 4px solid white;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-right: 1200px;
+  margin-left: 70px;
+  padding: 10px; 
+}
+
+
 .user {
   background-color: lightblue;
   color: white;
-  border: 2px solid white;
-  margin: 20px;
-  padding: 20px;
+  border: 4px solid white;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-right: 50px;
+  margin-left: 1200px;
+  padding: 10px;
+  
 }
 
+/* Gjorde alla till buttons.. får fixa det sen : )  */
+.user {
+  background-color: #8bc1e3;
+  color: white;
+  font-size: 15px;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+
+}
 </head>
+
+
+
+
 
 
 
@@ -37,6 +87,33 @@ echo " This is the user profile page :)";
 </style>
 </head>
 <body>
+
+<!-- Here is the php scirpt where i link to a bunch of diff -->
+
+
+
+
+<!-- readfile() - reads a file and writes it to the output buffer -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Här e mina bästa fina design buttons-->
+
+<div class="welcome">
+<h2>Welcome to your user page</h2>
+<p>You have possibilities to overwiev your profile, add experiments and wiev your points. Log it or it didnt happen! </p>
+</div>
 
 <div class="user">
 <h2>Company & Department</h2>
@@ -57,6 +134,23 @@ echo " This is the user profile page :)";
 <h2>Display name</h2>
 <p>Your display name is: </p>
 </div>
+
+<div class="user">
+<h2>Delete account</h2>
+<p>You can choose to delete your account here </p>
+</div>
+
+<div class="user">
+<h2>Information Scriba has about me</h2>
+<p>Click here to see what information scriba has about you </p>
+</div>
+
+
+
+
+
+
+
 
     
 </body>
