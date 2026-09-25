@@ -1,6 +1,9 @@
-<<<<<<< Updated upstream:register_user.php
 <?php
-    require 'database/db.php';
+    ini_set('display_errors', true);
+    ini_set('log_errors', true);
+    error_reporting(E_ALL);
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    require_once 'database/db.php';
 
     $message = "";
     $toastClass = "";
@@ -9,26 +12,26 @@
     if(isset($_POST['register']))
     {
         # fetch data from POST request
-        $First_Name = $_POST['First_Name'];
-        $Last_Name = $_POST['Last_Name'];
-        $Email = $_POST['Email'];
-        $Password = $_POST['Password1']; //Also unsure of how to send password
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $email = $_POST['email'];
+        $password = $_POST['password1']; //Also unsure of how to send password
 
         
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
-        // Check if Email already exists
-        // TODO(schema-migration): User table becomes profiles; Email becomes email
-        $checkEmailStmt = $conn->prepare("SELECT Email FROM User WHERE Email = ?");
-        $checkEmailStmt->bind_param("s", $Email);
-        $checkEmailStmt->execute();
-        $checkEmailStmt->store_result();
-        error_log("Checking Email [$Email], num_rows = " . $checkEmailStmt->num_rows);
+        // Check if email already exists
+        // TODO(schema-migration): Profiles table becomes profiles; email becomes email
+        $checkemailStmt = $conn->prepare("SELECT email FROM profiles WHERE email = ?");
+        $checkemailStmt->bind_param("s", $email);
+        $checkemailStmt->execute();
+        $checkemailStmt->store_result();
+        error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
 
-        // check if the number of rows are more than 0 => Email exists
-        if ($checkEmailStmt->num_rows > 0) {
-            $message = "Email ID already exists";
+        // check if the number of rows are more than 0 => email exists
+        if ($checkemailStmt->num_rows > 0) {
+            $message = "email ID already exists";
             $toastClass = "#007bff"; // Primary color
         } 
     
@@ -38,11 +41,10 @@
             // (email, first_name, last_name, salt, password) — also decide values
             // for the new columns (agreed_to_toc, saved_changes, streak) and write
             // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-            $sql = "INSERT INTO user(Email, First_Name, Last_Name, Salt, Password) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO profiles (email, first_name, last_name, password) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $Salt = random_bytes($numberOfDesiredBytes); 
-            $hashedPassword = password_hash($Password, PASSWORD_BCRYPT, $Salt);
-            $stmt->bind_param("sssss", $Email, $First_Name, $Last_Name, $Salt, $hashedPassword);
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+            $stmt->bind_param("ssss", $email, $first_name, $last_name, $hashedPassword);
             $result = $stmt->execute();
 
 
@@ -59,20 +61,17 @@
                     $stmt->close();
             }
   
-        $checkEmailStmt->close();
+        $checkemailStmt->close();
         include 'database/close_db.php';
     
         # redirect here instead of in the form down below
         # now the form is sent as a post, it would not be otherwise
         if (isset($result) && $result) {
-            header("Location: user_profile.php");
+            header("Location: index.php");
             exit;
         }
     }
     
-=======
-<?php require "insert_new_user.php"
->>>>>>> Stashed changes:register_user_page.php
 ?>
 
 <!DOCTYPE html>
@@ -105,44 +104,41 @@
                 color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
         <?php echo htmlspecialchars($message); ?>
     </div>
-<<<<<<< Updated upstream:register_user.php
     
-=======
->>>>>>> Stashed changes:register_user_page.php
     <?php endif;?>
 
     
      <!-- Create the action + call function to check if Passwords match-->
-    <form action="" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
+    <form method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="First_Name">First name</label><br>
-        <input type="text" class="" name="First_Name" required><br>
+        <label for="first_name">First name</label><br>
+        <input type="text" class="" name="first_name" required><br>
 
-        <label for="Last_Name">Last name</label><br>
-        <input type="text" class="" name="Last_Name" required><br>
+        <label for="last_name">Last name</label><br>
+        <input type="text" class="" name="last_name" required><br>
 
-        <label for="Email">Email adress</label><br>
-        <input type="Email" class="" name="Email" required><br> <!-- @ is needed -->
+        <label for="email">email adress</label><br>
+        <input type="email" class="" name="email" required><br> <!-- @ is needed -->
 
         <!-- setting type as Password makes characters hidden + supports Password control -->
-        <label for="Password">Password</label><br>
-        <input type="Password" class="" name="Password1" minlength= "8" required> <br> <!-- must use 8 characters -->
+        <label for="password">Password</label><br>
+        <input type="password" class="" name="password1" minlength= "8" required> <br> <!-- must use 8 characters -->
 
-        <label for="Password2">Repeat Password</label><br>
-        <input type="Password" class="" name="Password2" minlength= "8" required><br><br>
+        <label for="password2">Repeat Password</label><br>
+        <input type="password" class="" name="password2" minlength= "8" required><br><br>
 
         <!-- https://www.geeksforgeeks.org/javascript/Password-matching-using-javascript/ -->
         
         <script>
             // Function to check Whether both Passwords is same or not.
             function checkPassword(form) {
-                Password1 = form.Password1.value;
-                Password2 = form.Password2.value;
+                password1 = form.password1.value;
+                password2 = form.password2.value;
 
                 // If Not same return False.    
-                if (Password1 != Password2) {
+                if (password1 != password2) {
                     // This pops up and the request is not submitted
                     alert("\nPassword did not match: Please try again");
                     return false;
