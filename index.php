@@ -5,11 +5,12 @@
     ini_set('log_errors', true);
     error_reporting(E_ALL);
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    require_once 'database/db.php';
 
     $message = "";
     $toastClass = "";
 
-    if(isset($_POST["Log in"]))
+    if(isset($_POST["login"]))
         {
             # fetch data from POST request
             $email = $_POST['email'];
@@ -45,7 +46,7 @@
                 $stmt->bind_param("s", $email);
                 $stmt->execute();
 
-                $checkemailStmt->get_result();
+                $result = $stmt->get_result();
                 $profile = $result->fetch_assoc();
 
                 if ($user && password_verify($password, $user['password'])) {
@@ -130,7 +131,7 @@
 
             <label for="password">Password</label><br>
             <input type="password" class="" name="password" minlength="8"  required><br><br>
-            <input type="submit" class="btn btn-dark rounded-pill" name="Log in" value="Log in"><br><br>
+            <input type="submit" class="btn btn-dark rounded-pill" name="login" value="Log in"><br><br>
     
         </div>
     </form>
