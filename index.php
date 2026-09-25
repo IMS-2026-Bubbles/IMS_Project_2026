@@ -1,10 +1,6 @@
 
 
 <?php
-    ini_set('display_errors', true);
-    ini_set('log_errors', true);
-    error_reporting(E_ALL);
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     require_once 'database/db.php';
 
     $message = "";
@@ -14,7 +10,7 @@
         {
             # fetch data from POST request
             $email = $_POST['email'];
-            $password = $_POST['password']; //Also unsure of how to send password
+            $password = $_POST['password'];
 
             // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
             // Check if email already exists
@@ -30,48 +26,48 @@
             // check if the number of rows are more than 0 => email exists
             if ($checkemailStmt->num_rows < 1) {
                 $message = "Invalid email or password.";
-                $toastClass = "#007bff"; // Primary color
+                $toastClass = "#dc3545"; // Danger color
             } 
-        
+
             else {
-                # use placeholders to protect against sql injection
-                // TODO(schema-migration): becomes INSERT INTO profiles
-                // (email, first_name, last_name, salt, password) — also decide values
-                // for the new columns (agreed_to_toc, saved_changes, streak) and write
-                // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
+                    # use placeholders to protect against sql injection
+                    // TODO(schema-migration): becomes INSERT INTO profiles
+                    // (email, first_name, last_name, salt, password) — also decide values
+                    // for the new columns (agreed_to_toc, saved_changes, streak) and write
+                    // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
 
-                $sql = "SELECT password FROM profiles WHERE email = ?";
+                    $sql = "SELECT password FROM profiles WHERE email = ?";
 
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("s", $email);
-                $stmt->execute();
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("s", $email);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $profile = $result->fetch_assoc();
+                    $logincredentials = False;
 
-                $result = $stmt->get_result();
-                $profile = $result->fetch_assoc();
-
-                if ($user && password_verify($password, $user['password'])) {
-                        //correct log in info
-                        header ("Location: Project_library.php");
-                        //exit();
-                    }
-                        
-                        else {
-                            $message = "Error: " . $stmt->error;
-                            $toastClass = "#dc3545"; // Danger color
+                    if (password_verify($password, $profile['password'])) {
+                            //correct log in info
+                            $logincredentials = True;
                         }
-
-                        $stmt->close();
+                        
+                    else {
+                        $message = "Invalid email or password.";
+                        $toastClass = "#dc3545"; // Danger color
+                        }
+                
+                    $stmt->close();
+                    
                 }
-    
-            $checkemailStmt->close();
-            include 'database/close_db.php';
         
             # redirect here instead of in the form down below
             # now the form is sent as a post, it would not be otherwise
-            if (isset($result) && $result) {
-                header("Location: Project_library.php");
-                //exit;
+            if ($logincredentials) {
+                header ("Location:project_library.php");
+                exit();
             }
+
+            $checkemailStmt->close();
+            include 'database/close_db.php';
         }
 ?>
 

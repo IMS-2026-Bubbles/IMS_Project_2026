@@ -36,33 +36,32 @@
         } 
     
         else {
-            # use placeholders to protect against sql injection
-            // TODO(schema-migration): becomes INSERT INTO profiles
-            // (email, first_name, last_name, salt, password) — also decide values
-            // for the new columns (agreed_to_toc, saved_changes, streak) and write
-            // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-            $sql = "INSERT INTO profiles (email, first_name, last_name, password) VALUES (?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt->bind_param("ssss", $email, $first_name, $last_name, $hashedPassword);
-            $result = $stmt->execute();
+                # use placeholders to protect against sql injection
+                // TODO(schema-migration): becomes INSERT INTO profiles
+                // (email, first_name, last_name, salt, password) — also decide values
+                // for the new columns (agreed_to_toc, saved_changes, streak) and write
+                // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
+                $sql = "INSERT INTO profiles (email, first_name, last_name, password) VALUES (?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                $stmt->bind_param("ssss", $email, $first_name, $last_name, $hashedPassword);
+                $result = $stmt->execute();
 
 
-            if ($result) {
-                    $message = "Account created successfully";
-                    $toastClass = "#28a745"; // Success color
-                }
-                    
-                    else {
-                        $message = "Error: " . $stmt->error;
-                        $toastClass = "#dc3545"; // Danger color
+                if ($result) {
+                        $message = "Account created successfully";
+                        $toastClass = "#28a745"; // Success color
                     }
+                    
+                else {
+                    $message = "Error: " . $stmt->error;
+                    $toastClass = "#dc3545"; // Danger color
+                }
 
-                    $stmt->close();
+                $stmt->close();
             }
   
         $checkemailStmt->close();
-        include 'database/close_db.php';
     
         # redirect here instead of in the form down below
         # now the form is sent as a post, it would not be otherwise
@@ -70,6 +69,7 @@
             header("Location: index.php");
             exit;
         }
+        include 'database/close_db.php';
     }
     
 ?>
