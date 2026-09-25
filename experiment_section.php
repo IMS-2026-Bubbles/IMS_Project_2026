@@ -64,6 +64,9 @@ if (isset($_SESSION['messages_save_experiment_section'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['messages_save_experiment_section']);
 }
+
+// Navbar
+include "includes/navbar.php"; // Include the navbar
 ?>
 
 <?php

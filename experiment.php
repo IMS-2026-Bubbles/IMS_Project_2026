@@ -34,6 +34,9 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
 ?>
 
 <!-- Navbar? -->
+<?php
+include "includes/navbar.php"; // Include the navbar
+?>
 
 <?php
 // Display project name, experiment name, and experiment section name
