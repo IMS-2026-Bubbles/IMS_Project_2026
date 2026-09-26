@@ -7,9 +7,7 @@
 
 
 // Check if the user is logged in
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
-// (set at login, new schema keys on profile_id)
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['profile_id'])) {
     echo "You must be logged in to view this page.";
     exit();
 }

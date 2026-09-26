@@ -28,6 +28,34 @@
 // Return the permission level as an integer. (split into different functions?)
 
 function check_user_permission(mysqli $conn, string $profile_id, string $entity_type, string $entity_id): int {
+    // Check if $profile_id isset/exists
+    $profile_id = $profile_id ?? null;
+    if ($profile_id === null) {
+        // Profile ID is null => no access
+        return 0;
+    }
+        // Create query
+    $sql_check_profile = 
+    "SELECT profile_id FROM profiles WHERE profile_id = ?";
+        // Prepare query
+    $stmt_check_profile = $conn->prepare($sql_check_profile);
+        // Bind parameters
+    $stmt_check_profile->bind_param("s", $profile_id);
+        // Execute query
+    if ($stmt_check_profile->execute()) {
+        // Get the result set from the executed query
+        $result_check_profile = $stmt_check_profile->get_result();
+        // Check if the profile_id exists
+        if ($result_check_profile->num_rows === 0) {
+            return 0; // Profile does not exist => no access
+        } else {
+            // Profile exists, continue to check permissions
+        }
+    } else {
+        throw new RunTimeException("Profile check query failed: " . $stmt_check_profile->error);
+    }
+
+    // Check the permission level for the given entity type and ID
     if ($entity_type === 'experiment') {
         // Check permission for an experiment
             // Create query
