@@ -1,14 +1,33 @@
-# Terms of Service
+---
+title: "Terms of Service"
+subtitle: "Scriba Research Management System"
+author: "Scriba"
+date: "September 26, 2026"
+format:
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    fontsize: 11pt
+    titlepage: true
+    include-in-header:
+      text: |
+        \AddToHook{cmd/tableofcontents/before}{\newpage}
+---
 
 **Last Updated: September 26, 2026**
 
-## 1. Acceptance of Terms
+::: {.content-hidden}
+This is a placeholder for page break spacing
+:::
+
+# Acceptance of Terms
 
 Welcome to Scriba, a research and experiment management system. These Terms of Service ("Terms") constitute a legally binding agreement between you ("User," "you," or "your") and Scriba ("we," "us," "our," or "Company"). By accessing, using, or registering for the Scriba application ("Service"), you acknowledge that you have read, understood, and agree to be bound by these Terms, including our Privacy Policy and any other policies referenced herein.
 
 If you do not agree to these Terms, you must not access or use the Service. Your use of the Service is conditional upon your acceptance of these Terms. If you are using the Service on behalf of an organization, you represent that you have authority to bind that organization to these Terms.
 
-## 2. About Scriba
+# About Scriba
 
 Scriba is a web-based application designed to assist researchers, scientists, and R&D professionals in planning, conducting, and documenting experiments and research projects. The Service allows users to:
 
@@ -22,13 +41,13 @@ Scriba is a web-based application designed to assist researchers, scientists, an
 
 Scriba, Lägerhyddsvägen 1, 752 37 Uppsala, support@scriba.example.
 
-## 3. User Eligibility and Accounts
+# User Eligibility and Accounts
 
-### 3.1 Eligibility
+## Eligibility
 
 You must be at least 18 years old and, if using the Service on behalf of a university or organization, authorized by that institution to use the Service. If you are under 18 or do not meet these requirements, you may not use the Service.
 
-### 3.2 Account Creation
+## Account Creation
 
 To use the Service, you must create an account by providing your email address, full name, and a secure password. You are responsible for:
 
@@ -37,7 +56,7 @@ To use the Service, you must create an account by providing your email address, 
 - Preventing unauthorized access to your account
 - Notifying us immediately of any unauthorized access or security breach
 
-### 3.3 Account Termination
+## Account Termination
 
 You may request deletion of your account at any time from your profile page. Upon deletion, your account and associated personal data will be permanently removed, subject to legal retention obligations outlined in Section 8.
 
@@ -49,9 +68,9 @@ Scriba may suspend or terminate your account if:
 - You fail to pay fees (if applicable)
 - We are required to do so by law
 
-## 4. Acceptable Use
+# Acceptable Use
 
-### 4.1 Prohibited Conduct
+## Prohibited Conduct
 
 You agree not to:
 
@@ -65,7 +84,7 @@ You agree not to:
 - Store or transmit sensitive personal data (e.g., patient information) without appropriate anonymization or institutional approval
 - Use the Service for commercial purposes without express written authorization
 
-### 4.2 Research Data Responsibility
+## Research Data Responsibility
 
 As a research-focused application, Scriba processes research data and potentially sensitive information. You acknowledge that:
 
@@ -74,9 +93,9 @@ As a research-focused application, Scriba processes research data and potentiall
 - **Scriba is not liable** for improper handling of sensitive data by users
 - You obtain necessary approvals and informed consent from research subjects where required
 
-## 5. Intellectual Property Rights
+# Intellectual Property Rights
 
-### 5.1 Your Content
+## Your Content
 
 You retain all intellectual property rights in the experiment plans, logs, results, and other content ("User Content") you create within the Service. By submitting User Content, you grant Scriba a worldwide, non-exclusive, royalty-free license to:
 
@@ -85,13 +104,13 @@ You retain all intellectual property rights in the experiment plans, logs, resul
 - Perform technical functions necessary to provide the Service
 - Create backups and copies for security and recovery purposes
 
-### 5.2 Scriba's Intellectual Property
+## Scriba's Intellectual Property
 
 The Service, including its design, features, code, and documentation, is owned by Scriba and protected by copyright and intellectual property laws. You may not copy, modify, or create derivative works without express written permission.
 
-## 6. Data Privacy and GDPR Compliance
+# Data Privacy and GDPR Compliance
 
-### 6.1 Personal Data We Collect
+## Personal Data We Collect
 
 Scriba collects and processes the following personal data:
 
@@ -106,7 +125,7 @@ Scriba collects and processes the following personal data:
 
 [CUSTOMIZE: Adjust retention periods and data types based on your final policies.]
 
-### 6.2 Legal Basis for Processing
+## Legal Basis for Processing
 
 We process personal data under the following legal bases (GDPR Article 6):
 
@@ -115,7 +134,7 @@ We process personal data under the following legal bases (GDPR Article 6):
 - **Legal compliance** (Article 6(1)(c)): Where required by law
 - **Explicit consent**: For any additional processing beyond contract performance
 
-### 6.3 Your Data Protection Rights
+## Your Data Protection Rights
 
 Under GDPR and applicable data protection laws, you have the right to:
 
@@ -130,11 +149,11 @@ Under GDPR and applicable data protection laws, you have the right to:
 
 To exercise any of these rights, contact us at [CUSTOMIZE: legal@scriba.example].
 
-### 6.4 International Data Transfers
+## International Data Transfers
 
 The Service may process data in different jurisdictions. [CUSTOMIZE: specify if data is transferred outside the EU/EEA and, if so, specify transfer mechanisms (Standard Contractual Clauses, adequacy decisions, etc.).]
 
-### 6.5 Data Controller Role
+## Data Controller Role
 
 Regarding personal data you collect from research subjects:
 
@@ -145,9 +164,9 @@ Regarding personal data you collect from research subjects:
 
 [CUSTOMIZE: Develop and link a formal DPA if applicable to your research user base.]
 
-## 7. Data Security
+# Data Security
 
-### 7.1 Security Measures
+## Security Measures
 
 Scriba implements reasonable security measures to protect your personal data:
 
@@ -159,11 +178,11 @@ Scriba implements reasonable security measures to protect your personal data:
 
 [CUSTOMIZE: Add specific security certifications (ISO 27001, SOC 2, etc.) if applicable. Note planned security enhancements (e.g., "encryption of experiment data at rest is planned for [DATE]").]
 
-### 7.2 Limitations on Security
+## Limitations on Security
 
 While Scriba takes security seriously, no method of transmission over the internet is 100% secure. We cannot guarantee absolute security and are not liable for unauthorized access caused by your negligence, weak passwords, or compromised credentials.
 
-### 7.3 Data Breach Notification
+## Data Breach Notification
 
 In the event of a data breach affecting your personal data, Scriba will:
 
@@ -171,9 +190,9 @@ In the event of a data breach affecting your personal data, Scriba will:
 - Provide information about the breach, affected data, and recommended steps
 - Cooperate with relevant authorities
 
-## 8. Data Retention and Deletion
+# Data Retention and Deletion
 
-### 8.1 Retention Policy
+## Retention Policy
 
 Scriba retains personal data according to the following schedule:
 
@@ -184,7 +203,7 @@ Scriba retains personal data according to the following schedule:
 
 [CUSTOMIZE: Adjust retention periods based on legal or operational requirements.]
 
-### 8.2 Right to Deletion and Data Export
+## Right to Deletion and Data Export
 
 You may request:
 
@@ -194,15 +213,15 @@ You may request:
 
 [CUSTOMIZE: Confirm these features are implemented or note their planned deployment date.]
 
-## 9. Limitation of Liability
+# Limitation of Liability
 
-### 9.1 Liability Cap
+## Liability Cap
 
 To the maximum extent permitted by law, Scriba's total liability for any claims arising from these Terms, the Service, or your use thereof shall not exceed the amount you have paid to Scriba in the 12 months preceding the claim (or, if no payment was made, USD $100).
 
 This limitation applies regardless of the theory of liability (contract, tort, negligence, strict liability) and whether Scriba has been advised of the possibility of such damages.
 
-### 9.2 Excluded Damages
+## Excluded Damages
 
 Scriba shall not be liable for:
 
@@ -212,7 +231,7 @@ Scriba shall not be liable for:
 - Any damages resulting from unauthorized access, viruses, or service interruptions
 - Damages arising from your violation of these Terms or applicable laws
 
-### 9.3 Exceptions
+## Exceptions
 
 These limitations do not apply to:
 
@@ -220,9 +239,9 @@ These limitations do not apply to:
 - Fraud or fraudulent misrepresentation
 - Liability that cannot be limited by law
 
-## 10. Disclaimer of Warranties
+# Disclaimer of Warranties
 
-### 10.1 As-Is Service
+## As-Is Service
 
 The Service is provided "as is" and "as available" without warranties of any kind, express or implied.
 
@@ -234,11 +253,11 @@ Scriba disclaims all warranties, including:
 - Uninterrupted or error-free operation
 - Security against unauthorized access
 
-### 10.2 No Uptime Guarantee
+## No Uptime Guarantee
 
 [CUSTOMIZE: Define your service availability. Example: "Scriba does not guarantee specific uptime percentages. We aim to maintain service availability but may perform maintenance, experience technical issues, or face circumstances beyond our control that may temporarily interrupt the Service."]
 
-## 11. Indemnification
+# Indemnification
 
 You agree to indemnify, defend, and hold harmless Scriba, its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, costs, or expenses (including reasonable attorneys' fees) arising from:
 
@@ -249,9 +268,9 @@ You agree to indemnify, defend, and hold harmless Scriba, its officers, director
 - Infringement of third-party rights by your User Content
 - Breach of your representations or warranties
 
-## 12. Service Availability and Modifications
+# Service Availability and Modifications
 
-### 12.1 Service Modifications
+## Service Modifications
 
 Scriba reserves the right to:
 
@@ -262,7 +281,7 @@ Scriba reserves the right to:
 
 We will provide reasonable notice of material changes where practicable.
 
-### 12.2 No Guarantees
+## No Guarantees
 
 Scriba does not guarantee:
 
@@ -273,9 +292,9 @@ Scriba does not guarantee:
 
 We recommend maintaining backups of critical research data.
 
-## 13. Termination
+# Termination
 
-### 13.1 Termination by You
+## Termination by You
 
 You may terminate your use of the Service at any time by deleting your account. Upon termination:
 
@@ -283,7 +302,7 @@ You may terminate your use of the Service at any time by deleting your account. 
 - You will no longer have access to your experiments and projects
 - Termination will not relieve you of payment obligations for fees incurred
 
-### 13.2 Termination by Scriba
+## Termination by Scriba
 
 Scriba may suspend or terminate your access if:
 
@@ -294,13 +313,13 @@ Scriba may suspend or terminate your access if:
 
 Termination will not affect the continuation of certain obligations (Sections 11, 14).
 
-## 14. Governing Law and Dispute Resolution
+# Governing Law and Dispute Resolution
 
-### 14.1 Governing Law
+## Governing Law
 
 These Terms shall be governed by and construed in accordance with the laws of [CUSTOMIZE: Your jurisdiction, e.g., "the European Union and Member State laws"], without regard to its conflict of laws principles.
 
-### 14.2 Dispute Resolution
+## Dispute Resolution
 
 [CUSTOMIZE: Choose one of the following:]
 
@@ -313,35 +332,35 @@ Any dispute arising from these Terms shall be resolved by binding arbitration ad
 **Option 3 (Courts):**
 Any legal action or proceeding shall be brought exclusively in the courts of [CUSTOMIZE: Your jurisdiction], and you consent to the jurisdiction and venue of such courts.
 
-### 14.3 GDPR Compliance
+## GDPR Compliance
 
 Notwithstanding any dispute resolution clause, nothing in these Terms limits your right to lodge a complaint with a data protection authority or pursue legal remedies for GDPR violations.
 
-## 15. Changes to Terms
+# Changes to Terms
 
 Scriba may update these Terms from time to time. Changes will be posted with an updated "Last Updated" date. Your continued use of the Service following the posting of changes constitutes your acceptance of the revised Terms.
 
 Material changes will be communicated via email or prominent notice within the Service. If you do not accept the revised Terms, you must cease using the Service.
 
-## 16. Miscellaneous
+# Miscellaneous
 
-### 16.1 Entire Agreement
+## Entire Agreement
 
 These Terms, along with our Privacy Policy, constitute the entire agreement between you and Scriba regarding the Service and supersede all prior agreements or understandings.
 
-### 16.2 Severability
+## Severability
 
 If any provision of these Terms is held invalid or unenforceable, that provision shall be reformed to the minimum extent necessary to make it enforceable, and the remaining provisions shall continue in full force.
 
-### 16.3 Waiver
+## Waiver
 
 Failure to enforce any provision of these Terms does not constitute a waiver of that provision or any other provision.
 
-### 16.4 No Partnership
+## No Partnership
 
 Nothing in these Terms creates a partnership, joint venture, agency, or employment relationship between you and Scriba.
 
-## 17. Contact Information
+# Contact Information
 
 For questions, concerns, or to exercise your data protection rights, contact:
 
@@ -361,7 +380,7 @@ For complaints regarding data handling, you may contact your local data protecti
 
 ---
 
-## Appendix: GDPR Rights Reference Quick Guide
+# Appendix: GDPR Rights Reference Quick Guide
 
 | Right | Description | How to Request |
 |-------|-------------|-----------------|
