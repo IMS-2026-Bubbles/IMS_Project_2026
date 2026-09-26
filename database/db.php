@@ -3,8 +3,6 @@
 $servername = "localhost";
 $username = "root"; 
 $password = "root";
-// TODO(schema-migration): point $dbname at the database loaded with the new
-// snake_case schema (database/database_schema.sql)
 $dbname = "scriba_db"; # add the name of our database here
 
 // Create connection
