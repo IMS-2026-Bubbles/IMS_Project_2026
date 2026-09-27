@@ -205,6 +205,9 @@ require_once "session/init.php"; // Start the session and initialize session var
         https://www.w3schools.com/howto/howto_js_sort_table.asp
     </p>
 
+    <!-- Logout link/button? -->
+    <a href="actions/logout.php" class="logout">Logout</a><br><br>
+
 
     <!-- adding a company -->
      
