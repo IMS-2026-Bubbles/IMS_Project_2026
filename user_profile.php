@@ -4,15 +4,75 @@ echo " This is the user profile page :)";
 ?>
 
 <?php
-// starts the session? needed i dont know 
-require_once 'Session/init.php';
-//check youre logged in 
-require_once 'Session/check_user_logged_in.php';
-//kopplad till databasen? 
-require_once 'Database_related/db.php';
 
-$user_id = $_SESSION['user_id'];
-echo $user_id
+//startar sessionen och kopplar till min exempel profil
+session_start();
+$_SESSION["profile_id"] = 1;
+include "database/db.php";
+$profile_ID = 1;
+
+
+
+//email knapp 
+/*
+$stmt = $conn->prepare("SELECT email FROM profiles WHERE profile_id = ?");
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+//gör samma för att få för och efetrnamn i profilsidan 
+
+$stmt = $conn->prepare("SELECT first_name, last_name FROM profiles WHERE profile_id = ?");
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+*/
+
+//selecting everything from profiles 
+
+$stmt = $conn->prepare(
+    "SELECT * FROM profiles WHERE profile_id = ?"
+);
+
+
+//gets the profile form scriba database 
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+
+
+
+
+
+
+
+
+//selecting points for the user 
+
+$stmt = $conn->prepare(
+    "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
+);
+
+//gets the profile form scriba database 
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$points = $result->fetch_assoc();
+//
+
+
+
+
+
 
 ?>
 
@@ -21,6 +81,7 @@ echo $user_id
 <html lang="en">
 <head>
 
+<!--tilda la in detta --> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
@@ -28,7 +89,7 @@ echo $user_id
     <title>Document</title>
 
     <!-- i want nav bar here -->
-    <?php include "includes/navbar.php";?>
+    <?php// include "includes/navbar.php";?>
 
     <body style="background-image: url('assets/website_background.jpg');">
 
@@ -122,17 +183,27 @@ echo $user_id
 
 <div class="user">
 <h2>Email</h2>
-<p>Your Email adress:</p>
+<p>Your Email adress:
+<?php echo htmlspecialchars($user["email"]); ?>
+    </p>
+  
 </div>
+
 
 <div class="user">
 <h2>Points</h2>
-<p>You have _ points</p>
+<p>
+        You have
+        <?php echo htmlspecialchars($points["scriba_points"]); ?>
+        points
+    </p>
 </div>
 
 <div class="user">
 <h2>Display name</h2>
 <p>Your display name is: </p>
+<?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?>
+</p>
 </div>
 
 <div class="user">
