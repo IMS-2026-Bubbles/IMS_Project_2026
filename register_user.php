@@ -154,9 +154,9 @@
             <span class="slider round"></span>
             <!-- create hyperlink (<a>) so you can view GDPR rules-->
             <!-- # so that you don't change page -->
-            I accept the <a href=# onclick="return GDPR();">GDPR policy</a><br><br>
+            I accept the <a href=# onclick="return GDPR();">Terms of Service and GDPR policy</a><br>
         </label><br><br>
-
+        <a href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a><br><br>
 
         <script>
         function GDPR() {
