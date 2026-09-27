@@ -2,7 +2,7 @@
 // Fetch timestamp for last update of experiment
 
 // Fetch the timestamp for the last update of the specified experiment.
-// It expects $exp_ID which is used to query the database for the last 
+// It expects $experiment_id which is used to query the database for the last 
 // update timestamps associated with that experiment. Format the timestamps
 // into year-month-day hour:minute format for display.
 // Return an associative array $exp_last_update with keys 
@@ -14,11 +14,11 @@
 // Do not display the generated experiments.updated_at — it defaults to the
 // 1970-01-01 sentinel until a section is edited.
     // Create query
-$sql_exp_last_update = "SELECT Date_Created, Date_Updated, Plan_Updated, Log_Updated, Result_Updated FROM Proj_Experiment WHERE Exp_ID = ?";
+$sql_exp_last_update = "SELECT Date_Created, Date_Updated, Plan_Updated, Log_Updated, Result_Updated FROM Proj_Experiment WHERE experiment_id = ?";
     // Prepare query
 $stmt_exp_last_update = $conn->prepare($sql_exp_last_update);
     // Bind the experiment ID parameter
-$stmt_exp_last_update->bind_param("s", $exp_ID);
+$stmt_exp_last_update->bind_param("s", $experiment_id);
     // Execute query
 if ($stmt_exp_last_update->execute()) {
     // Get the result set from the executed query
@@ -31,8 +31,8 @@ if ($stmt_exp_last_update->execute()) {
         return $timestamp ? date("Y-m-d H:i", strtotime($timestamp)) : null;
     }, $exp_last_update);
 } elseif (isset($messages)) {
-    $messages[] = "Error retrieving last update timestamps for experiment " . $exp_ID . " : " . $stmt_exp_last_update->error . "<br>";
+    $messages[] = "Error retrieving last update timestamps for experiment " . $experiment_id . " : " . $stmt_exp_last_update->error . "<br>";
 } else {
-    echo "Error retrieving last update timestamps for experiment " . $exp_ID . " : " . $stmt_exp_last_update->error . "<br>";
+    echo "Error retrieving last update timestamps for experiment " . $experiment_id . " : " . $stmt_exp_last_update->error . "<br>";
 }
 ?>

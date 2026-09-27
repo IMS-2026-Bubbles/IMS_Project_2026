@@ -6,8 +6,8 @@ include "session/init.php"; // Make the session available
 include "session/check_user_logged_in.php";
 
 // Variables
-    // $exp_ID from URL (URL is always a GET request)
-$exp_ID = $_GET['exp_ID'] ?? NULL;
+    // $experiment_id from URL (URL is always a GET request)
+$experiment_id = $_GET['experiment_id'] ?? NULL;
 
 // Connect to database
 include "database/db.php";
@@ -17,7 +17,7 @@ include "includes/check_user_permission.php"; // Include the user permission che
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
 // $exp_ID becomes $experiment_id; the $proj_exp_name_array / $exp_progress_flags /
 // $exp_last_update keys used below follow the new column names
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
@@ -72,7 +72,7 @@ if ($user_access >= 2) {
     . "<input type='text' name='new_tags' placeholder='Add new tags (comma separated)'>"
     . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
     // Experiment_ID
-    . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
+    . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
     // Submit button
     . "<input type='submit' value='Add Tags'>"
     . "</form>"
@@ -114,9 +114,9 @@ echo "<br><br>";
 
 
 <!-- Create links for sub-pages, plan/log/result -->
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Plan">Experiment Plan</a><br>
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Log">Experiment Log</a><br>
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Result">Experiment Result</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Plan">Experiment Plan</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Log">Experiment Log</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Result">Experiment Result</a><br>
 
 
 <?php

@@ -9,9 +9,9 @@ include "session/check_user_logged_in.php";
 
 // Variables
     // $user_id from session
-    // $exp_ID from URL (URL is always a GET request)
-$exp_ID = $_GET['exp_ID'] ?? NULL;
-if ($exp_ID === null) {
+    // $experiment_id from URL (URL is always a GET request)
+$experiment_id = $_GET['experiment_id'] ?? NULL;
+if ($experiment_id === null) {
     $messages[] = "Error: No experiment ID provided.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
@@ -25,8 +25,8 @@ if ($exp_section === null) {
     $messages[] = "Error: No experiment section provided.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
-    // Redirect back to experiment.php with the same exp_ID
-    header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
+    // Redirect back to experiment.php with the same experiment_id
+    header("Location: experiment.php?experiment_id=" . urlencode($experiment_id));
     exit();
 }
     // Whitelist section names
@@ -37,8 +37,8 @@ if (!in_array($exp_section, $valid_sections)) {
     $messages[] = "Error: Invalid experiment section provided.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
-    // Redirect back to experiment.php with the same exp_ID
-    header("Location: experiment.php?exp_ID=" . urlencode($exp_ID));
+    // Redirect back to experiment.php with the same experiment_id
+    header("Location: experiment.php?experiment_id=" . urlencode($experiment_id));
     exit();
 }
 
@@ -48,10 +48,10 @@ include "database/db.php";
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
-// $exp_ID becomes $experiment_id; the array keys used below
+// $experiment_id becomes $experiment_id; the array keys used below
 // ($proj_exp_name_array, $exp_progress_flags, $exp_last_update) follow the new
 // column names
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
@@ -80,7 +80,7 @@ echo "Section: " . htmlspecialchars($exp_section) . "<br><br>";
 ?>
 
 <!-- Link back to main experiment page -->
-<a href="experiment.php?exp_ID=<?php echo urlencode($exp_ID); ?>">Back to <?php echo htmlspecialchars($proj_exp_name_array['Experiment_Name']); ?></a><br><br>
+<a href="experiment.php?experiment_id=<?php echo urlencode($experiment_id); ?>">Back to <?php echo htmlspecialchars($proj_exp_name_array['Experiment_Name']); ?></a><br><br>
 
 <!-- Tags (static), Done toggle, save/submit -->
 <?php
@@ -108,7 +108,7 @@ if ($user_access >= 2) {
     // User has edit permission, display the form for editing the experiment plan
     echo "<form action='actions/save_experiment_section.php' method='post'>"
         // Hidden inputs for the experiment ID and section
-        . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
+        . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($exp_section) . "'>"
         // Progress flag
         . "<input type='checkbox' name='done_flag' value='1' " . ($exp_progress_flags[$exp_section . '_Done'] ? 'checked' : '') . "> Mark as Done<br>"

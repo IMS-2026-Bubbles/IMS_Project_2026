@@ -12,8 +12,8 @@ include "../session/init.php"; // Make the session available
 $messages = array();
 
 // Variables from POST request
-$exp_ID = $_POST['exp_ID'] ?? null;
-if ($exp_ID === null) {
+$experiment_id = $_POST['experiment_id'] ?? null;
+if ($experiment_id === null) {
     $messages[] = "Error: No experiment ID provided.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;
@@ -30,13 +30,13 @@ include "../database/db.php";
 // Check if the user has permission to edit tags for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;
-    // Redirect back to experiment.php with the same exp_ID
-    header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
+    // Redirect back to experiment.php with the same experiment_id
+    header("Location: ../experiment.php?experiment_id=" . urlencode($experiment_id));
     exit();
 }
 
@@ -45,7 +45,7 @@ if ($exp_tags_remove !== '') {
     $messages[] = "Removing tags:<br>";
 
     // Relevant variables
-        // $exp_ID
+        // $experiment_id
         // $exp_tags_remove
 
     // Convert tags to array and sanitize
@@ -74,7 +74,7 @@ if ($exp_tags_remove !== '') {
         // Loop over each tag and bind + execute
     foreach ($remove_tags_array as $tag) {
         // Bind parameters
-        $stmt_delete_tag->bind_param("ss", $exp_ID, $tag);
+        $stmt_delete_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_delete_tag->execute()) {
             $messages[] = "Tag " . $tag . " removed successfully.<br>";
@@ -91,7 +91,7 @@ if ($exp_tags_add !== '') {
     $messages[] = "Adding tags:<br>";
 
     // Relevant variables
-        // $exp_ID
+        // $experiment_id
         // $exp_tags_add
 
     // Convert tags to array and sanitize
@@ -120,7 +120,7 @@ if ($exp_tags_add !== '') {
         // Loop over each tag and bind + execute
     foreach ($new_tags_array as $tag) {
         // Bind parameters
-        $stmt_insert_tag->bind_param("ss", $exp_ID, $tag);
+        $stmt_insert_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_insert_tag->execute()) {
             $messages[] = "Tag " . $tag . " added successfully.<br>";
@@ -137,13 +137,13 @@ include "../database/close_db.php";
 // Store messages in session to display on experiment.php
 $_SESSION['messages_save_experiment_tags'] = $messages;
 
-// Redirect back to experiment.php with the same exp_ID
-header("Location: ../experiment.php?exp_ID=" . urlencode($exp_ID));
+// Redirect back to experiment.php with the same experiment_id
+header("Location: ../experiment.php?experiment_id=" . urlencode($experiment_id));
 exit();
 // // Links in case redirect fails
-//     // Link back to experiment.php with the same exp_ID
-// if (isset($_POST['exp_ID'])) {
-//     echo "<a href='../experiment.php?exp_ID=" . urlencode($_POST['exp_ID']) . "'>Back to experiment</a><br><br>";
+//     // Link back to experiment.php with the same experiment_id
+// if (isset($_POST['experiment_id'])) {
+//     echo "<a href='../experiment.php?experiment_id=" . urlencode($_POST['experiment_id']) . "'>Back to experiment</a><br><br>";
 // } else {
 //     echo "Error: No experiment ID available.<br>";
 //     echo "<a href='../project_library.php'>Back to project library</a><br><br>";
