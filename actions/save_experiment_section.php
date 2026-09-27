@@ -61,8 +61,8 @@ if ($user_access < 2) {
 include "../includes/fetch_experiment_progress.php"; // Fetches the progress status for the specified experiment ID
     // Compare $done_flag with the current value in the database
     $done_flag = (int)$done_flag; // Cast to int for comparison
-    $exp_progress_flags = array_map('intval', $exp_progress_flags); // Ensure all values are integers
-if ($done_flag !== $exp_progress_flags[$exp_section . '_Done']) {
+    $experiment_progress = array_map('intval', $experiment_progress); // Ensure all values are integers
+if ($done_flag !== $experiment_progress[$exp_section . '_Done']) {
     // TODO(schema-migration): old table/column names and old array key. Becomes
     // UPDATE experiments SET <section>_is_done = ? WHERE experiment_id = ?
     // and the key above becomes $exp_section . '_is_done'

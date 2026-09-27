@@ -14,10 +14,9 @@ include "database/db.php";
 
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
-// $exp_ID becomes $experiment_id; the $proj_exp_name_array / $exp_progress_flags /
-// $exp_last_update keys used below follow the new column names
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
+// $exp_ID becomes $experiment_id; the $project_experiment_name / $experiment_progress /
+// $experiment_updated_at keys used below follow the new column names
+$user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
@@ -40,11 +39,11 @@ include "includes/navbar.php"; // Include the navbar
 
 <?php
 // Display project name, experiment name, and experiment section name
-include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
+include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $project_experiment_name
 
 // Diplay the project, experiment, and section name
-echo "Project: " . htmlspecialchars($proj_exp_name_array['Project_Name']) . "<br>";
-echo "Experiment: " . htmlspecialchars($proj_exp_name_array['Experiment_Name']) . "<br><br>";
+echo "Project: " . htmlspecialchars($project_experiment_name['Project_Name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($project_experiment_name['Experiment_Name']) . "<br><br>";
 ?>
 
 <!-- Link back to parent project -->
@@ -93,21 +92,21 @@ if (isset($messages_save_experiment_tags)) {
 <!-- markers for partial/total progress and last update -->
 <?php
 // Retrieve and display progress flags for the experiment
-include "includes/fetch_experiment_progress.php"; // Fetches the progress flags as $exp_progress_flags
+include "includes/fetch_experiment_progress.php"; // Fetches the progress flags as $experiment_progress
 // Retrieve the last update timestamp for the experiment
-include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the experiment as $exp_last_update
-echo "Experiment created: " . $exp_last_update['Date_Created'] . "<br>";
-echo "Experiment updated: " . $exp_last_update['Date_Updated'] . "<br><br>";
+include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the experiment as $experiment_updated_at
+echo "Experiment created: " . $experiment_updated_at['Date_Created'] . "<br>";
+echo "Experiment updated: " . $experiment_updated_at['Date_Updated'] . "<br><br>";
 
 // Define the progress flag display helper.
 include "includes/render_progress_badge.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_badge("Plan", $exp_progress_flags['Plan_Done'])
-    . "(" . $exp_last_update['Plan_Updated'] . ")<br>"
-    . exp_progress_badge("Log", $exp_progress_flags['Log_Done'])
-    . "(" . $exp_last_update['Log_Updated'] . ")<br>"
-    . exp_progress_badge("Result", $exp_progress_flags['Result_Done'])
-    . "(" . $exp_last_update['Result_Updated'] . ")<br>"
+    . exp_progress_badge("Plan", $experiment_progress['Plan_Done'])
+    . "(" . $experiment_updated_at['Plan_Updated'] . ")<br>"
+    . exp_progress_badge("Log", $experiment_progress['Log_Done'])
+    . "(" . $experiment_updated_at['Log_Updated'] . ")<br>"
+    . exp_progress_badge("Result", $experiment_progress['Result_Done'])
+    . "(" . $experiment_updated_at['Result_Updated'] . ")<br>"
     . "</div>";
 echo "<br><br>";
 ?>
