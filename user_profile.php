@@ -5,14 +5,14 @@
 
 <?php
 // starts the session? needed i dont know 
-require_once 'Session/init.php';
+require_once 'session/init.php';
 //check youre logged in 
-require_once 'Session/check_user_logged_in.php';
+require_once 'session/check_user_logged_in.php';
 //kopplad till databasen? 
-require_once 'Database_related/db.php';
+require_once 'database/db.php';
 
 $profile_id = $_SESSION['profile_id'];
-echo $profile_id
+// echo $profile_id
 
 ?>
 
@@ -71,16 +71,6 @@ echo $profile_id
   border-radius: 5px;
   cursor: pointer;
 }
-
-
-
-}
-</head>
-
-
-
-
-
 
 
 

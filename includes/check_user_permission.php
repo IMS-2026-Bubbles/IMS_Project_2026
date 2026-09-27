@@ -27,7 +27,7 @@
 // 
 // Return the permission level as an integer. (split into different functions?)
 
-function check_user_permission(mysqli $conn, string $profile_id, string $entity_type, string $entity_id): int {
+function check_user_permission(mysqli $conn, string $profile_id, string $entity_type, string|NULL $entity_id): int {
     // Check if $profile_id isset/exists
     $profile_id = $profile_id ?? null;
     if ($profile_id === null) {
