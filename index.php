@@ -1,6 +1,8 @@
 
 
 <?php
+require_once "session/init.php"; // Start the session and initialize session variables
+
     require_once 'database/db.php';
 
     $message = "";
@@ -69,29 +71,24 @@
                 // User with company_id => project_library.php
                 // User that doesn't belong to a company => user_profile.php
             if ($logincredentials) {
+                // Since login = success, add profile_id to session so we can access it on other pages.
+                $_SESSION['profile_id'] = $profile['profile_id'];
+
                 // Fetch the user's affiliations from the database. Need if they are scriba admin
                 // and if they belong to at least one company.
                 $profile_id = $profile['profile_id'];
                 require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
                 
                 // Scriba admin
-                $user_is_scriba_admin = array_column($user_affiliations, 'is_scriba_admin');
-                $user_is_scriba_admin = array_unique($user_is_scriba_admin);
-                $user_is_scriba_admin = array_filter($user_is_scriba_admin, 
-                                                    fn($value) => $value !== null);
-                $user_is_scriba_admin = min($user_is_scriba_admin); // 1 = is_scriba_admin, 0 = not scriba admin
+                $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
 
                 // User with any company_id
-                $user_company_ids = array_column($user_affiliations, 'company_id');
-                $user_company_ids = array_unique($user_company_ids);
-                $user_company_ids = array_filter($user_company_ids, 
-                                                fn($value) => $value !== null);
-                $user_company_ids = count($user_company_ids);
+                $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
 
                 if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
                     header ("Location:scriba_admin.php");
                     exit();
-                } elseif ($user_company_ids > 0) { // User with company_id => project_library.php
+                } elseif (count($user_company_ids) > 0) { // User with company_id => project_library.php
                     header ("Location:project_library.php");
                     exit();
                 } else { // User that doesn't belong to a company => user_profile.php

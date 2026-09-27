@@ -1,6 +1,6 @@
 <?php
 
-echo " This is the user profile page :)";
+// echo " This is the user profile page :)";
 ?>
 
 <?php
@@ -11,8 +11,8 @@ require_once 'Session/check_user_logged_in.php';
 //kopplad till databasen? 
 require_once 'Database_related/db.php';
 
-$user_id = $_SESSION['user_id'];
-echo $user_id
+$profile_id = $_SESSION['profile_id'];
+echo $profile_id
 
 ?>
 

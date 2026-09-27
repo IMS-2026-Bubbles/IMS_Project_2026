@@ -1,5 +1,6 @@
 <?php
-session_start(); # should this be here? 
+// session_start(); # should this be here? // Yes, I bundled it in session/init.php
+require_once "session/init.php"; // Start the session and initialize session variables
 
     include 'database/db.php';
 
