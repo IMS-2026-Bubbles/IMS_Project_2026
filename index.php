@@ -36,8 +36,9 @@
                     // for the new columns (agreed_to_toc, saved_changes, streak) and write
                     // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
 
-                    $sql = "SELECT password FROM profiles WHERE email = ?";
-
+                    $sql = "SELECT password, profile_id FROM profiles WHERE email = ?";
+                                // adding profile_id so I can get/use it later. How do we
+                                // make it so I can use it later? -RH
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("s", $email);
                     $stmt->execute();
@@ -61,9 +62,46 @@
         
             # redirect here instead of in the form down below
             # now the form is sent as a post, it would not be otherwise
+            // Note from Rasmus
+            // Adding a decision tree for what type of account you are logging into,
+                // and redirecting accordingly. Using $profile['profile_id'] (see above).
+                // Scriba admin => scriba_admin.php
+                // User with company_id => project_library.php
+                // User that doesn't belong to a company => user_profile.php
             if ($logincredentials) {
-                header ("Location:project_library.php");
-                exit();
+                // Fetch the user's affiliations from the database. Need if they are scriba admin
+                // and if they belong to at least one company.
+                $profile_id = $profile['profile_id'];
+                require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
+                
+                // Scriba admin
+                $user_is_scriba_admin = array_column($user_affiliations, 'is_scriba_admin');
+                $user_is_scriba_admin = array_unique($user_is_scriba_admin);
+                $user_is_scriba_admin = array_filter($user_is_scriba_admin, 
+                                                    fn($value) => $value !== null);
+                $user_is_scriba_admin = min($user_is_scriba_admin); // 1 = is_scriba_admin, 0 = not scriba admin
+
+                // User with any company_id
+                $user_company_ids = array_column($user_affiliations, 'company_id');
+                $user_company_ids = array_unique($user_company_ids);
+                $user_company_ids = array_filter($user_company_ids, 
+                                                fn($value) => $value !== null);
+                $user_company_ids = count($user_company_ids);
+
+                if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
+                    header ("Location:scriba_admin.php");
+                    exit();
+                } elseif ($user_company_ids > 0) { // User with company_id => project_library.php
+                    header ("Location:project_library.php");
+                    exit();
+                } else { // User that doesn't belong to a company => user_profile.php
+                    header ("Location:user_profile.php");
+                    exit();
+                }
+
+
+                // header ("Location:project_library.php");
+                // exit();
             }
 
             $checkemailStmt->close();
