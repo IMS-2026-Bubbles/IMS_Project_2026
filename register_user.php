@@ -1,4 +1,5 @@
 <?php
+<<<<<<< Updated upstream
     ini_set('display_errors', true);
     ini_set('log_errors', true);
     error_reporting(E_ALL);
@@ -7,6 +8,9 @@
     require_once "session/init.php"; // Start the session and initialize session variables
     // No check for user logged in here, registration page
 
+=======
+    require_once 'Session/init.php';
+>>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -73,7 +77,8 @@
         # now the form is sent as a post, it would not be otherwise
         if (isset($result) && $result) {
             header("Location: index.php");
-            exit;
+            exit();
+            session_destroy();
         }
         include 'database/close_db.php';
     }

@@ -1,9 +1,15 @@
 
 
 <?php
+<<<<<<< Updated upstream
 require_once "session/init.php"; // Start the session and initialize session variables
 // No check for user logged in here, front page
 
+=======
+    
+    //Must fix so that sessions are created properly when logged in
+    require_once 'session/init.php';
+>>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -18,9 +24,9 @@ require_once "session/init.php"; // Start the session and initialize session var
             // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
             // Check if email already exists
             // TODO(schema-migration): Profiles table becomes profiles; email becomes email
-            $sql = "SELECT email FROM profiles WHERE email = ?";
+            $sql = "SELECT email, profile_id FROM profiles WHERE email = ?";
             $checkemailStmt = $conn->prepare($sql);
-            $checkemailStmt->bind_param("s", $email);
+            $checkemailStmt->bind_param("ss", $email, $profile_id);
             $checkemailStmt->execute();
             $checkemailStmt->store_result();
             error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
@@ -63,6 +69,7 @@ require_once "session/init.php"; // Start the session and initialize session var
                     
                 }
         
+<<<<<<< Updated upstream
             # redirect here instead of in the form down below
             # now the form is sent as a post, it would not be otherwise
             // Note from Rasmus
@@ -100,6 +107,15 @@ require_once "session/init.php"; // Start the session and initialize session var
 
                 // header ("Location:project_library.php");
                 // exit();
+=======
+            // redirect here instead of in the form down below
+            // now the form is sent as a post, it would not be otherwise
+            if ($logincredentials) {
+            // MUST MOFIFY SESSION HERE SO THAT LOG IN RECOGNIZED WHEN ENETRING PROJECT LIBRARY
+                header ("Location:project_library.php");
+                $_SESSION['profile_id'] = $profile_id;
+                exit();
+>>>>>>> Stashed changes
             }
 
             $checkemailStmt->close();
