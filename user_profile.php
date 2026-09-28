@@ -11,7 +11,7 @@
 // Redirect to:
     // navigation bar options
     // actions/join_company_lab.php (join company or lab forms)
-    // actions/logout.php (after deleting account)
+    // actions/logout.php (delete account -> logout and redirect to index.php)
 
 
 // starts the session

@@ -6,7 +6,7 @@ require_once "database/db.php";
 
 
 // Get current logged-in user
-$profileId = (int) $_SESSION["profile_id"];
+$profile_id = (int) $_SESSION["profile_id"];
 
 
 // Get selected leaderboard type
@@ -108,7 +108,7 @@ elseif ($scope === "company") {
 
     $stmt->bind_param(
         "i",
-        $profileId
+        $profile_id
     );
 
     $stmt->execute();
@@ -165,7 +165,7 @@ elseif ($scope === "lab") {
 
     $stmt->bind_param(
         "i",
-        $profileId
+        $profile_id
     );
 
     $stmt->execute();

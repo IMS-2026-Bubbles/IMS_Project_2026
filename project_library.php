@@ -1,4 +1,18 @@
 <?php
+// Project Library
+
+// Arrive from: 
+    // login.php (after logging in)
+    // navigation bar (project library button)
+    // project_library.php (after adding a new project)
+// Action:
+    // Display all projects user has view access to
+    // Add new project
+// Redirect to:
+    // navigation bar options
+    // experiment_library.php (after clicking on a project)
+
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -13,9 +27,10 @@ require_once "database/db.php";
 
 
 // Get current user
-$profileId = (int) $_SESSION["profile_id"];
+$profile_id = (int) $_SESSION["profile_id"];
 
 
+// TODO: Refactor search into an include?
 // Search projects
 $search = "";
 
@@ -24,97 +39,97 @@ if (isset($_GET["search"])) {
 }
 
 
-// Add project
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
+// // Add project
+// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
-    $projectName = trim($_POST["project_name"]);
-    $labId = trim($_POST["lab_id"]);
+//     $projectName = trim($_POST["project_name"]);
+//     $labId = trim($_POST["lab_id"]);
 
-    if ($projectName != "" && $labId != "") {
+//     if ($projectName != "" && $labId != "") {
 
-        // Check that the selected lab belongs to one of the user's companies
-        $checkSql = "
-            SELECT labs.lab_id
-            FROM labs
-            JOIN company_members
-                ON labs.company_id = company_members.company_id
-            WHERE labs.lab_id = ?
-              AND company_members.profile_id = ?
-        ";
+//         // Check that the selected lab belongs to one of the user's companies
+//         $checkSql = "
+//             SELECT labs.lab_id
+//             FROM labs
+//             JOIN company_members
+//                 ON labs.company_id = company_members.company_id
+//             WHERE labs.lab_id = ?
+//               AND company_members.profile_id = ?
+//         ";
 
-        $checkStmt = $conn->prepare($checkSql);
+//         $checkStmt = $conn->prepare($checkSql);
 
-        $checkStmt->bind_param(
-            "si",
-            $labId,
-            $profileId
-        );
+//         $checkStmt->bind_param(
+//             "si",
+//             $labId,
+//             $profile_id
+//         );
 
-        $checkStmt->execute();
+//         $checkStmt->execute();
 
-        $checkResult = $checkStmt->get_result();
+//         $checkResult = $checkStmt->get_result();
 
-        if ($checkResult->num_rows == 0) {
-            die("You do not have permission to use this lab.");
-        }
+//         if ($checkResult->num_rows == 0) {
+//             die("You do not have permission to use this lab.");
+//         }
 
-        $checkStmt->close();
-
-
-        // Add new project
-        $sql = "
-            INSERT INTO projects
-            (name, lab_id)
-            VALUES (?, ?)
-        ";
-
-        $stmt = $conn->prepare($sql);
-
-        $stmt->bind_param(
-            "ss",
-            $projectName,
-            $labId
-        );
-
-        $stmt->execute();
-
-        $newProjectId = $stmt->insert_id;
-
-        $stmt->close();
+//         $checkStmt->close();
 
 
-        // Add current user as project owner
-        $sql = "
-            INSERT INTO project_members
-            (project_id, profile_id, role)
-            VALUES (?, ?, 'owner')
-        ";
+//         // Add new project
+//         $sql = "
+//             INSERT INTO projects
+//             (name, lab_id)
+//             VALUES (?, ?)
+//         ";
 
-        $stmt = $conn->prepare($sql);
+//         $stmt = $conn->prepare($sql);
 
-        $stmt->bind_param(
-            "ii",
-            $newProjectId,
-            $profileId
-        );
+//         $stmt->bind_param(
+//             "ss",
+//             $projectName,
+//             $labId
+//         );
 
-        $stmt->execute();
+//         $stmt->execute();
 
-        $stmt->close();
+//         $newProjectId = $stmt->insert_id;
+
+//         $stmt->close();
 
 
-        // Refresh the project library
-        header("Location: project_library.php");
-        exit();
-    }
-}
+//         // Add current user as project owner
+//         $sql = "
+//             INSERT INTO project_members
+//             (project_id, profile_id, role)
+//             VALUES (?, ?, 'owner')
+//         ";
+
+//         $stmt = $conn->prepare($sql);
+
+//         $stmt->bind_param(
+//             "ii",
+//             $newProjectId,
+//             $profile_id
+//         );
+
+//         $stmt->execute();
+
+//         $stmt->close();
+
+
+//         // Refresh the project library
+//         header("Location: project_library.php");
+//         exit();
+//     }
+// }
 
 
 // Get labs from the user's companies
 $labs = [];
 
-$sql = "
-    SELECT DISTINCT
+$sql = 
+    "SELECT DISTINCT
         labs.lab_id,
         labs.name
     FROM labs
@@ -128,7 +143,7 @@ $stmt = $conn->prepare($sql);
 
 $stmt->bind_param(
     "i",
-    $profileId
+    $profile_id
 );
 
 $stmt->execute();
@@ -145,8 +160,8 @@ $stmt->close();
 // Get projects from the user's companies
 $projects = [];
 
-$sql = "
-    SELECT DISTINCT
+$sql = 
+    "SELECT DISTINCT
         projects.project_id,
         projects.name AS project_name,
         projects.lab_id,
@@ -175,7 +190,7 @@ if ($search != "") {
 
     $stmt->bind_param(
         "is",
-        $profileId,
+        $profile_id,
         $searchValue
     );
 
@@ -183,7 +198,7 @@ if ($search != "") {
 
     $stmt->bind_param(
         "i",
-        $profileId
+        $profile_id
     );
 }
 

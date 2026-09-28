@@ -13,7 +13,7 @@ require_once "database/db.php";
 
 
 // Get current user
-$profileId = (int) $_SESSION["profile_id"];
+$profile_id = (int) $_SESSION["profile_id"];
 
 
 // Get project ID
@@ -47,7 +47,7 @@ if ($projectId > 0) {
     $checkStmt->bind_param(
         "ii",
         $projectId,
-        $profileId
+        $profile_id
     );
 
     $checkStmt->execute();
@@ -143,7 +143,7 @@ if ($projectId > 0) {
 
         $stmt->bind_param(
             "iis",
-            $profileId,
+            $profile_id,
             $projectId,
             $searchValue
         );
@@ -152,7 +152,7 @@ if ($projectId > 0) {
 
         $stmt->bind_param(
             "ii",
-            $profileId,
+            $profile_id,
             $projectId
         );
     }
