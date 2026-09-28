@@ -5,105 +5,135 @@ require_once 'session/init.php';
 require_once 'session/check_user_logged_in.php';
 // Connect to database
 require_once 'database/db.php';
+
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
-// echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
-
-// //startar sessionen och kopplar till min exempel profil
-// session_start();
-// $_SESSION["profile_id"] = 1;
-// include "database/db.php";
-// $profile_ID = 1;
+//echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
 
 
 
-//email knapp 
-/*
-$stmt = $conn->prepare("SELECT email FROM profiles WHERE profile_id = ?");
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
+// -------- handle POST methods -------- 
 
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+// join lab
+if(isset($_POST['join_lab']))
+    {
+    # fetch data from POST request
+    $lab_code = $_POST['unique_code_lab'];
 
-//gör samma för att få för och efetrnamn i profilsidan 
+    # check so that this code actually exists:
+    $stmt = $conn->prepare(
+        "SELECT lab_id 
+        FROM lab_members 
+        WHERE lab_id = ?"
+        );
+    $stmt->bind_param("s", $lab_code);
+    $stmt->execute();
+    $exists = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-$stmt = $conn->prepare("SELECT first_name, last_name FROM profiles WHERE profile_id = ?");
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
+    # if the lab doesn't exist
+    if (!$exists){
+        $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
+    }
+    else{
+        # use placeholders to protect against sql injection
+        $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $lab_code, $profile_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        header("Location: user_profile.php");
+        exit;}
+    }
 
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
 
-*/
 
-//selecting everything from profiles 
-//PHP MySQL prepared statements from W3 schools 
+if(isset($_POST['join_company']))
+    {
+    # fetch data from POST request
+    $company_code = $_POST['unique_code'];
 
+    # check so that this code actually exists:
+    $stmt = $conn->prepare(
+    "SELECT company_id FROM companies WHERE company_id = ?");
+    $stmt->bind_param("s", $company_code);
+    $stmt->execute();
+    $exists = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    # if the company doesn't exist
+    if (!$exists){
+        $error_join_company = "The company you want to join doesn't exist. Make sure your code is correct.";
+    }
+    else{
+        # use placeholders to protect against sql injection
+        $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $company_code, $profile_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        header("Location: user_profile.php");   // use your real filename
+        exit;
+        }
+    }
+
+
+
+
+
+
+
+# get all info about a user, this will be displayed later on
+# retrieve names + email + company + labgroup
 $stmt = $conn->prepare( //statement
-    "SELECT * FROM profiles WHERE profile_id = ?"
+    "SELECT profiles.email, profiles.first_name, profiles.last_name
+    FROM profiles 
+    WHERE profiles.profile_id = ?"
 );
 
-
-//gets the profile form scriba database 
+// binds based on profile_id
 $stmt->bind_param("i", $profile_id);
 $stmt->execute();
-
 $result = $stmt->get_result();  
-//fetch assoc() PHP mysqli function makes result as an associative array 
 $user = $result->fetch_assoc(); 
-
-
-
+$stmt->close();
 
 
 
 
 //selecting points for the user 
-
 $stmt = $conn->prepare(
     "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
 );
-
-//gets the profile form scriba database 
 $stmt->bind_param("i", $profile_id);
 $stmt->execute();
-
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
+$stmt->close();
 
 
 
 
-//selecting company & department?? lab now 
-
+//selecting company
 $stmt = $conn->prepare(
     "SELECT companies.name FROM companies JOIN company_members ON companies.company_id = company_members.company_id WHERE company_members.profile_id = ?"
 );
-
-
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
-
 $result = $stmt->get_result();
 $company = $result->fetch_assoc();
+$stmt->close();
 
 
 // lab aswell 
-
 $stmt = $conn->prepare(
     "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
 );
-
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
-
 $result = $stmt->get_result();
 $lab = $result->fetch_assoc();
-
-
-
-
+$stmt->close();
 
 
 
@@ -112,14 +142,11 @@ $lab = $result->fetch_assoc();
 
 //delete user account with SQL DELETE statement
 //i know i should use the is_deleted from profiles but rn its what it is 
-
 // UPDATE profiles SET is_delted = TRUE smth like this 
-
-
 if (isset($_POST["delete_account"])) {
 
     $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
-    $stmt->bind_param("i", $profile_ID);
+    $stmt->bind_param("i", $profile_id);
 
     if ($stmt->execute()) {
         echo "Record deleted successfully";
@@ -127,35 +154,6 @@ if (isset($_POST["delete_account"])) {
         echo "Error deleting user profile: " . $conn->error;
     }
 }
-
-
-
-//retrieve all information we have about our user 
-
-//this is work in progress on how i should retreive all information 
-
-/* $stmt = $conn->prepare(
-  "SELECT *
-FROM (
-    SELECT * FROM profiles
-    UNION
-    SELECT * FROM companies
-    UNION
-    SELECT * FROM labs
-)
-WHERE ...
-);
-
-
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$ = $result->fetch_assoc(); */
-
-
-
-
 
 
 
@@ -167,7 +165,6 @@ $ = $result->fetch_assoc(); */
 <html lang="en">
 <head>
 
-<!--tilda la in detta --> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
@@ -175,7 +172,7 @@ $ = $result->fetch_assoc(); */
     <!-- <title>Document</title> -->
 
     <!-- i want nav bar here -->
-    <?php // include "includes/navbar.php";?>
+    <?php include "includes/navbar.php";?>
 
     <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
@@ -219,7 +216,7 @@ $ = $result->fetch_assoc(); */
     border: none;
     margin: 50px 45% 50px 5%; /* top, right, bottom, left */
     border-radius: 5px;
-    cursor: pointer;
+    /* cursor: pointer; */ /* FOR CORNELIA: i removed this as a button/ Tilda */
     }
 
 
@@ -228,47 +225,63 @@ $ = $result->fetch_assoc(); */
 </head>
 <body style="background-image: url('assets/website_background.jpg');">
 
-<!-- i want nav bar here -->
-    <?php 
-    include "includes/navbar.php";
-    ?>
-
-<!-- Here is the php scirpt where i link to a bunch of diff -->
-
-
-
 
 <!-- readfile() - reads a file and writes it to the output buffer -->
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- Här e mina bästa fina design buttons-->
 
 <div class="welcome">
-<h2>Welcome to your user page</h2>
+    <!-- I added so that the display name is showed up here instead / Tilda -->
+<h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
 <p>You have possibilities to overwiev your profile, add experiments and wiev your points. Log it or it didnt happen! </p>
 </div>
 
 <div class="user">
 <h2>Company & Department</h2>
-<p>What company and department you belong to
 <p>
-        Company:
-        <?php echo htmlspecialchars($company["name"]); ?>
 
-        Lab: 
-        <?php echo htmlspecialchars($lab["name"]); ?>
+        Lab:
+        <?php 
+        // if you don't belong to a company, have the possibility to join one
+        if (empty($lab["name"])){ ?>
+            <br>No lab group<br>
+            <form action="" method= "POST" class = "join_lab"> 
+            <label for="companies">Join a lab group</label><br>
+            <input type="text" class="" name="unique_code_lab" required><br>
+            <input type="submit" class="" name="join_lab" value="Join"><br><br>
+            </form>
+            <?php 
+            // if the lab already exist
+            if (!empty($error_join_lab)){echo htmlspecialchars($error_join_lab);}}
+       
+        // if user has a company it just shows
+        else {
+            echo htmlspecialchars($lab["name"]);
+        } ?> 
+        <br>
+
+        Company:
+        <?php 
+        // if you don't belong to a company, have the possibility to join one
+        if (empty($company["name"])){ ?>
+            <br>No company <br>
+            <form action="" method= "POST" class = "join_company"> 
+            <label for="companies">Join a company</label><br>
+            <input type="text" class="" name="unique_code" required><br>
+            <input type="submit" class="" name="join_company" value="Join"><br><br>
+            </form>
+            <?php 
+            // if the company already exist
+            if (!empty($error_join_company)){ echo htmlspecialchars($error_join_company);}}
+       
+        // if user has a company it just shows
+        else {
+            echo htmlspecialchars($company["name"]);
+        } ?>
+        <br>
+        
+
     </p>
     </p>
 </div> 
@@ -291,13 +304,14 @@ $ = $result->fetch_assoc(); */
     </p>
 </div>
 
-
+<!-- I SUGGEST THAT WE REMOVE THIS PART -->
+<!--
 <div class="user">
 <h2>Display name</h2>
 <p>Your display name is:
 <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?>
 </p>
-</div>
+</div> -->
 
 
 <div class="user">
@@ -310,8 +324,10 @@ $ = $result->fetch_assoc(); */
 
 </div>
 
+
+<!-- I SUGGEST THAT WE REMOVE THIS PART AS THE PERSONAL INFORMATION IS DISPLAYED ABOVE -->
 <!-- not a button now but in the future a button + some kind of new page --> 
-<div class="user">
+<!--<div class="user">
 <h2>Information Scriba has about me</h2>
 <p>Click here to see what information scriba has about you </p>
  <p>Email: <?php echo htmlspecialchars($user["email"]); ?></p>
@@ -320,7 +336,7 @@ $ = $result->fetch_assoc(); */
     <p>Saved changes: <?php echo htmlspecialchars($user["saved_changes"]); ?></p>
     <p>Last login: <?php echo htmlspecialchars($user["last_login_at"]); ?></p>
     <p>Streak: <?php echo htmlspecialchars($user["streak"]); ?></p>
-</div>
+</div>--> 
 
 
 <!-- JavaScript Operators are used to assign values, compare values, perform arithmetic operations, and much more. -->
