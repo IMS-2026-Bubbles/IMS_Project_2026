@@ -2,10 +2,9 @@
 <html>
 <?php
 // Session initialization
-include "session/init.php"; // Make the session available
-
+require_once "session/init.php"; // Make the session available
 // Check if the user is logged in
-include "session/check_user_logged_in.php";
+require_once "session/check_user_logged_in.php";
 
 // Variables
     // $profile_id from session
@@ -43,7 +42,7 @@ if (!in_array($experiment_section, $valid_sections)) {
 }
 
 // Connect to database
-include "database/db.php";
+require_once "database/db.php";
 
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function

@@ -1,5 +1,8 @@
 <?php
 
+// Move to actions/login_verification.php?
+
+
 if(isset($_POST['Log in']))
     {
         # fetch data from POST request

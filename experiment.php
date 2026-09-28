@@ -1,7 +1,6 @@
 <?php
 // Session initialization
 include "session/init.php"; // Make the session available
-
 // Check if the user is logged in
 include "session/check_user_logged_in.php";
 
@@ -10,7 +9,7 @@ include "session/check_user_logged_in.php";
 $experiment_id = $_GET['experiment_id'] ?? NULL;
 
 // Connect to database
-include "database/db.php";
+require_once "database/db.php";
 
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function

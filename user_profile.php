@@ -4,21 +4,21 @@
 ?>
 
 <?php
-// // starts the session
-// require_once 'session/init.php';
-// //check user is logged in 
-// require_once 'session/check_user_logged_in.php';
-// // Connect to database
-// require_once 'database/db.php';
-// // Get the profile ID from the session
-// $profile_id = $_SESSION['profile_id'];
+// starts the session
+require_once 'session/init.php';
+//check user is logged in 
+require_once 'session/check_user_logged_in.php';
+// Connect to database
+require_once 'database/db.php';
+// Get the profile ID from the session
+$profile_id = $_SESSION['profile_id'];
 
 
-//startar sessionen och kopplar till min exempel profil
-session_start();
-$_SESSION["profile_id"] = 1;
-include "database/db.php";
-$profile_ID = 1;
+// //startar sessionen och kopplar till min exempel profil
+// session_start();
+// $_SESSION["profile_id"] = 1;
+// include "database/db.php";
+// $profile_ID = 1;
 
 
 

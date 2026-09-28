@@ -2,6 +2,7 @@
 
 <?php
 require_once "session/init.php"; // Start the session and initialize session variables
+// No check for user logged in here, front page
 
     require_once 'database/db.php';
 
@@ -78,7 +79,7 @@ require_once "session/init.php"; // Start the session and initialize session var
                 // and if they belong to at least one company.
                 $profile_id = $profile['profile_id'];
                 require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
-                
+
                 // Scriba admin
                 $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
 

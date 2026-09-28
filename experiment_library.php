@@ -5,10 +5,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 // Start session
-include "session/init.php";
+require_once "session/init.php";
+require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 
 // Connect to database
-include "database/db.php";
+require_once "database/db.php";
 
 // Get project ID
 $projectId = 0;

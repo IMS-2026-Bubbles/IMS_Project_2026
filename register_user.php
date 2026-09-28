@@ -3,6 +3,10 @@
     ini_set('log_errors', true);
     error_reporting(E_ALL);
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    require_once "session/init.php"; // Start the session and initialize session variables
+    // No check for user logged in here, registration page
+
     require_once 'database/db.php';
 
     $message = "";

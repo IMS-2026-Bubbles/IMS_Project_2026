@@ -1,8 +1,9 @@
 <?php
 // session_start(); # should this be here? // Yes, I bundled it in session/init.php
 require_once "session/init.php"; // Start the session and initialize session variables
+require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 
-    include 'database/db.php';
+    require_once 'database/db.php';
 
     $message = "";
     $toastClass = "";
