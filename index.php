@@ -12,6 +12,7 @@ require_once "session/init.php"; // Start the session and initialize session var
 
     $message = "";
     $toastClass = "";
+    $logincredentials = False;
 
     if(isset($_POST["login"]))
         {
@@ -22,9 +23,9 @@ require_once "session/init.php"; // Start the session and initialize session var
             // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
             // Check if email already exists
             // TODO(schema-migration): Profiles table becomes profiles; email becomes email
-            $sql = "SELECT email, profile_id FROM profiles WHERE email = ?";
+            $sql = "SELECT * FROM profiles WHERE email = ?";
             $checkemailStmt = $conn->prepare($sql);
-            $checkemailStmt->bind_param("ss", $email, $profile_id);
+            $checkemailStmt->bind_param("s", $email);
             $checkemailStmt->execute();
             $checkemailStmt->store_result();
             error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
@@ -39,7 +40,6 @@ require_once "session/init.php"; // Start the session and initialize session var
             else {
                     # use placeholders to protect against sql injection
                     // TODO(schema-migration): becomes INSERT INTO profiles
-                    // (email, first_name, last_name, salt, password) — also decide values
                     // for the new columns (agreed_to_toc, saved_changes, streak) and write
                     // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
 
@@ -51,7 +51,6 @@ require_once "session/init.php"; // Start the session and initialize session var
                     $stmt->execute();
                     $result = $stmt->get_result();
                     $profile = $result->fetch_assoc();
-                    $logincredentials = False;
 
                     if (password_verify($password, $profile['password'])) {
                             //correct log in info
