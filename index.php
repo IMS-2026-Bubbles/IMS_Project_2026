@@ -77,6 +77,7 @@ require_once "session/init.php"; // Start the session and initialize session var
             if ($logincredentials) {
                 // Since login = success, add profile_id to session so we can access it on other pages.
                 $_SESSION['profile_id'] = $profile['profile_id'];
+                // Add company_id to session if user has one. 
 
                 // Fetch the user's affiliations from the database. Need if they are scriba admin
                 // and if they belong to at least one company.
