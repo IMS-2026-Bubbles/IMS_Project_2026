@@ -1,35 +1,59 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+// Start session
+include "session/init.php";
+
+// Connect to database
+include "database/db.php";
+
 // Get project ID
-$projectId = 1;
+$projectId = 0;
 
 if (isset($_GET["project_id"])) {
-    $projectId = $_GET["project_id"];
+    $projectId = (int) $_GET["project_id"];
 }
 
-// Temporary experiment data
-$experiments = [
-    [
-        "id" => 1,
-        "project_id" => 1,
-        "name" => "Experiment 1"
-    ],
-    [
-        "id" => 2,
-        "project_id" => 1,
-        "name" => "Experiment 2"
-    ],
-    [
-        "id" => 3,
-        "project_id" => 1,
-        "name" => "Experiment 3"
-    ],
-    [
-        "id" => 4,
-        "project_id" => 1,
-        "name" => "Experiment 4"
-    ]
-];
+if (isset($_POST["project_id"])) {
+    $projectId = (int) $_POST["project_id"];
+}
+
+// Add experiment
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
+
+    $experimentName = trim($_POST["experiment_name"]);
+
+    if ($projectId > 0 && $experimentName != "") {
+
+        $sql = "
+            INSERT INTO experiments
+            (name, project_id)
+            VALUES (?, ?)
+        ";
+
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bind_param(
+            "si",
+            $experimentName,
+            $projectId
+        );
+
+        $stmt->execute();
+
+        $stmt->close();
+
+        // Return to current project
+        header(
+            "Location: experiment_library.php?project_id=" . $projectId
+        );
+
+        exit();
+    }
+}
 
 // Search experiments
 $search = "";
@@ -38,29 +62,55 @@ if (isset($_GET["search"])) {
     $search = trim($_GET["search"]);
 }
 
-// Filter experiments by project
+// Get experiments
 $projectExperiments = [];
 
-foreach ($experiments as $experiment) {
+if ($projectId > 0) {
 
-    if ($experiment["project_id"] == $projectId) {
-        $projectExperiments[] = $experiment;
-    }
-}
+    $sql = "
+        SELECT
+            experiment_id,
+            name
+        FROM experiments
+        WHERE project_id = ?
+    ";
 
-// Filter experiments by search
-if ($search != "") {
-
-    $filteredExperiments = [];
-
-    foreach ($projectExperiments as $experiment) {
-
-        if (stripos($experiment["name"], $search) !== false) {
-            $filteredExperiments[] = $experiment;
-        }
+    if ($search != "") {
+        $sql .= " AND name LIKE ?";
     }
 
-    $projectExperiments = $filteredExperiments;
+    $sql .= " ORDER BY name";
+
+    $stmt = $conn->prepare($sql);
+
+    if ($search != "") {
+
+        $searchValue = "%" . $search . "%";
+
+        $stmt->bind_param(
+            "is",
+            $projectId,
+            $searchValue
+        );
+
+    } else {
+
+        $stmt->bind_param(
+            "i",
+            $projectId
+        );
+    }
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+
+        $projectExperiments[] = $row;
+    }
+
+    $stmt->close();
 }
 
 ?>
@@ -72,9 +122,13 @@ if ($search != "") {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <!-- Bootstrap -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -90,7 +144,7 @@ if ($search != "") {
 
         body {
             min-height: 100vh;
-             background: linear-gradient(120deg, #7794b6, #d4f6fd);
+            background: linear-gradient(120deg, #7794b6, #d4f6fd);
             color: #263c55;
         }
 
@@ -129,17 +183,54 @@ if ($search != "") {
 
         .add-experiment {
             height: 48px;
+            width: 100%;
             border: 2px solid #263c55;
             border-radius: 18px;
             background: linear-gradient(100deg, #cbd8f2, #ffffff);
             color: #263c55;
             font-size: 20px;
-            text-decoration: none;
+            cursor: pointer;
         }
 
         .add-experiment:hover {
-            background-color: #dce6f8;
+            background: #dce6f8;
             color: #263c55;
+        }
+
+        /* Add form */
+
+        .add-form {
+            display: none;
+            margin-top: 15px;
+            margin-bottom: 35px;
+            padding: 20px;
+            border: 2px solid #263c55;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .add-input {
+            height: 48px;
+            border: 2px solid #263c55;
+            border-radius: 15px;
+            font-size: 18px;
+            color: #263c55;
+        }
+
+        .add-button {
+            height: 48px;
+            border: 2px solid #263c55;
+            border-radius: 15px;
+            background: #7794b6;
+            color: white;
+            font-size: 18px;
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+
+        .add-button:hover {
+            background: #263c55;
+            color: white;
         }
 
         /* Experiment card */
@@ -201,7 +292,7 @@ if ($search != "") {
             text-decoration: underline;
         }
 
-        /* Mobile layout */
+        /* Mobile */
 
         @media (max-width: 800px) {
 
@@ -224,6 +315,8 @@ if ($search != "") {
     <!-- Experiment Library -->
 
     <main class="library-container">
+
+        <!-- Back -->
 
         <a
             href="project_library.php"
@@ -262,12 +355,51 @@ if ($search != "") {
 
         <!-- Add experiment -->
 
-        <a
-            href="#"
-            class="add-experiment d-flex justify-content-center align-items-center mb-5"
+        <button
+            type="button"
+            class="add-experiment d-flex justify-content-center align-items-center mb-4"
+            onclick="showAddForm()"
         >
             add experiment
-        </a>
+        </button>
+
+        <!-- Add form -->
+
+        <div
+            id="addForm"
+            class="add-form"
+        >
+
+            <form
+                action="experiment_library.php"
+                method="POST"
+            >
+
+                <input
+                    type="hidden"
+                    name="project_id"
+                    value="<?php echo htmlspecialchars($projectId); ?>"
+                >
+
+                <input
+                    type="text"
+                    name="experiment_name"
+                    class="form-control add-input mb-3"
+                    placeholder="experiment name"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    name="add_experiment"
+                    class="add-button"
+                >
+                    Add
+                </button>
+
+            </form>
+
+        </div>
 
         <!-- Experiment list -->
 
@@ -277,19 +409,19 @@ if ($search != "") {
 
                 <?php foreach ($projectExperiments as $experiment): ?>
 
-                    <!-- Experiment -->
-
                     <div class="col-md-6">
 
                         <a
-                            href="experiment.php?experiment_id=<?php echo $experiment["id"]; ?>"
+                            href="experiment.php?experiment_id=<?php echo $experiment["experiment_id"]; ?>"
                             class="experiment-card"
                         >
 
                             <div class="experiment-title">
 
                                 <?php
-                                echo htmlspecialchars($experiment["name"]);
+                                echo htmlspecialchars(
+                                    $experiment["name"]
+                                );
                                 ?>
 
                             </div>
@@ -315,6 +447,26 @@ if ($search != "") {
         </div>
 
     </main>
+
+    <script>
+
+        function showAddForm() {
+
+            var form = document.getElementById("addForm");
+
+            if (form.style.display === "none" || form.style.display === "") {
+
+                form.style.display = "block";
+
+            } else {
+
+                form.style.display = "none";
+
+            }
+
+        }
+
+    </script>
 
 </body>
 
