@@ -1,13 +1,13 @@
 <?php
-// session_start(); # should this be here? 
 require_once "session/init.php"; // Make the session available
 require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+
 
 // connect to database
     require_once "database/db.php";
 
     $profile_ID = $_SESSION["profile_id"];
-    // $profile_ID = 1; // just for testing
+    //$profile_ID = 1; // just for testing
 
     # to get the company_id of this person
     $admin_company_ID = "SELECT company_id
@@ -128,8 +128,7 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     }
 
     
-    // disconnect from database
-    include "database/close_db.php";
+   
     ?>
 
 
@@ -139,9 +138,23 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company admin</title>
+
+    <!-- Loads Bootstrap -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+<!-- i want nav bar here -->
+    <?php 
+    include "includes/navbar.php";
+    ?>
+
     <h1>Company admin page</h1>
     
 </head>
+
 
 <style>
         /* For tables */
@@ -177,14 +190,6 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
 
 
 <body>
-    <p>This is the page that the company admin will be able to see. </p>
-    <p>Functions: <br>
-        - View all users in the company and the lab groups <br>
-        - Create new lab groups <br>
-        - Create the unique codes <br>
-        - See the unique codes connected to a lab group (PK for Lab_group)
-    </p>
-
 
     <!-- adding a lab group -->
      
@@ -238,3 +243,11 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     
 </body>
 </html>
+
+<?php
+
+
+ // disconnect from database
+    include "database/close_db.php";
+
+?>
