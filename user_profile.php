@@ -10,8 +10,7 @@
     // and delete account
 // Redirect to:
     // navigation bar options
-    // user_profile.php (after joining a lab or company)
-    // user_profile.php (after deleting account)
+    // actions/join_company_lab.php (join company or lab forms)
     // actions/logout.php (after deleting account)
 
 

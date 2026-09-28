@@ -1,12 +1,13 @@
 <?php
-// Join lab action
+// Join company/lab action
 
 // Arrive from: 
-    // index.php (join lab form)
+    // index.php (join company or lab form)
 // Action:
-
+    // Update company_members table to add the user to the specified company
+    // Update lab_members table to add the user to the specified lab
 // Redirect to: 
-    // user_profile.php (with message indicating lab join success or failure)
+    // user_profile.php (with message indicating success or failure)
 
 
 // starts the session
@@ -50,5 +51,43 @@ if(isset($_POST['join_company']))
         exit;
         }
     }
+
+
+    
+if(isset($_POST['join_lab']))
+    {
+    # fetch data from POST request
+    $lab_code = $_POST['unique_code_lab'];
+
+    # check so that this code actually exists:
+    $stmt = $conn->prepare(
+        "SELECT lab_id 
+        FROM lab_members 
+        WHERE lab_id = ?"
+        );
+    $stmt->bind_param("s", $lab_code);
+    $stmt->execute();
+    $exists = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    # if the lab doesn't exist
+    if (!$exists){
+        $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
+        $_SESSION['error_join_lab'] = $error_join_lab;
+        header("Location: user_profile.php");
+    }
+    else{
+        # use placeholders to protect against sql injection
+        $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $lab_code, $profile_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        header("Location: user_profile.php");
+        exit;}
+    }
+
+
+
 
 ?>
