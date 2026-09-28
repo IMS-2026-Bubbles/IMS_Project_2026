@@ -1,4 +1,20 @@
 <?php
+// User profile page
+
+// Arrive from: 
+    // actions/login.php (if user is not a scriba admin and does not belong to a company)
+    // inside Scriba via navigation bar
+// Action: 
+    // Display user profile information, 
+    // allow user to join a lab or company, 
+    // and delete account
+// Redirect to:
+    // navigation bar options
+    // user_profile.php (after joining a lab or company)
+    // user_profile.php (after deleting account)
+    // actions/logout.php (after deleting account)
+
+
 // starts the session
 require_once 'session/init.php';
 //check user is logged in 
@@ -10,74 +26,94 @@ require_once 'database/db.php';
 $profile_id = $_SESSION['profile_id'];
 //echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
 
+// Join lab action message
+if (isset($_SESSION['error_join_lab'])) {
+    $error_join_lab = $_SESSION['error_join_lab'];
+    unset($_SESSION['error_join_lab']);
+} else {
+    $error_join_lab = "";
+}
 
+// Join company action message
+if (isset($_SESSION['error_join_company'])) {
+    $error_join_company = $_SESSION['error_join_company'];
+    unset($_SESSION['error_join_company']);
+} else {
+    $error_join_company = "";
+}
+
+// Delete account action message
+if (isset($_SESSION['delete_account_message'])) {
+    $delete_account_message = $_SESSION['delete_account_message'];
+    unset($_SESSION['delete_account_message']);
+} else {
+    $delete_account_message = "";
+}
 
 // -------- handle POST methods -------- 
 
 // join lab
-if(isset($_POST['join_lab']))
-    {
-    # fetch data from POST request
-    $lab_code = $_POST['unique_code_lab'];
+// if(isset($_POST['join_lab']))
+//     {
+//     # fetch data from POST request
+//     $lab_code = $_POST['unique_code_lab'];
 
-    # check so that this code actually exists:
-    $stmt = $conn->prepare(
-        "SELECT lab_id 
-        FROM lab_members 
-        WHERE lab_id = ?"
-        );
-    $stmt->bind_param("s", $lab_code);
-    $stmt->execute();
-    $exists = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
+//     # check so that this code actually exists:
+//     $stmt = $conn->prepare(
+//         "SELECT lab_id 
+//         FROM lab_members 
+//         WHERE lab_id = ?"
+//         );
+//     $stmt->bind_param("s", $lab_code);
+//     $stmt->execute();
+//     $exists = $stmt->get_result()->fetch_assoc();
+//     $stmt->close();
 
-    # if the lab doesn't exist
-    if (!$exists){
-        $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
-    }
-    else{
-        # use placeholders to protect against sql injection
-        $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("si", $lab_code, $profile_id);
-        $result = $stmt->execute();
-        $stmt->close();
-        header("Location: user_profile.php");
-        exit;}
-    }
-
-
-
-if(isset($_POST['join_company']))
-    {
-    # fetch data from POST request
-    $company_code = $_POST['unique_code'];
-
-    # check so that this code actually exists:
-    $stmt = $conn->prepare(
-    "SELECT company_id FROM companies WHERE company_id = ?");
-    $stmt->bind_param("s", $company_code);
-    $stmt->execute();
-    $exists = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-
-    # if the company doesn't exist
-    if (!$exists){
-        $error_join_company = "The company you want to join doesn't exist. Make sure your code is correct.";
-    }
-    else{
-        # use placeholders to protect against sql injection
-        $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("si", $company_code, $profile_id);
-        $result = $stmt->execute();
-        $stmt->close();
-        header("Location: user_profile.php");   // use your real filename
-        exit;
-        }
-    }
+//     # if the lab doesn't exist
+//     if (!$exists){
+//         $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
+//     }
+//     else{
+//         # use placeholders to protect against sql injection
+//         $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("si", $lab_code, $profile_id);
+//         $result = $stmt->execute();
+//         $stmt->close();
+//         header("Location: user_profile.php");
+//         exit;}
+//     }
 
 
+
+// if(isset($_POST['join_company']))
+//     {
+//     # fetch data from POST request
+//     $company_code = $_POST['unique_code'];
+
+//     # check so that this code actually exists:
+//     $stmt = $conn->prepare(
+//     "SELECT company_id FROM companies WHERE company_id = ?");
+//     $stmt->bind_param("s", $company_code);
+//     $stmt->execute();
+//     $exists = $stmt->get_result()->fetch_assoc();
+//     $stmt->close();
+
+//     # if the company doesn't exist
+//     if (!$exists){
+//         $error_join_company = "The company you want to join doesn't exist. Make sure your code is correct.";
+//     }
+//     else{
+//         # use placeholders to protect against sql injection
+//         $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
+//         $stmt = $conn->prepare($sql);
+//         $stmt->bind_param("si", $company_code, $profile_id);
+//         $result = $stmt->execute();
+//         $stmt->close();
+//         header("Location: user_profile.php");   // use your real filename
+//         exit;
+//         }
+//     }
 
 
 
@@ -140,20 +176,20 @@ $stmt->close();
 
 
 
-//delete user account with SQL DELETE statement
-//i know i should use the is_deleted from profiles but rn its what it is 
-// UPDATE profiles SET is_delted = TRUE smth like this 
-if (isset($_POST["delete_account"])) {
+// //delete user account with SQL DELETE statement
+// //i know i should use the is_deleted from profiles but rn its what it is 
+// // UPDATE profiles SET is_delted = TRUE smth like this 
+// if (isset($_POST["delete_account"])) {
 
-    $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
-    $stmt->bind_param("i", $profile_id);
+//     $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
+//     $stmt->bind_param("i", $profile_id);
 
-    if ($stmt->execute()) {
-        echo "Record deleted successfully";
-    } else {
-        echo "Error deleting user profile: " . $conn->error;
-    }
-}
+//     if ($stmt->execute()) {
+//         echo "Record deleted successfully";
+//     } else {
+//         echo "Error deleting user profile: " . $conn->error;
+//     }
+// }
 
 
 
@@ -321,6 +357,13 @@ if (isset($_POST["delete_account"])) {
    <form method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
     <button type="submit" name="delete_account">Delete account</button>
 </form>
+<?php 
+    if (!empty($delete_account_message)) {
+        echo "<br>";
+        echo htmlspecialchars($delete_account_message);
+        echo "<br>";
+    }
+?>
 
 </div>
 

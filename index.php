@@ -1,4 +1,14 @@
 <?php
+// index/Front page/login page
+
+// Arrive from: 
+    // outside Scriba (first page you see when you go to the site)
+    // actions/login.php (invalid login credentials)
+// Action: Display login form and any error messages from previous login attempts
+// Redirect to: 
+    // actions/login.php (on form submission)
+    // register_user.php (if user clicks "Register new user" button)
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);

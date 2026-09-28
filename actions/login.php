@@ -1,11 +1,22 @@
 <?php
+// Login action
+
+// Arrive from: 
+    // index.php (login form)
+// Action: 
+    // Check login credentials, 
+    // set session variables, 
+    // and redirect to the appropriate page based on user type
+// Redirect to: 
+    // scriba_admin.php, project_library.php, or user_profile.php (depending on user type)
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 
 require_once "session/init.php"; // Start the session and initialize session variables
-// No check for user logged in here, front page
+// No check for user logged in here, login action
 require_once 'database/db.php';
 
 $message = "";
