@@ -1,4 +1,16 @@
 <?php
+// Leaderboard page
+
+// Arrive from:
+    // navigation bar (leaderboard button)
+    // leaderboard.php (switching between global, company, and lab leaderboards)
+// Action:
+    // Display the leaderboard based on the selected scope (global, company, or lab)
+// Redirect to:
+    // leaderboard.php (after selecting a different scope)
+    // navigation bar options
+
+
 
 require_once "session/init.php";
 require_once "session/check_user_logged_in.php";
