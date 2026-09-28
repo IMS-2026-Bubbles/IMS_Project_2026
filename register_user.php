@@ -97,7 +97,13 @@
         </style>
 </head>
 
-
+<style>
+    body {
+            min-height: 100vh;
+             background: linear-gradient(120deg, #7794b6, #d4f6fd);
+            color: #263c55;
+        }
+</style>
 
 
 <body>
@@ -111,6 +117,10 @@
                 color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
         <?php echo htmlspecialchars($message); ?>
     </div>
+
+
+
+    
     
     <?php endif;?>
 
