@@ -1,15 +1,13 @@
 
 
 <?php
-<<<<<<< Updated upstream
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+
 require_once "session/init.php"; // Start the session and initialize session variables
 // No check for user logged in here, front page
-
-=======
-    
-    //Must fix so that sessions are created properly when logged in
-    require_once 'session/init.php';
->>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -69,7 +67,6 @@ require_once "session/init.php"; // Start the session and initialize session var
                     
                 }
         
-<<<<<<< Updated upstream
             # redirect here instead of in the form down below
             # now the form is sent as a post, it would not be otherwise
             // Note from Rasmus
@@ -107,15 +104,6 @@ require_once "session/init.php"; // Start the session and initialize session var
 
                 // header ("Location:project_library.php");
                 // exit();
-=======
-            // redirect here instead of in the form down below
-            // now the form is sent as a post, it would not be otherwise
-            if ($logincredentials) {
-            // MUST MOFIFY SESSION HERE SO THAT LOG IN RECOGNIZED WHEN ENETRING PROJECT LIBRARY
-                header ("Location:project_library.php");
-                $_SESSION['profile_id'] = $profile_id;
-                exit();
->>>>>>> Stashed changes
             }
 
             $checkemailStmt->close();
