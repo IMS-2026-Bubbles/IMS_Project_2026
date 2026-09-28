@@ -1,15 +1,13 @@
-<?php
 
-echo " This is the user profile page :)";
-?>
 
 <?php
 
 //startar sessionen och kopplar till min exempel profil
+//test solution to se one example user 
 session_start();
-$_SESSION["profile_id"] = 1;
-include "database/db.php";
-$profile_ID = 1;
+$_SESSION["profile_id"] = 1111111111; //this is the one logged in
+include "database/db.php"; 
+$profile_ID = $_SESSION["profile_id"]; 
 
 
 
@@ -34,8 +32,9 @@ $user = $result->fetch_assoc();
 */
 
 //selecting everything from profiles 
+//PHP MySQL prepared statements from W3 schools 
 
-$stmt = $conn->prepare(
+$stmt = $conn->prepare( //statement
     "SELECT * FROM profiles WHERE profile_id = ?"
 );
 
@@ -44,10 +43,9 @@ $stmt = $conn->prepare(
 $stmt->bind_param("i", $profile_ID);
 $stmt->execute();
 
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
-
+$result = $stmt->get_result();  
+//fetch assoc() PHP mysqli function makes result as an associative array 
+$user = $result->fetch_assoc(); 
 
 
 
@@ -61,13 +59,95 @@ $stmt = $conn->prepare(
     "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
 );
 
-//gets the profile form scriba database 
+//gets the profile form scriba database makes a variable with $
 $stmt->bind_param("i", $profile_ID);
 $stmt->execute();
 
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
-//
+
+
+
+
+//selecting company & department?? lab now 
+
+$stmt = $conn->prepare(
+    "SELECT companies.name FROM companies JOIN company_members ON companies.company_id = company_members.company_id WHERE company_members.profile_id = ?"
+);
+
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$company = $result->fetch_assoc();
+
+
+// lab aswell 
+
+$stmt = $conn->prepare(
+    "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
+);
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$lab = $result->fetch_assoc();
+
+
+
+
+
+
+
+
+
+
+//delete user account with SQL DELETE statement
+//i know i should use the is_deleted from profiles but rn its what it is 
+
+// UPDATE profiles SET is_delted = TRUE smth like this 
+
+
+if (isset($_POST["delete_account"])) {
+
+    $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
+    $stmt->bind_param("i", $profile_ID);
+
+    if ($stmt->execute()) {
+        echo "Record deleted successfully";
+    } else {
+        echo "Error deleting user profile: " . $conn->error;
+    }
+}
+
+
+
+//retrieve all information we have about our user 
+
+//this is work in progress on how i should retreive all information 
+
+/* $stmt = $conn->prepare(
+  "SELECT *
+FROM (
+    SELECT * FROM profiles
+    UNION
+    SELECT * FROM companies
+    UNION
+    SELECT * FROM labs
+)
+WHERE ...
+);
+
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$ = $result->fetch_assoc(); */
+
+
 
 
 
@@ -89,7 +169,7 @@ $points = $result->fetch_assoc();
     <title>Document</title>
 
     <!-- i want nav bar here -->
-    <?php// include "includes/navbar.php";?>
+    <?php include "includes/navbar.php";?>
 
     <body style="background-image: url('assets/website_background.jpg');">
 
@@ -178,7 +258,15 @@ $points = $result->fetch_assoc();
 
 <div class="user">
 <h2>Company & Department</h2>
-<p>What company and department you belong to</p>
+<p>What company and department you belong to
+<p>
+        Company:
+        <?php echo htmlspecialchars($company["name"]); ?>
+
+        Lab: 
+        <?php echo htmlspecialchars($lab["name"]); ?>
+    </p>
+    </p>
 </div> 
 
 <div class="user">
@@ -199,6 +287,7 @@ $points = $result->fetch_assoc();
     </p>
 </div>
 
+
 <div class="user">
 <h2>Display name</h2>
 <p>Your display name is: </p>
@@ -206,18 +295,39 @@ $points = $result->fetch_assoc();
 </p>
 </div>
 
+
 <div class="user">
 <h2>Delete account</h2>
 <p>You can choose to delete your account here </p>
+<!--  this is a form, thought abou making a button but it is better to send a form to PHP that answers with f (isset($_POST["delete_account"])) { --> 
+   <form method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+    <button type="submit" name="delete_account">Delete account</button>
+</form>
+
 </div>
 
+<!-- not a button now but in the future a button + some kind of new page --> 
 <div class="user">
 <h2>Information Scriba has about me</h2>
 <p>Click here to see what information scriba has about you </p>
+ <p>Email: <?php echo htmlspecialchars($user["email"]); ?></p>
+    <p>First name: <?php echo htmlspecialchars($user["first_name"]); ?></p>
+    <p>Last name: <?php echo htmlspecialchars($user["last_name"]); ?></p>
+    <p>Saved changes: <?php echo htmlspecialchars($user["saved_changes"]); ?></p>
+    <p>Last login: <?php echo htmlspecialchars($user["last_login_at"]); ?></p>
+    <p>Streak: <?php echo htmlspecialchars($user["streak"]); ?></p>
 </div>
 
 
+<!-- JavaScript Operators are used to assign values, compare values, perform arithmetic operations, and much more. -->
 
+<script>
+function confirmDelete() {
+    if (confirm("Are you sure?")) {
+        alert("You clicked Yes, your account is now deleted");
+    }
+}
+</script>
 
 
 
