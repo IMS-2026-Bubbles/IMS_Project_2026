@@ -1,23 +1,21 @@
 <?php
 // Session initialization
 include "session/init.php"; // Make the session available
-
 // Check if the user is logged in
 include "session/check_user_logged_in.php";
 
 // Variables
-    // $exp_ID from URL (URL is always a GET request)
-$exp_ID = $_GET['exp_ID'] ?? NULL;
+    // $experiment_id from URL (URL is always a GET request)
+$experiment_id = $_GET['experiment_id'] ?? NULL;
 
 // Connect to database
-include "database/db.php";
+require_once "database/db.php";
 
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
-// $exp_ID becomes $experiment_id; the $proj_exp_name_array / $exp_progress_flags /
-// $exp_last_update keys used below follow the new column names
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $exp_ID);
+// $exp_ID becomes $experiment_id; the $project_experiment_name / $experiment_progress /
+// $experiment_updated_at keys used below follow the new column names
+$user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
@@ -33,18 +31,18 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
 }
 ?>
 
-<!-- Navbar? -->
+<!-- Navbar -->
 <?php
-include "includes/navbar.php"; // Include the navbar
+include "includes/navbar.php";
 ?>
 
 <?php
 // Display project name, experiment name, and experiment section name
-include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $proj_exp_name_array
+include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $project_experiment_name
 
 // Diplay the project, experiment, and section name
-echo "Project: " . htmlspecialchars($proj_exp_name_array['Project_Name']) . "<br>";
-echo "Experiment: " . htmlspecialchars($proj_exp_name_array['Experiment_Name']) . "<br><br>";
+echo "Project: " . htmlspecialchars($project_experiment_name['project_name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name']) . "<br><br>";
 ?>
 
 <!-- Link back to parent project -->
@@ -52,7 +50,7 @@ echo "Experiment: " . htmlspecialchars($proj_exp_name_array['Experiment_Name']) 
 // Retrieve project ID for the experiment
 include "includes/fetch_experiment_project_id.php"; // This script fetches the project ID for the specified experiment ID
 // Create link back to parent project page
-echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent project</a><br><br>";
+echo "<a href='project.php?proj_ID=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
 ?>
 
 
@@ -61,7 +59,7 @@ echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent p
 // Retrieve experiment tags from the database
 include "includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
 // Display current tags
-echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
+echo "Experiment tags: " . implode(", ", $experiment_tags) . "<br><br>";
 ?>
 
 <?php
@@ -69,10 +67,12 @@ echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 if ($user_access >= 2) {
     echo "<form action='actions/save_experiment_tags.php' method='post'>"
     // Input fields for new and remove tags
-    . "<input type='text' name='new_tags' placeholder='Add new tags (comma separated)'>"
+    . "<input type='text' name='add_tags' placeholder='Add new tags (comma separated)'>"
+    . "<br>"
     . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
+    . "<br>"
     // Experiment_ID
-    . "<input type='hidden' name='exp_ID' value='" . htmlspecialchars($exp_ID) . "'>"
+    . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
     // Submit button
     . "<input type='submit' value='Add Tags'>"
     . "</form>"
@@ -93,30 +93,30 @@ if (isset($messages_save_experiment_tags)) {
 <!-- markers for partial/total progress and last update -->
 <?php
 // Retrieve and display progress flags for the experiment
-include "includes/fetch_experiment_progress.php"; // Fetches the progress flags as $exp_progress_flags
+include "includes/fetch_experiment_progress.php"; // Fetches the progress flags as $experiment_progress
 // Retrieve the last update timestamp for the experiment
-include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the experiment as $exp_last_update
-echo "Experiment created: " . $exp_last_update['Date_Created'] . "<br>";
-echo "Experiment updated: " . $exp_last_update['Date_Updated'] . "<br><br>";
+include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the experiment as $experiment_updated_at
+echo "Experiment created: " . $experiment_updated_at['created_at'] . "<br>";
+echo "Experiment updated: " . $experiment_updated_at['updated_at'] . "<br><br>";
 
 // Define the progress flag display helper.
 include "includes/render_progress_badge.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_badge("Plan", $exp_progress_flags['Plan_Done'])
-    . "(" . $exp_last_update['Plan_Updated'] . ")<br>"
-    . exp_progress_badge("Log", $exp_progress_flags['Log_Done'])
-    . "(" . $exp_last_update['Log_Updated'] . ")<br>"
-    . exp_progress_badge("Result", $exp_progress_flags['Result_Done'])
-    . "(" . $exp_last_update['Result_Updated'] . ")<br>"
+    . experiment_progress_badge("Plan", $experiment_progress['plan_is_done'])
+    . "(" . $experiment_updated_at['plan_updated_at'] . ")<br>"
+    . experiment_progress_badge("Log", $experiment_progress['log_is_done'])
+    . "(" . $experiment_updated_at['log_updated_at'] . ")<br>"
+    . experiment_progress_badge("Result", $experiment_progress['result_is_done'])
+    . "(" . $experiment_updated_at['result_updated_at'] . ")<br>"
     . "</div>";
 echo "<br><br>";
 ?>
 
 
 <!-- Create links for sub-pages, plan/log/result -->
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Plan">Experiment Plan</a><br>
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Log">Experiment Log</a><br>
-<a href="experiment_section.php?exp_ID=<?php echo urlencode($exp_ID); ?>&section=Result">Experiment Result</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=plan">Experiment Plan</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=log">Experiment Log</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=result">Experiment Result</a><br>
 
 
 <?php

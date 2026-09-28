@@ -1,6 +1,5 @@
 
-echo " This is the user profile page :)";
-?>
+
 
 <?php
 

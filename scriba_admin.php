@@ -1,7 +1,9 @@
 <?php
-session_start(); # should this be here? 
+// session_start(); # should this be here? // Yes, I bundled it in session/init.php
+require_once "session/init.php"; // Start the session and initialize session variables
+require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 
-    include 'database/db.php';
+    require_once 'database/db.php';
 
     $message = "";
     $toastClass = "";
@@ -203,6 +205,9 @@ session_start(); # should this be here?
         Look at this link on how you sort a table by clicking on header:<br> 
         https://www.w3schools.com/howto/howto_js_sort_table.asp
     </p>
+
+    <!-- Logout link/button? -->
+    <a href="actions/logout.php" class="logout">Logout</a><br><br>
 
 
     <!-- adding a company -->

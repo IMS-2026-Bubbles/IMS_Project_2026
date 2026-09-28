@@ -89,17 +89,17 @@ CREATE TABLE `profiles` (
   `first_name` VARCHAR(255),
   `last_name` VARCHAR(255),
   `password` VARCHAR(255) NOT NULL,
-  `agreed_to_toc` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
-    -- Typo! Change to 'tos' = terms of service, not 'toc' = table of contents
-  `saved_changes` INT,
+  `agreed_to_tos` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
+  `saved_changes` INT NOT NULL DEFAULT 0, -- start from 0
   `last_login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on login
-  `streak` INT,
+  `streak` INT NOT NULL DEFAULT 1, -- start from 1, creating the account counts as the first day of the streak
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
   `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
   -- see delete restrictions/cascades above.
   -- Check for this before checking password on login
   PRIMARY KEY (`profile_id`)
 );
+
 
 
 CREATE TABLE `project_members` (

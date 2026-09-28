@@ -1,6 +1,15 @@
 
 
 <?php
+<<<<<<< Updated upstream
+require_once "session/init.php"; // Start the session and initialize session variables
+// No check for user logged in here, front page
+
+=======
+    
+    //Must fix so that sessions are created properly when logged in
+    require_once 'session/init.php';
+>>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -15,9 +24,9 @@
             // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
             // Check if email already exists
             // TODO(schema-migration): Profiles table becomes profiles; email becomes email
-            $sql = "SELECT email FROM profiles WHERE email = ?";
+            $sql = "SELECT email, profile_id FROM profiles WHERE email = ?";
             $checkemailStmt = $conn->prepare($sql);
-            $checkemailStmt->bind_param("s", $email);
+            $checkemailStmt->bind_param("ss", $email, $profile_id);
             $checkemailStmt->execute();
             $checkemailStmt->store_result();
             error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
@@ -36,8 +45,9 @@
                     // for the new columns (agreed_to_toc, saved_changes, streak) and write
                     // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
 
-                    $sql = "SELECT password FROM profiles WHERE email = ?";
-
+                    $sql = "SELECT password, profile_id FROM profiles WHERE email = ?";
+                                // adding profile_id so I can get/use it later. How do we
+                                // make it so I can use it later? -RH
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("s", $email);
                     $stmt->execute();
@@ -59,11 +69,53 @@
                     
                 }
         
+<<<<<<< Updated upstream
             # redirect here instead of in the form down below
             # now the form is sent as a post, it would not be otherwise
+            // Note from Rasmus
+            // Adding a decision tree for what type of account you are logging into,
+                // and redirecting accordingly. Using $profile['profile_id'] (see above).
+                // Scriba admin => scriba_admin.php
+                // User with company_id => project_library.php
+                // User that doesn't belong to a company => user_profile.php
             if ($logincredentials) {
+                // Since login = success, add profile_id to session so we can access it on other pages.
+                $_SESSION['profile_id'] = $profile['profile_id'];
+
+                // Fetch the user's affiliations from the database. Need if they are scriba admin
+                // and if they belong to at least one company.
+                $profile_id = $profile['profile_id'];
+                require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
+
+                // Scriba admin
+                $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
+
+                // User with any company_id
+                $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
+
+                if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
+                    header ("Location:scriba_admin.php");
+                    exit();
+                } elseif (count($user_company_ids) > 0) { // User with company_id => project_library.php
+                    header ("Location:project_library.php");
+                    exit();
+                } else { // User that doesn't belong to a company => user_profile.php
+                    header ("Location:user_profile.php");
+                    exit();
+                }
+
+
+                // header ("Location:project_library.php");
+                // exit();
+=======
+            // redirect here instead of in the form down below
+            // now the form is sent as a post, it would not be otherwise
+            if ($logincredentials) {
+            // MUST MOFIFY SESSION HERE SO THAT LOG IN RECOGNIZED WHEN ENETRING PROJECT LIBRARY
                 header ("Location:project_library.php");
+                $_SESSION['profile_id'] = $profile_id;
                 exit();
+>>>>>>> Stashed changes
             }
 
             $checkemailStmt->close();

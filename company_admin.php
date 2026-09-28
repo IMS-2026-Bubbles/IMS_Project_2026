@@ -1,14 +1,16 @@
 <?php
-session_start(); # should this be here? 
+// session_start(); # should this be here? 
+require_once "session/init.php"; // Make the session available
+require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 
 // connect to database
-    include "database/db.php";
+    require_once "database/db.php";
 
-    $profile_ID = ""; // FIX THIS: track this from the login session somehow
-    $profile_ID = 1; // just for testing
+    $profile_ID = $_SESSION["profile_id"];
+    // $profile_ID = 1; // just for testing
 
-    # to get the company_id of thius person
-    $admin_company_ID = "SELECT company_ID
+    # to get the company_id of this person
+    $admin_company_ID = "SELECT company_id
                         FROM company_members
                         WHERE profile_id = $profile_ID";
 

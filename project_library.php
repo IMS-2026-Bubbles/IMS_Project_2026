@@ -1,24 +1,15 @@
 <?php
 
-// Temporary project data
-$projects = [
-    [
-        "id" => 1,
-        "name" => "Project 1"
-    ],
-    [
-        "id" => 2,
-        "name" => "Project 2"
-    ],
-    [
-        "id" => 3,
-        "name" => "Project 3"
-    ],
-    [
-        "id" => 4,
-        "name" => "Project 4"
-    ]
-];
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+// Start session
+require_once "session/init.php";
+require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+
+// Connect to database
+require_once "database/db.php";
 
 // Search projects
 $search = "";
@@ -27,20 +18,124 @@ if (isset($_GET["search"])) {
     $search = trim($_GET["search"]);
 }
 
-// Filter projects
+// Add project
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
+
+    $projectName = trim($_POST["project_name"]);
+    $labId = (int) $_POST["lab_id"];
+
+    if ($projectName != "" && $labId > 0) {
+
+        $sql = "
+            INSERT INTO projects
+            (name, lab_id)
+            VALUES (?, ?)
+        ";
+
+        $stmt = $conn->prepare($sql);
+
+        $stmt->bind_param(
+            "si",
+            $projectName,
+            $labId
+        );
+
+        $stmt->execute();
+
+        $newProjectId = $stmt->insert_id;
+
+        $stmt->close();
+
+        // Add current user as project owner if logged in
+        if (isset($_SESSION["profile_id"])) {
+
+            $profileId = (int) $_SESSION["profile_id"];
+
+            $sql = "
+                INSERT INTO project_members
+                (project_id, profile_id, role)
+                VALUES (?, ?, 'owner')
+            ";
+
+            $stmt = $conn->prepare($sql);
+
+            $stmt->bind_param(
+                "ii",
+                $newProjectId,
+                $profileId
+            );
+
+            $stmt->execute();
+
+            $stmt->close();
+        }
+
+        // Refresh the project library
+        header("Location: project_library.php");
+
+        exit();
+    }
+}
+
+// Get labs
+$labs = [];
+
+$sql = "
+    SELECT
+        lab_id,
+        name
+    FROM labs
+    ORDER BY name
+";
+
+$result = $conn->query($sql);
+
+while ($row = $result->fetch_assoc()) {
+    $labs[] = $row;
+}
+
+// Get projects
+$projects = [];
+
+$sql = "
+    SELECT
+        projects.project_id,
+        projects.name AS project_name,
+        projects.lab_id,
+        labs.name AS lab_name
+    FROM projects
+    JOIN labs
+        ON projects.lab_id = labs.lab_id
+";
+
 if ($search != "") {
 
-    $filteredProjects = [];
-
-    foreach ($projects as $project) {
-
-        if (stripos($project["name"], $search) !== false) {
-            $filteredProjects[] = $project;
-        }
-    }
-
-    $projects = $filteredProjects;
+    $sql .= " WHERE projects.name LIKE ?";
 }
+
+$sql .= " ORDER BY projects.name";
+
+$stmt = $conn->prepare($sql);
+
+if ($search != "") {
+
+    $searchValue = "%" . $search . "%";
+
+    $stmt->bind_param(
+        "s",
+        $searchValue
+    );
+}
+
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $projects[] = $row;
+}
+
+$stmt->close();
 
 ?>
 
@@ -51,9 +146,13 @@ if ($search != "") {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <!-- Bootstrap -->
+
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
@@ -63,8 +162,9 @@ if ($search != "") {
 
     <title>Project Library</title>
 
-
     <style>
+
+        /* Page */
 
         body {
             min-height: 100vh;
@@ -72,11 +172,15 @@ if ($search != "") {
             color: #263c55;
         }
 
+        /* Library */
+
         .library-container {
             width: 75%;
             max-width: 950px;
             margin: 70px auto;
         }
+
+        /* Search */
 
         .search-box {
             height: 48px;
@@ -92,20 +196,69 @@ if ($search != "") {
             color: #263c55;
         }
 
+        /* Add project */
+
         .add-project {
             height: 48px;
+            width: 100%;
             border: 2px solid #263c55;
             border-radius: 18px;
             background: linear-gradient(100deg, #cbd8f2, #ffffff);
             color: #263c55;
             font-size: 20px;
-            text-decoration: none;
+            cursor: pointer;
         }
 
         .add-project:hover {
-            background-color: #dce6f8;
+            background: #dce6f8;
             color: #263c55;
         }
+
+        /* Add form */
+
+        .add-form {
+            display: none;
+            margin-top: 15px;
+            margin-bottom: 35px;
+            padding: 20px;
+            border: 2px solid #263c55;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .add-input {
+            height: 48px;
+            border: 2px solid #263c55;
+            border-radius: 15px;
+            font-size: 18px;
+            color: #263c55;
+        }
+
+        .add-select {
+            height: 48px;
+            border: 2px solid #263c55;
+            border-radius: 15px;
+            font-size: 18px;
+            color: #263c55;
+        }
+
+        .add-button {
+            height: 48px;
+            border: 2px solid #263c55;
+            border-radius: 15px;
+            background: #7794b6;
+            color: white;
+            font-size: 18px;
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+
+        .add-button:hover {
+            background: #263c55;
+            color: white;
+        }
+
+        /* Project card */
 
         .project-card {
             position: relative;
@@ -145,11 +298,24 @@ if ($search != "") {
             color: #263c55;
         }
 
+        /* Lab name */
+
+        .project-lab {
+            position: absolute;
+            bottom: 15px;
+            left: 18px;
+            font-size: 15px;
+        }
+
+        /* No results */
+
         .no-results {
             text-align: center;
             font-size: 18px;
             padding: 40px;
         }
+
+        /* Mobile */
 
         @media (max-width: 800px) {
 
@@ -163,19 +329,15 @@ if ($search != "") {
 
 </head>
 
-
 <body>
-
 
     <!-- Navigation -->
 
     <?php include "includes/navbar.php"; ?>
 
-
-    <!-- Library -->
+    <!-- Project Library -->
 
     <main class="library-container">
-
 
         <!-- Search -->
 
@@ -195,41 +357,117 @@ if ($search != "") {
 
         </form>
 
+        <!-- Add project button -->
 
-        <!-- Add project -->
-
-        <a
-            href="#"
-            class="add-project d-flex justify-content-center align-items-center mb-5"
+        <button
+            type="button"
+            class="add-project d-flex justify-content-center align-items-center mb-4"
+            onclick="showAddForm()"
         >
             add project
-        </a>
+        </button>
 
+        <!-- Add project form -->
+
+        <div
+            id="addForm"
+            class="add-form"
+        >
+
+            <form
+                action="project_library.php"
+                method="POST"
+            >
+
+                <!-- Project name -->
+
+                <div class="mb-3">
+
+                    <input
+                        type="text"
+                        name="project_name"
+                        class="form-control add-input"
+                        placeholder="project name"
+                        required
+                    >
+
+                </div>
+
+                <!-- Lab -->
+
+                <div class="mb-3">
+
+                    <select
+                        name="lab_id"
+                        class="form-select add-select"
+                        required
+                    >
+
+                        <option value="">
+                            select lab
+                        </option>
+
+                        <?php foreach ($labs as $lab): ?>
+
+                            <option
+                                value="<?php echo $lab["lab_id"]; ?>"
+                            >
+                                <?php
+                                echo htmlspecialchars($lab["name"]);
+                                ?>
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+                <!-- Add button -->
+
+                <button
+                    type="submit"
+                    name="add_project"
+                    class="add-button"
+                >
+                    Add
+                </button>
+
+            </form>
+
+        </div>
 
         <!-- Project list -->
 
         <div class="row g-5">
 
-
             <?php if (count($projects) > 0): ?>
 
-
                 <?php foreach ($projects as $project): ?>
-
-
-                    <!-- Project -->
 
                     <div class="col-md-6">
 
                         <a
-                            href="experiment_library.php?project_id=<?php echo $project["id"]; ?>"
+                            href="experiment_library.php?project_id=<?php echo $project["project_id"]; ?>"
                             class="project-card"
                         >
 
                             <div class="project-title">
 
                                 <?php
-                                echo htmlspecialchars($project["name"]);
+                                echo htmlspecialchars(
+                                    $project["project_name"]
+                                );
+                                ?>
+
+                            </div>
+
+                            <div class="project-lab">
+
+                                <?php
+                                echo htmlspecialchars(
+                                    $project["lab_name"]
+                                );
                                 ?>
 
                             </div>
@@ -238,12 +476,9 @@ if ($search != "") {
 
                     </div>
 
-
                 <?php endforeach; ?>
 
-
             <?php else: ?>
-
 
                 <div class="col-12">
 
@@ -253,14 +488,31 @@ if ($search != "") {
 
                 </div>
 
-
             <?php endif; ?>
-
 
         </div>
 
     </main>
 
+    <script>
+
+        function showAddForm() {
+
+            var form = document.getElementById("addForm");
+
+            if (form.style.display === "none" || form.style.display === "") {
+
+                form.style.display = "block";
+
+            } else {
+
+                form.style.display = "none";
+
+            }
+
+        }
+
+    </script>
 
 </body>
 

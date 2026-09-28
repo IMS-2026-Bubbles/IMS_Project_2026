@@ -1,8 +1,16 @@
 <?php
+<<<<<<< Updated upstream
     ini_set('display_errors', true);
     ini_set('log_errors', true);
     error_reporting(E_ALL);
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    require_once "session/init.php"; // Start the session and initialize session variables
+    // No check for user logged in here, registration page
+
+=======
+    require_once 'Session/init.php';
+>>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -16,12 +24,12 @@
         $last_name = $_POST['last_name'];
         $email = $_POST['email'];
         $password = $_POST['password1']; //Also unsure of how to send password
+        $agreed_to_tos = (int)$_POST['agreed_to_tos'] ?? 0; // checkbox for Terms of Service and GDPR agreement
 
         
 
         // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
         // Check if email already exists
-        // TODO(schema-migration): Profiles table becomes profiles; email becomes email
         $checkemailStmt = $conn->prepare("SELECT email FROM profiles WHERE email = ?");
         $checkemailStmt->bind_param("s", $email);
         $checkemailStmt->execute();
@@ -38,13 +46,15 @@
         else {
                 # use placeholders to protect against sql injection
                 // TODO(schema-migration): becomes INSERT INTO profiles
-                // (email, first_name, last_name, salt, password) — also decide values
+                // (email, first_name, last_name, password) — also decide values
                 // for the new columns (agreed_to_toc, saved_changes, streak) and write
                 // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-                $sql = "INSERT INTO profiles (email, first_name, last_name, password) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_toc) VALUES (?, ?, ?, ?, ?)";
+                                                                            // I know, I made a typo in the db, toc should be tos.
+                                                                            // This has been changed in the db schema file. -RH
                 $stmt = $conn->prepare($sql);
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-                $stmt->bind_param("ssss", $email, $first_name, $last_name, $hashedPassword);
+                $stmt->bind_param("ssssi", $email, $first_name, $last_name, $hashedPassword, $agreed_to_tos);
                 $result = $stmt->execute();
 
 
@@ -67,7 +77,8 @@
         # now the form is sent as a post, it would not be otherwise
         if (isset($result) && $result) {
             header("Location: index.php");
-            exit;
+            exit();
+            session_destroy();
         }
         include 'database/close_db.php';
     }
@@ -150,13 +161,13 @@
 
         <!-- GDPR button -->
         <label class="switch">
-            <input type="checkbox" required>
-            <span class="slider round"></span>
+            <input type="checkbox" for="agreed_to_tos" name="agreed_to_tos" value="1" required>
+            <span class="slider round" name=agreed_to_tos></span>
             <!-- create hyperlink (<a>) so you can view GDPR rules-->
             <!-- # so that you don't change page -->
-            I accept the <a href=# onclick="return GDPR();">GDPR policy</a><br><br>
+            I accept the <a href=# onclick="return GDPR();">Terms of Service and GDPR policy</a><br>
         </label><br><br>
-
+        <a href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a><br><br>
 
         <script>
         function GDPR() {

@@ -1,5 +1,8 @@
 <?php
 
+// Move to actions/login_verification.php?
+
+
 if(isset($_POST['Log in']))
     {
         # fetch data from POST request
@@ -30,14 +33,22 @@ if(isset($_POST['Log in']))
             // (email, first_name, last_name, salt, password) — also decide values
             // for the new columns (agreed_to_toc, saved_changes, streak) and write
             // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-            $sql = "SELECT password FROM profiles WHERE profiles['email'] = ?";
+            $sql = "SELECT password FROM profiles WHERE profiles['email'] = ?"; 
+                    // profiles['email'] should be just email right? -RH
             $stmt = $conn->prepare($sql);
+                    // but now we don't excecute the password retrieval? -RH
             $checkemailStmt->bind_param("s", $email); //unsure
             $checkemailStmt->execute();
             $checkemailStmt->store_result();
             $result = password_verify($password, $checkemailStmt);
 
-            if ($result) {
+            if ($result) { // TRUE = login successful
+            // Adding a decision tree for what type of account you are logging into,
+                // and redirecting accordingly. 
+                // Scriba admin => scriba_admin.php
+                // User with company_id => project_library.php
+                // User that doesn't belong to a company => user_profile.php
+
                     //correct log in info
                     header ("Location: Project_library.php");
                     exit();
@@ -49,6 +60,9 @@ if(isset($_POST['Log in']))
                     }
 
                     $stmt->close();
+            } else { // FALSE = login failed
+                // Redirect back to login page
+                
             }
   
         $checkemailStmt->close();
