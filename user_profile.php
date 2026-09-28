@@ -1,13 +1,19 @@
-
-
-
 <?php
+// starts the session
+require_once 'session/init.php';
+//check user is logged in 
+require_once 'session/check_user_logged_in.php';
+// Connect to database
+require_once 'database/db.php';
+// Get the profile ID from the session
+$profile_id = $_SESSION['profile_id'];
+// echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
 
-//startar sessionen och kopplar till min exempel profil
-session_start();
-$_SESSION["profile_id"] = 1;
-include "database/db.php";
-$profile_ID = 1;
+// //startar sessionen och kopplar till min exempel profil
+// session_start();
+// $_SESSION["profile_id"] = 1;
+// include "database/db.php";
+// $profile_ID = 1;
 
 
 
@@ -43,10 +49,9 @@ $stmt = $conn->prepare( //statement
 $stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
-
+$result = $stmt->get_result();  
+//fetch assoc() PHP mysqli function makes result as an associative array 
+$user = $result->fetch_assoc(); 
 
 
 
@@ -61,12 +66,94 @@ $stmt = $conn->prepare(
 );
 
 //gets the profile form scriba database 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
-//
+
+
+
+
+//selecting company & department?? lab now 
+
+$stmt = $conn->prepare(
+    "SELECT companies.name FROM companies JOIN company_members ON companies.company_id = company_members.company_id WHERE company_members.profile_id = ?"
+);
+
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$company = $result->fetch_assoc();
+
+
+// lab aswell 
+
+$stmt = $conn->prepare(
+    "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
+);
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$lab = $result->fetch_assoc();
+
+
+
+
+
+
+
+
+
+
+//delete user account with SQL DELETE statement
+//i know i should use the is_deleted from profiles but rn its what it is 
+
+// UPDATE profiles SET is_delted = TRUE smth like this 
+
+
+if (isset($_POST["delete_account"])) {
+
+    $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
+    $stmt->bind_param("i", $profile_ID);
+
+    if ($stmt->execute()) {
+        echo "Record deleted successfully";
+    } else {
+        echo "Error deleting user profile: " . $conn->error;
+    }
+}
+
+
+
+//retrieve all information we have about our user 
+
+//this is work in progress on how i should retreive all information 
+
+/* $stmt = $conn->prepare(
+  "SELECT *
+FROM (
+    SELECT * FROM profiles
+    UNION
+    SELECT * FROM companies
+    UNION
+    SELECT * FROM labs
+)
+WHERE ...
+);
+
+
+$stmt->bind_param("i", $profile_ID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$ = $result->fetch_assoc(); */
+
+
 
 
 
@@ -88,7 +175,7 @@ $points = $result->fetch_assoc();
     <!-- <title>Document</title> -->
 
     <!-- i want nav bar here -->
-    <?php// include "includes/navbar.php";?>
+    <?php // include "includes/navbar.php";?>
 
     <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
