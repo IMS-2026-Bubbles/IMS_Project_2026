@@ -4,6 +4,7 @@
 // Arrive from: 
     // outside Scriba (first page you see when you go to the site)
     // actions/login.php (invalid login credentials)
+    // register_user.php (after registering a new user)
 // Action: Display login form and any error messages from previous login attempts
 // Redirect to: 
     // actions/login.php (on form submission)

@@ -1,77 +1,104 @@
 <?php
+// Scriba admin page
+
+// Arrive from: 
+    // index.php (after logging in as a Scriba admin)
+    // scriba_admin.php (after making/removing a user as admin)
+    // scriba_admin.php (after registering a new company)
+// Action:
+    // Display all users and their company affiliations
+    // Display all companies and their unique IDs
+    // Allow admins to make users admins or remove admin rights
+    // Allow admins to register new companies
+// Redirect to:
+    // manage_company.php (register company, make/remove admin rights)
+
+
 require_once "session/init.php"; // Start the session and initialize session variables
 require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 require_once 'database/db.php';
 
-    $message = "";
-    $toastClass = "";
-
-    # HANDLE POST METHOD TO CHANGE ADMIN STATUS
-    # post methods should be at top in order to reload page directly
-    if(isset($_POST['make_admin'])){
-        $profile_id = $_POST['profile_id'];
-        $sql_admin = "UPDATE company_members SET role = 'admin' WHERE  profile_id = ?";
-        $stmt = $conn->prepare($sql_admin);
-        $stmt->bind_param("i", $profile_id);
-        $result = $stmt->execute();}
-
-    if(isset($_POST['admin_removal'])){
-        $profile_id = $_POST['profile_id'];
-        $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
-        $stmt = $conn->prepare($sql_admin);
-        $stmt->bind_param("i", $profile_id);
-        $result = $stmt->execute();}
 
 
+if (isset($_SESSION['manage_company_message'])) {
+    $manage_company_message = $_SESSION['manage_company_message'];
+    unset($_SESSION['manage_company_message']);
+} else {
+    $manage_company_message = "";
+}
+
+if (isset($_SESSION['manage_company_toastClass'])) {
+    $manage_company_toastClass = $_SESSION['manage_company_toastClass'];
+    unset($_SESSION['manage_company_toastClass']);
+} else {
+    $manage_company_toastClass = "";
+}
+    // # HANDLE POST METHOD TO CHANGE ADMIN STATUS
+    // # post methods should be at top in order to reload page directly
+    // if(isset($_POST['make_admin'])){
+    //     $profile_id = $_POST['profile_id'];
+    //     $sql_admin = "UPDATE company_members SET role = 'admin' WHERE  profile_id = ?";
+    //     $stmt = $conn->prepare($sql_admin);
+    //     $stmt->bind_param("i", $profile_id);
+    //     $result = $stmt->execute();}
+
+    // if(isset($_POST['admin_removal'])){
+    //     $profile_id = $_POST['profile_id'];
+    //     $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
+    //     $stmt = $conn->prepare($sql_admin);
+    //     $stmt->bind_param("i", $profile_id);
+    //     $result = $stmt->execute();}
 
 
-    # if button to register new:
-    if(isset($_POST['register_company']))
-    {
-    # fetch data from POST request
-    $name = $_POST['name'];
-
-    # write a function that creates unique ID
-    function createUniqueCompanyID($conn) {
-        $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
-        $code = "C"; # all company ids start with C
-        # for loop that generates a random number and pick the char with that position
-        for ($i = 0; $i < 9; $i++) {
-            $random_number = random_int(0, strlen($characters) - 1);
-            $code .= $characters[$random_number];}
-        return $code;}
-
-    $company_id = createUniqueCompanyID($conn);
-
-    # add a check here as well so that the same companies isn't added twice
-    $checkCompStmt = $conn->prepare("SELECT name FROM companies WHERE name = ?");
-    $checkCompStmt->bind_param("s", $name);
-    $checkCompStmt->execute();
-    $checkCompStmt->store_result();
-    error_log("Checking company name: [$name], num_rows = " . $checkCompStmt->num_rows);
 
 
-    // check if the number of rows are more than 0 => Email exists
-    if ($checkCompStmt->num_rows > 0) {
-        $message = "Company already exists";
-        $toastClass = "#ff0019"; // Primary color
-    } 
+    // # if button to register new:
+    // if(isset($_POST['register_company']))
+    // {
+    // # fetch data from POST request
+    // $name = $_POST['name'];
+
+    // # write a function that creates unique ID
+    // function createUniqueCompanyID($conn) {
+    //     $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
+    //     $code = "C"; # all company ids start with C
+    //     # for loop that generates a random number and pick the char with that position
+    //     for ($i = 0; $i < 9; $i++) {
+    //         $random_number = random_int(0, strlen($characters) - 1);
+    //         $code .= $characters[$random_number];}
+    //     return $code;}
+
+    // $company_id = createUniqueCompanyID($conn);
+
+    // # add a check here as well so that the same companies isn't added twice
+    // $checkCompStmt = $conn->prepare("SELECT name FROM companies WHERE name = ?");
+    // $checkCompStmt->bind_param("s", $name);
+    // $checkCompStmt->execute();
+    // $checkCompStmt->store_result();
+    // error_log("Checking company name: [$name], num_rows = " . $checkCompStmt->num_rows);
+
+
+    // // check if the number of rows are more than 0 => Email exists
+    // if ($checkCompStmt->num_rows > 0) {
+    //     $message = "Company already exists";
+    //     $toastClass = "#ff0019"; // Primary color
+    // } 
     
-    else {
-    # use placeholders to protect against sql injection
-    $sql = "INSERT INTO companies(name, company_id) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $name, $company_id);
-    $result = $stmt->execute();
+    // else {
+    // # use placeholders to protect against sql injection
+    // $sql = "INSERT INTO companies(name, company_id) VALUES (?, ?)";
+    // $stmt = $conn->prepare($sql);
+    // $stmt->bind_param("ss", $name, $company_id);
+    // $result = $stmt->execute();
 
-    # echos how it went
-    if ($result) {
-        $message = "Company created";
-        $toastClass = "#1ea324"; // Primary color
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-    }}
+    // # echos how it went
+    // if ($result) {
+    //     $message = "Company created";
+    //     $toastClass = "#1ea324"; // Primary color
+    // } else {
+    //     echo "Error: " . $stmt->error;
+    // }
+    // }}
 
 
 
@@ -191,9 +218,9 @@ require_once 'database/db.php';
 <body>
     <h1>Admin Page</h1>
     <!-- Makes sure that the message is actually displayed -->
-    <?php if (!empty($message)): ?>
-        <div style="background-color: <?php echo $toastClass; ?>; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-            <?php echo htmlspecialchars($message); ?>
+    <?php if (!empty($manage_company_message)): ?>
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
 
