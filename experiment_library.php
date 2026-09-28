@@ -6,10 +6,15 @@ ini_set('display_startup_errors', 1);
 
 // Start session
 require_once "session/init.php";
-require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+require_once "session/check_user_logged_in.php";
 
 // Connect to database
 require_once "database/db.php";
+
+
+// Get current user
+$profileId = (int) $_SESSION["profile_id"];
+
 
 // Get project ID
 $projectId = 0;
@@ -22,6 +27,41 @@ if (isset($_POST["project_id"])) {
     $projectId = (int) $_POST["project_id"];
 }
 
+
+// Check that the project belongs to the user's company
+if ($projectId > 0) {
+
+    $checkSql = "
+        SELECT projects.project_id
+        FROM projects
+        JOIN labs
+            ON projects.lab_id = labs.lab_id
+        JOIN company_members
+            ON labs.company_id = company_members.company_id
+        WHERE projects.project_id = ?
+          AND company_members.profile_id = ?
+    ";
+
+    $checkStmt = $conn->prepare($checkSql);
+
+    $checkStmt->bind_param(
+        "ii",
+        $projectId,
+        $profileId
+    );
+
+    $checkStmt->execute();
+
+    $checkResult = $checkStmt->get_result();
+
+    if ($checkResult->num_rows == 0) {
+        die("You do not have permission to access this project.");
+    }
+
+    $checkStmt->close();
+}
+
+
 // Add experiment
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
@@ -29,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
     if ($projectId > 0 && $experimentName != "") {
 
+        // Add new experiment
         $sql = "
             INSERT INTO experiments
             (name, project_id)
@@ -47,6 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
         $stmt->close();
 
+
         // Return to current project
         header(
             "Location: experiment_library.php?project_id=" . $projectId
@@ -56,12 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
     }
 }
 
+
 // Search experiments
 $search = "";
 
 if (isset($_GET["search"])) {
     $search = trim($_GET["search"]);
 }
+
 
 // Get experiments
 $projectExperiments = [];
@@ -70,26 +114,36 @@ if ($projectId > 0) {
 
     $sql = "
         SELECT
-            experiment_id,
-            name
+            experiments.experiment_id,
+            experiments.name
         FROM experiments
-        WHERE project_id = ?
+        JOIN projects
+            ON experiments.project_id = projects.project_id
+        JOIN labs
+            ON projects.lab_id = labs.lab_id
+        JOIN company_members
+            ON labs.company_id = company_members.company_id
+        WHERE company_members.profile_id = ?
+          AND projects.project_id = ?
     ";
 
     if ($search != "") {
-        $sql .= " AND name LIKE ?";
+        $sql .= " AND experiments.name LIKE ?";
     }
 
-    $sql .= " ORDER BY name";
+    $sql .= " ORDER BY experiments.name";
+
 
     $stmt = $conn->prepare($sql);
+
 
     if ($search != "") {
 
         $searchValue = "%" . $search . "%";
 
         $stmt->bind_param(
-            "is",
+            "iis",
+            $profileId,
             $projectId,
             $searchValue
         );
@@ -97,10 +151,12 @@ if ($projectId > 0) {
     } else {
 
         $stmt->bind_param(
-            "i",
+            "ii",
+            $profileId,
             $projectId
         );
     }
+
 
     $stmt->execute();
 
@@ -293,7 +349,7 @@ if ($projectId > 0) {
             text-decoration: underline;
         }
 
-        /* Mobile */
+        /* Mobile layout */
 
         @media (max-width: 800px) {
 
@@ -409,6 +465,8 @@ if ($projectId > 0) {
             <?php if (count($projectExperiments) > 0): ?>
 
                 <?php foreach ($projectExperiments as $experiment): ?>
+
+                    <!-- Experiment -->
 
                     <div class="col-md-6">
 

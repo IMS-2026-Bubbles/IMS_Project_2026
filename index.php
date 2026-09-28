@@ -121,6 +121,9 @@ require_once "session/init.php"; // Start the session and initialize session var
     <style>
         body{
             padding: 70px ; /* Adds 50px of space around the inside of the web browser*/
+            min-height: 100vh;
+            background: linear-gradient(120deg, #7794b6, #d4f6fd);
+            color: #263c55;
         }
     </style>
     

@@ -39,7 +39,7 @@ INSERT INTO `labs` (`lab_id`, `company_id`, `name`) VALUES
 --   $2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM
 INSERT INTO `profiles`
     (`profile_id`, `email`, `first_name`, `last_name`, `password`,
-     `agreed_to_toc`, `saved_changes`, `last_login_at`, `streak`,
+     `agreed_to_tos`, `saved_changes`, `last_login_at`, `streak`,
      `is_scriba_admin`, `is_deleted`)
 VALUES
     (1, 'alice.chen@example.com', 'Alice', 'Chen',
