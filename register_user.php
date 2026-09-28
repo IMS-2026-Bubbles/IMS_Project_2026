@@ -43,9 +43,9 @@
                 # use placeholders to protect against sql injection
                 // TODO(schema-migration): becomes INSERT INTO profiles
                 // (email, first_name, last_name, password) — also decide values
-                // for the new columns (agreed_to_toc, saved_changes, streak) and write
+                // for the new columns (agreed_to_tos, saved_changes, streak) and write
                 // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
-                $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_toc) VALUES (?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_tos) VALUES (?, ?, ?, ?, ?)";
                                                                             // I know, I made a typo in the db, toc should be tos.
                                                                             // This has been changed in the db schema file. -RH
                 $stmt = $conn->prepare($sql);

@@ -82,7 +82,7 @@ $stmt = $conn->prepare(
 );
 
 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
@@ -95,7 +95,7 @@ $stmt = $conn->prepare(
     "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
 );
 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
@@ -119,7 +119,7 @@ $lab = $result->fetch_assoc();
 if (isset($_POST["delete_account"])) {
 
     $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
-    $stmt->bind_param("i", $profile_ID);
+    $stmt->bind_param("i", $profile_id);
 
     if ($stmt->execute()) {
         echo "Record deleted successfully";
