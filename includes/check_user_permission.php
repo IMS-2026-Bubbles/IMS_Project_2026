@@ -60,24 +60,26 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
         // Check permission for an experiment
             // Create query
         $sql_exp_permission = 
-            "SELECT MAX(CASE -- Highest permission => access level
+            "SELECT MAX(GREATEST( -- Highest permission => access level
                 -- Scriba admin => no access for privacy reasons
                 -- Company admin => edit (Company member -> no access)
-                WHEN company_members.role = 'admin'    THEN 2
-                -- Lab group admin => edit
-                WHEN lab_members.role = 'admin'  THEN 2
-                -- Lab group member => read
-                WHEN lab_members.role = 'member' THEN 1
+                CASE 
+                    WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
+                -- Lab group admin => edit, member => read
+                CASE 
+                    WHEN lab_members.role = 'admin'        THEN 2
+                    WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
                 -- Project
-                WHEN project_members.role = 'owner'    THEN 3
-                WHEN project_members.role = 'edit'     THEN 2
-                WHEN project_members.role = 'read'     THEN 1
+                CASE
+                    WHEN project_members.role = 'owner'    THEN 3
+                    WHEN project_members.role = 'edit'     THEN 2
+                    WHEN project_members.role = 'read'     THEN 1 ELSE 0 END,
                 -- Experiment owner is project owner
-                WHEN experiment_members.role = 'edit'  THEN 2
-                WHEN experiment_members.role = 'read'  THEN 1
-                -- None of the above => no access
-                ELSE 0
-                END) AS `access` -- New column named Access to hold the highest permission level
+                CASE
+                    WHEN experiment_members.role = 'edit'  THEN 2
+                    WHEN experiment_members.role = 'read'  THEN 1 ELSE 0 END
+                ) -- End of GREATEST
+                ) AS `access` -- New column named Access to hold the highest permission level
             FROM experiments 
             -- Add tables for bridging towards member tables
             JOIN projects
@@ -128,21 +130,22 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
         // Check permission for a project
             // Create query
         $sql_proj_permission = 
-            "SELECT MAX(CASE -- Highest permission => access level
+            "SELECT MAX(GREATEST( -- Highest permission => access level
                 -- Scriba admin => no access for privacy reasons
                 -- Company admin => edit (Company member -> no access)
-                WHEN company_members.role = 'admin'    THEN 2
-                -- Lab group admin => edit
-                WHEN lab_members.role = 'admin'  THEN 2
-                -- Lab group member => read
-                WHEN lab_members.role = 'member' THEN 1
+                CASE 
+                    WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
+                -- Lab group admin => edit, member => read
+                CASE
+                    WHEN lab_members.role = 'admin'        THEN 2
+                    WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
                 -- Project
-                WHEN project_members.role = 'owner'    THEN 3
-                WHEN project_members.role = 'edit'     THEN 2
-                WHEN project_members.role = 'read'     THEN 1
-                -- None of the above => no access
-                ELSE 0
-                END) AS `access`
+                CASE
+                    WHEN project_members.role = 'owner'    THEN 3
+                    WHEN project_members.role = 'edit'     THEN 2
+                    WHEN project_members.role = 'read'     THEN 1 ELSE 0 END
+                ) -- End of GREATEST
+                ) AS `access`
             FROM projects
             -- Add tables for bridging towards member tables
             LEFT JOIN labs
@@ -194,9 +197,9 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
             -- Company admin => edit (Company member -> no access)
             WHEN company_members.role = 'admin'    THEN 2
             -- Lab group admin => edit
-            WHEN lab_members.role = 'admin'  THEN 2
+            WHEN lab_members.role = 'admin'        THEN 2
             -- Lab group member => read
-            WHEN lab_members.role = 'member' THEN 1
+            WHEN lab_members.role = 'member'       THEN 1
             -- None of the above => no access
             ELSE 0
             END) AS `access`

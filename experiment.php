@@ -32,9 +32,9 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
 }
 ?>
 
-<!-- Navbar? -->
+<!-- Navbar -->
 <?php
-include "includes/navbar.php"; // Include the navbar
+include "includes/navbar.php";
 ?>
 
 <?php
@@ -42,8 +42,8 @@ include "includes/navbar.php"; // Include the navbar
 include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $project_experiment_name
 
 // Diplay the project, experiment, and section name
-echo "Project: " . htmlspecialchars($project_experiment_name['Project_Name']) . "<br>";
-echo "Experiment: " . htmlspecialchars($project_experiment_name['Experiment_Name']) . "<br><br>";
+echo "Project: " . htmlspecialchars($project_experiment_name['project_name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name']) . "<br><br>";
 ?>
 
 <!-- Link back to parent project -->
@@ -51,7 +51,7 @@ echo "Experiment: " . htmlspecialchars($project_experiment_name['Experiment_Name
 // Retrieve project ID for the experiment
 include "includes/fetch_experiment_project_id.php"; // This script fetches the project ID for the specified experiment ID
 // Create link back to parent project page
-echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent project</a><br><br>";
+echo "<a href='project.php?proj_ID=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
 ?>
 
 
@@ -60,7 +60,7 @@ echo "<a href='project.php?proj_ID=" . urlencode($proj_ID) . "'>Back to parent p
 // Retrieve experiment tags from the database
 include "includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
 // Display current tags
-echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
+echo "Experiment tags: " . implode(", ", $experiment_tags) . "<br><br>";
 ?>
 
 <?php
@@ -68,8 +68,10 @@ echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
 if ($user_access >= 2) {
     echo "<form action='actions/save_experiment_tags.php' method='post'>"
     // Input fields for new and remove tags
-    . "<input type='text' name='new_tags' placeholder='Add new tags (comma separated)'>"
+    . "<input type='text' name='add_tags' placeholder='Add new tags (comma separated)'>"
+    . "<br>"
     . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
+    . "<br>"
     // Experiment_ID
     . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
     // Submit button

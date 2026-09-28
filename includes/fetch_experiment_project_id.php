@@ -3,26 +3,26 @@
 
 // This script fetches the project ID for the specified experiment ID
 // It expects the variable $experiment_id to be set before inclusion, which is used to query the database for the project ID associated with that experiment.
-// Returns the project ID in $proj_ID, which can be used to link back to the parent project page.
+// Returns the project ID in $project_id, which can be used to link back to the parent project page.
 
 //  Retieve project ID
 // TODO(schema-migration): old table/column names and internally inconsistent
 // (Project_ID selected, Experiment_ID in WHERE, Proj_ID/experiment_id in the table).
 // Becomes: SELECT project_id FROM experiments WHERE experiment_id = ?
     // Create query
-$sql_exp_parent = "SELECT Project_ID FROM Proj_Experiment WHERE Experiment_ID = ?";
+$sql_experiment_parent = "SELECT project_id FROM experiments WHERE experiment_id = ?";
     // Prepare query
-$stmt_exp_parent = $conn->prepare($sql_exp_parent);
+$stmt_experiment_parent = $conn->prepare($sql_experiment_parent);
     // Bind the experiment ID parameter
-$stmt_exp_parent->bind_param("s", $experiment_id);
+$stmt_experiment_parent->bind_param("s", $experiment_id);
     // Execute query
-if ($stmt_exp_parent->execute()) {
+if ($stmt_experiment_parent->execute()) {
     // Get the result set from the executed query
-    $result_exp_parent = $stmt_exp_parent->get_result(); // get_result() returns a mysqli_result object
+    $result_experiment_parent = $stmt_experiment_parent->get_result(); // get_result() returns a mysqli_result object
     // Fetch the project ID from the result set
-    $proj_ID = $result_exp_parent->fetch_assoc()['Project_ID']; // fetch_assoc() fetches a single row as an associative array, needed to access the value
+    $project_id = $result_experiment_parent->fetch_assoc()['project_id']; // fetch_assoc() fetches a single row as an associative array, needed to access the value
 } else {
-    echo "Error retrieving project ID for experiment " . $experiment_id . " : " . $stmt_exp_parent->error . "<br>";
+    echo "Error retrieving project ID for experiment " . $experiment_id . " : " . $stmt_experiment_parent->error . "<br>";
 }
 
 // Continue with page

@@ -10,27 +10,27 @@
 // become experiments/projects; columns experiment_id/Exp_Name/Proj_ID/Proj_Name become
 // experiment_id/name/project_id/name. The $project_experiment_name keys change with them.
 // Create query
-$sql_proj_exp_name =
+$sql_project_experiment_name =
     "SELECT 
-        Proj_Experiment.experiment_id, 
-        Proj_Experiment.Exp_Name, 
-        Project.Proj_ID, 
-        Project.Proj_Name 
-    FROM Proj_Experiment 
-    JOIN Project 
-        ON Proj_Experiment.Proj_ID = Project.Proj_ID 
-    WHERE Proj_Experiment.experiment_id = ?
+        experiments.experiment_id, 
+        experiments.name AS experiment_name, 
+        projects.project_id, 
+        projects.name AS project_name
+    FROM experiments 
+    JOIN projects 
+        ON experiments.project_id = projects.project_id 
+    WHERE experiments.experiment_id = ?
     ";
     // Prepare query
-$stmt_proj_exp_name = $conn->prepare($sql_proj_exp_name);
+$stmt_project_experiment_name = $conn->prepare($sql_project_experiment_name);
     // Bind parameters
-$stmt_proj_exp_name->bind_param("s", $experiment_id);
+$stmt_project_experiment_name->bind_param("s", $experiment_id);
     // Execute query
-if ($stmt_proj_exp_name->execute()) {
+if ($stmt_project_experiment_name->execute()) {
     // Get the result set from the executed query
-    $result_proj_exp_name = $stmt_proj_exp_name->get_result(); // get_result() returns a mysqli_result object
+    $result_project_experiment_name = $stmt_project_experiment_name->get_result(); // get_result() returns a mysqli_result object
     // Fetch the project and experiment names into an associative array
-    $project_experiment_name = $result_proj_exp_name->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array
+    $project_experiment_name = $result_project_experiment_name->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array
     // Check if the result is empty (i.e., no experiment found with the given ID)
     if (!$project_experiment_name) {
         echo "No experiment found with ID: " . htmlspecialchars($experiment_id);

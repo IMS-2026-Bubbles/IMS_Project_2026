@@ -21,8 +21,8 @@ if ($experiment_id === null) {
     header("Location: ../project_library.php");
     exit();
 }
-$exp_tags_add = $_POST['new_tags'] ?? "";
-$exp_tags_remove = $_POST['remove_tags'] ?? "";
+$add_experiment_tags = $_POST['add_tags'] ?? "";
+$remove_experiment_tags = $_POST['remove_tags'] ?? "";
 
 // Connect to database
 include "../database/db.php";
@@ -30,7 +30,7 @@ include "../database/db.php";
 // Check if the user has permission to edit tags for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
+$user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
@@ -41,15 +41,15 @@ if ($user_access < 2) {
 }
 
 // Remove tags from the database
-if ($exp_tags_remove !== '') {
+if ($remove_experiment_tags !== '') {
     $messages[] = "Removing tags:<br>";
 
     // Relevant variables
         // $experiment_id
-        // $exp_tags_remove
+        // $remove_experiment_tags
 
     // Convert tags to array and sanitize
-    $remove_tags_array = explode(',', $exp_tags_remove);
+    $remove_tags_array = explode(',', $remove_experiment_tags);
     $remove_tags_array = array_map('trim', $remove_tags_array); // Trim whitespace
     $remove_tags_array = array_filter($remove_tags_array); // Remove empty values
 
@@ -57,18 +57,18 @@ if ($exp_tags_remove !== '') {
         // Fetch existing tags for the experiment
     include "../includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
         // Compare remove tags with existing tags
-    $nonexistent_remove_tags = array_diff($remove_tags_array, $exp_tags_array);
-    if (!empty($nonexistent_remove_tags)) {
-        $messages[] = "Nonexistent tags: " . implode(", ", $nonexistent_remove_tags) . "<br>";
+    $nonexistent_tags_to_remove = array_diff($remove_tags_array, $experiment_tags);
+    if (!empty($nonexistent_tags_to_remove)) {
+        $messages[] = "Nonexistent tags: " . implode(", ", $nonexistent_tags_to_remove) . "<br>";
         // Remove nonexistent tags from the remove tags array
-        $remove_tags_array = array_diff($remove_tags_array, $nonexistent_remove_tags);
+        $remove_tags_array = array_diff($remove_tags_array, $nonexistent_tags_to_remove);
     }
 
     // Remove tags from the database
 // TODO(schema-migration): old table/column names. Becomes
 // DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?
         // Create query to delete tag
-    $sql_delete_tag = "DELETE FROM Exp_Tag WHERE Experiment_ID = ? AND Exp_Tag = ?";
+    $sql_delete_tag = "DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?";
         // Prepare query
     $stmt_delete_tag = $conn->prepare($sql_delete_tag);
         // Loop over each tag and bind + execute
@@ -87,38 +87,38 @@ if ($exp_tags_remove !== '') {
 
 
 // Insert new tags into the database
-if ($exp_tags_add !== '') {
+if ($add_experiment_tags !== '') {
     $messages[] = "Adding tags:<br>";
 
     // Relevant variables
         // $experiment_id
-        // $exp_tags_add
+        // $add_experiment_tags
 
     // Convert tags to array and sanitize
-    $new_tags_array = explode(',', $exp_tags_add);
-    $new_tags_array = array_map('trim', $new_tags_array); // Trim whitespace
-    $new_tags_array = array_filter($new_tags_array); // Remove empty values
+    $add_tags_array = explode(',', $add_experiment_tags);
+    $add_tags_array = array_map('trim', $add_tags_array); // Trim whitespace
+    $add_tags_array = array_filter($add_tags_array); // Remove empty values
 
     // Check if tags already exist
         // Fetch existing tags for the experiment
     include "../includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
         // Compare new tags with existing tags
-    $duplicate_new_tags = array_intersect($new_tags_array, $exp_tags_array);
+    $duplicate_new_tags = array_intersect($add_tags_array, $experiment_tags);
     if (!empty($duplicate_new_tags)) {
         $messages[] = "Previously existing tags: " . implode(", ", $duplicate_new_tags) . "<br>";
         // Remove duplicate tags from the new tags array
-        $new_tags_array = array_diff($new_tags_array, $duplicate_new_tags);
+        $add_tags_array = array_diff($add_tags_array, $duplicate_new_tags);
     }
 
     // Insert new tags into the database
 // TODO(schema-migration): old table/column names. Becomes
 // INSERT INTO experiment_tags (experiment_id, tag) VALUES (?, ?)
         // Create query to insert tag
-    $sql_insert_tag = "INSERT INTO Exp_Tag (Experiment_ID, Exp_Tag) VALUES (?, ?)";
+    $sql_insert_tag = "INSERT INTO experiment_tags (experiment_id, tag) VALUES (?, ?)";
         // Prepare query
     $stmt_insert_tag = $conn->prepare($sql_insert_tag);
         // Loop over each tag and bind + execute
-    foreach ($new_tags_array as $tag) {
+    foreach ($add_tags_array as $tag) {
         // Bind parameters
         $stmt_insert_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
