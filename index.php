@@ -40,7 +40,7 @@ require_once "session/init.php"; // Start the session and initialize session var
             else {
                     # use placeholders to protect against sql injection
                     // TODO(schema-migration): becomes INSERT INTO profiles
-                    // for the new columns (agreed_to_toc, saved_changes, streak) and write
+                    // for the new columns (agreed_to_tos, saved_changes, streak) and write
                     // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
 
                     $sql = "SELECT password, profile_id FROM profiles WHERE email = ?";
