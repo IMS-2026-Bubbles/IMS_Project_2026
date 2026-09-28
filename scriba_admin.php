@@ -1,5 +1,4 @@
 <?php
-// session_start(); # should this be here? // Yes, I bundled it in session/init.php
 require_once "session/init.php"; // Start the session and initialize session variables
 require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 
@@ -139,12 +138,7 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     } else {
         $rows_to_display_company = "No added companies";
     }
-
-
-
-    
-    // disconnect from database
-    include "database/close_db.php";
+   
     ?>
 
 
@@ -154,9 +148,47 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loads Bootstrap -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+
+
+    <!-- When improving front end, this is where updates can be made -->
+    <style>
+        /* For tables */
+        .table{
+            --bs-table-hover-bg: #D6EEEE; /* Added so that colour changes over a row */
+
+        }
+        
+        /* If div class = container, the tables will be next to each other */
+        .container{ 
+            display: flex; 
+            justify-content: center;  /* the tables are in the center of page */
+            gap: 50px;}
+
+        /* I don't manage to make this look nice, but this is the start :) */
+        .register_form{
+            padding: 10px ; /* adds 50px of space between the content of the container and its edges */
+            margin: 0 auto; /* centers the container in the web browser */ 
+        } 
+        
+    </style>
+
+
+
     <title>Admin</title>
 </head>
 
+<!-- i want nav bar here -->
+    <?php 
+    include "includes/navbar.php";
+    ?>
 <body>
     <h1>Admin Page</h1>
     <!-- Makes sure that the message is actually displayed -->
@@ -166,48 +198,18 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
         </div>
     <?php endif; ?>
 
-    <!-- When improving front end, this is where updates can be made -->
-    <style>
-        /* For tables */
-        table{
-            text-align: left;
-            border-collapse: collapse; /* Make underline to be connected */
-            padding: 10px;
-        }
-        
-        /* For table header and data */
-        th, td {
-            text-align: left;
-            border-bottom: 1px solid #ddd; /* Have underlines */
-            padding: 10px;
-        }
+    
 
-        /* Hover is so that if you have your mouse on row, colour changes on that row */
-        tr:hover {background-color: #D6EEEE;}
+    
 
-        /* If div class = container, the tables will be next to each other */
-        .container{ 
-            display: flex; 
-            justify-content: center;  /* the tables are in the center of page */
-            gap: 50px;}
-
-        /* I don't manage to make this look nice, but this is the start :) */
-        .register_form{
-            padding: 50px ; /* adds 50px of space between the content of the container and its edges */
-            margin: 0 auto; /* centers the container in the web browser */ 
-        } 
-        
-    </style>
-
-
+<!--
     <p>This is the page that ONLY Scriba admin (superadmin) will be able to see. This is also the only page this type of admin will have access to. </p>
 
         Look at this link on how you sort a table by clicking on header:<br> 
         https://www.w3schools.com/howto/howto_js_sort_table.asp
-    </p>
+    </p> -->
 
-    <!-- Logout link/button? -->
-    <a href="actions/logout.php" class="logout">Logout</a><br><br>
+
 
 
     <!-- adding a company -->
@@ -217,7 +219,7 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
         <label for="companies">Register a new company</label><br>
-        <input type="text" class="" name="name" required><br>
+        <input type="text" class="" name="name" required><br><br>
 
     <input type="submit" class="btn btn-dark rounded-pill" name="register_company" value="Register"><br><br>
     </form>
@@ -226,8 +228,10 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     <!-- Table 1 -->
     <div class = "container">
     <div>
-        <table class = "table table-striped"> <!-- update to another class maybe -->
-            <thead>
+        <!--<table class = "table table-striped">  update to another class maybe -->
+        <table class="table table-striped table-hover">
+
+        <thead>
             <tr>
                 <!-- specifying the column names names -->
             <th scope="col">Name</th>
@@ -235,7 +239,7 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
             <th scope="col">Status</th>
             <th scope="col">Action</th>
             </tr>
-        <thead> 
+    </thead> 
         <tbody>
             <?php echo $rows_to_display; ?>
         </tbody>
@@ -245,7 +249,8 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     
     <!-- Table 2 -->
     <div>
-        <table class = "table table-striped"> <!-- update to another class maybe -->
+        <!-- <table class = "table table-striped">  update to another class maybe -->
+            <table class="table table-striped table-hover">
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -263,3 +268,12 @@ require_once "session/check_user_logged_in.php"; // Check if the user is logged 
     
 </body>
 </html>
+
+
+<?php
+
+
+ // disconnect from database
+    include "database/close_db.php";
+
+?>

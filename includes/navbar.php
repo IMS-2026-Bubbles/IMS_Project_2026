@@ -65,6 +65,16 @@ require_once "check_user_permission.php"; // Include the user permission check f
         <ul class="navbar-nav">
         <!-- Company/lab admin page = company/lab admin only -->
             <?php
+
+            // -------------------------- TEMP DEBUG - remove when done -------------
+            echo "<pre>";
+            echo "company_id set? "; var_dump(isset($company_id));
+            echo "company_id value: "; var_dump($company_id ?? null);
+            echo "profile_id: "; var_dump($_SESSION['profile_id'] ?? null);
+            echo "DEBUG company_id=" . var_export($company_id ?? null, true) . "<br>";
+
+            // -----------------------------------------------------------------
+
             if (isset($company_id)) {
                 $company_admin_access_level = check_user_permission($conn, $_SESSION['profile_id'], 'company', $company_id); 
                 if ($company_admin_access_level >= 3) { // 3 = admin access level
@@ -90,22 +100,26 @@ require_once "check_user_permission.php"; // Include the user permission check f
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='scriba_admin.php'>Scriba Admin</a>
                       </li>";
+            
+            
             } else { // Not scriba admin, show buttons for everyone else
                 // <!-- Home Page/Projects = everyone (not scriba) -->
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='project_library.php'>Home Page/Projects</a>
                       </li>";
-                // <!-- Leaderboard = everyone (not scriba?) -->
+                // <!-- Leaderboard = everyone (not scriba) -->
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='leaderboard.php'>Leaderboard</a>
                       </li>";
+                
+                // <!-- Profile page = everyone (not scriba) -->
+                echo "<li class='nav-item'>
+                        <a class='nav-link active' href='user_profile.php'>User Profile</a> 
+                        </li>";
             }
             ?>
        
-        <!-- Profile page = everyone -->
-            <li class="nav-item">
-                <a class="nav-link active" href="user_profile.php">User Profile</a> 
-            </li>
+        
         <!-- Logout = everyone -->
             <li class="nav-item">
                 <a class="nav-link active logout" href="actions/logout.php">Log out</a> 

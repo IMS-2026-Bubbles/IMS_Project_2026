@@ -1,47 +1,193 @@
 <?php
-require_once "session/init.php"; // Start the session and initialize session variables
-require_once "session/check_user_logged_in.php"; // Check if the user is logged in
-require_once 'database/db.php';
+
+require_once "session/init.php";
+require_once "session/check_user_logged_in.php";
+require_once "database/db.php";
 
 
-// Temporary leaderboard data
-$users = [
-    [
-        "name" => "Alice",
-        "email" => "alice@example.com",
-        "company" => "Company A",
-        "lab_group" => "Lab Group 1",
-        "points" => 120
-    ],
-    [
-        "name" => "Bob",
-        "email" => "bob@example.com",
-        "company" => "Company B",
-        "lab_group" => "Lab Group 2",
-        "points" => 105
-    ],
-    [
-        "name" => "Charlie",
-        "email" => "charlie@example.com",
-        "company" => "Company A",
-        "lab_group" => "Lab Group 1",
-        "points" => 95
-    ],
-    [
-        "name" => "David",
-        "email" => "david@example.com",
-        "company" => "Company B",
-        "lab_group" => "Lab Group 3",
-        "points" => 80
-    ]
-];
+// Get current logged-in user
+$profileId = (int) $_SESSION["profile_id"];
 
-// Sort users by points
-usort($users, function ($a, $b) {
-    return $b["points"] <=> $a["points"];
-});
+
+// Get selected leaderboard type
+$scope = "global";
+
+if (isset($_GET["scope"])) {
+    $scope = $_GET["scope"];
+}
+
+
+// Only allow valid leaderboard types
+if (
+    $scope !== "global" &&
+    $scope !== "company" &&
+    $scope !== "lab"
+) {
+    $scope = "global";
+}
+
+
+// Store leaderboard users
+$users = [];
+
+
+// --------------------------------------------------
+// GLOBAL LEADERBOARD
+// --------------------------------------------------
+
+if ($scope === "global") {
+
+    $sql = "
+        SELECT
+            profiles.profile_id,
+            profiles.first_name,
+            profiles.last_name,
+            profile_points.scriba_points
+        FROM profile_points
+        JOIN profiles
+            ON profile_points.profile_id = profiles.profile_id
+        ORDER BY
+            profile_points.scriba_points DESC,
+            profiles.first_name ASC,
+            profiles.last_name ASC
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+
+        $users[] = [
+            "name" =>
+                $row["first_name"] . " " . $row["last_name"],
+
+            "points" =>
+                (int) $row["scriba_points"]
+        ];
+    }
+
+    $stmt->close();
+}
+
+
+// --------------------------------------------------
+// COMPANY LEADERBOARD
+// --------------------------------------------------
+
+elseif ($scope === "company") {
+
+    $sql = "
+        SELECT DISTINCT
+            profiles.profile_id,
+            profiles.first_name,
+            profiles.last_name,
+            profile_points.scriba_points
+        FROM profile_points
+
+        JOIN profiles
+            ON profile_points.profile_id = profiles.profile_id
+
+        JOIN company_members AS user_company
+            ON profile_points.profile_id = user_company.profile_id
+
+        JOIN company_members AS current_user_company
+            ON user_company.company_id = current_user_company.company_id
+
+        WHERE current_user_company.profile_id = ?
+
+        ORDER BY
+            profile_points.scriba_points DESC,
+            profiles.first_name ASC,
+            profiles.last_name ASC
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->bind_param(
+        "i",
+        $profileId
+    );
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+
+        $users[] = [
+            "name" =>
+                $row["first_name"] . " " . $row["last_name"],
+
+            "points" =>
+                (int) $row["scriba_points"]
+        ];
+    }
+
+    $stmt->close();
+}
+
+
+// --------------------------------------------------
+// LAB GROUP LEADERBOARD
+// --------------------------------------------------
+
+elseif ($scope === "lab") {
+
+    $sql = "
+        SELECT DISTINCT
+            profiles.profile_id,
+            profiles.first_name,
+            profiles.last_name,
+            profile_points.scriba_points
+        FROM profile_points
+
+        JOIN profiles
+            ON profile_points.profile_id = profiles.profile_id
+
+        JOIN lab_members AS user_lab
+            ON profile_points.profile_id = user_lab.profile_id
+
+        JOIN lab_members AS current_user_lab
+            ON user_lab.lab_id = current_user_lab.lab_id
+
+        WHERE current_user_lab.profile_id = ?
+
+        ORDER BY
+            profile_points.scriba_points DESC,
+            profiles.first_name ASC,
+            profiles.last_name ASC
+    ";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->bind_param(
+        "i",
+        $profileId
+    );
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+
+        $users[] = [
+            "name" =>
+                $row["first_name"] . " " . $row["last_name"],
+
+            "points" =>
+                (int) $row["scriba_points"]
+        ];
+    }
+
+    $stmt->close();
+}
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -50,7 +196,10 @@ usort($users, function ($a, $b) {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <!-- Loads Bootstrap -->
     <link
@@ -62,109 +211,187 @@ usort($users, function ($a, $b) {
 
     <title>Leaderboard</title>
 
+
     <style>
 
         /* Page */
 
         body {
+
             min-height: 100vh;
-             background: linear-gradient(120deg, #7794b6, #d4f6fd);
+
+            background:
+                linear-gradient(
+                    120deg,
+                    #7794b6,
+                    #d4f6fd
+                );
+
             color: #263c55;
+
         }
 
 
         /* Leaderboard */
 
         .leaderboard-container {
+
             width: 80%;
+
             max-width: 1000px;
+
             margin: 60px auto;
+
         }
 
+
         .leaderboard-title {
+
             text-align: center;
+
             font-size: 32px;
+
             font-weight: bold;
+
             margin-bottom: 35px;
+
         }
 
 
         /* Leaderboard buttons */
 
         .leaderboard-buttons {
+
             display: flex;
+
             justify-content: center;
+
             gap: 20px;
+
             margin-bottom: 35px;
+
         }
+
 
         .leaderboard-button {
+
             min-width: 150px;
+
             padding: 10px 25px;
+
             border: 2px solid #263c55;
+
             border-radius: 20px;
-            background: linear-gradient(100deg, #cbd8f2, #ffffff);
+
+            background:
+                linear-gradient(
+                    100deg,
+                    #cbd8f2,
+                    #ffffff
+                );
+
             color: #263c55;
+
             font-size: 18px;
+
             text-decoration: none;
+
             text-align: center;
+
         }
 
+
         .leaderboard-button:hover {
+
             background-color: #dce6f8;
+
             color: #263c55;
+
         }
 
 
         /* Ranking table */
 
         .leaderboard-table {
+
             width: 100%;
+
             background-color: white;
+
             border: 2px solid #263c55;
+
             border-radius: 15px;
+
             overflow: hidden;
+
         }
+
 
         .leaderboard-table th {
+
             background-color: #cbd8f2;
+
             color: #263c55;
+
             padding: 15px;
+
             text-align: center;
+
         }
+
 
         .leaderboard-table td {
+
             padding: 15px;
+
             border-top: 1px solid #d5dce8;
+
             text-align: center;
+
         }
 
-.leaderboard-table th:nth-child(1),
-.leaderboard-table td:nth-child(1) {
-    width: 20%;
-}
 
-.leaderboard-table th:nth-child(2),
-.leaderboard-table td:nth-child(2) {
-    width: 50%;
-}
+        .leaderboard-table th:nth-child(1),
+        .leaderboard-table td:nth-child(1) {
 
-.leaderboard-table th:nth-child(3),
-.leaderboard-table td:nth-child(3) {
-    width: 30%;
-}
+            width: 20%;
+
+        }
+
+
+        .leaderboard-table th:nth-child(2),
+        .leaderboard-table td:nth-child(2) {
+
+            width: 50%;
+
+        }
+
+
+        .leaderboard-table th:nth-child(3),
+        .leaderboard-table td:nth-child(3) {
+
+            width: 30%;
+
+        }
 
 
         /* Rank and points */
 
         .rank {
+
             font-weight: bold;
+
             text-align: center;
+
         }
 
+
         .points {
+
             font-weight: bold;
+
             text-align: center;
+
         }
 
 
@@ -173,12 +400,18 @@ usort($users, function ($a, $b) {
         @media (max-width: 800px) {
 
             .leaderboard-container {
+
                 width: 95%;
+
             }
 
+
             .leaderboard-buttons {
+
                 flex-direction: column;
+
                 align-items: center;
+
             }
 
         }
@@ -187,7 +420,9 @@ usort($users, function ($a, $b) {
 
 </head>
 
+
 <body>
+
 
     <!-- Navigation -->
 
@@ -196,73 +431,147 @@ usort($users, function ($a, $b) {
 
     <!-- Leaderboard -->
 
-    
-    <!-- Leaderboard -->
-
     <main class="leaderboard-container">
 
+
         <h1 class="leaderboard-title">
+
             LEADERBOARD
+
         </h1>
+
 
         <!-- Leaderboard filters -->
 
         <div class="leaderboard-buttons">
 
-            <a href="leaderboard.php" class="leaderboard-button">
+
+            <a
+                href="leaderboard.php?scope=global"
+                class="leaderboard-button"
+            >
                 Global
             </a>
 
-            <a href="#" class="leaderboard-button">
+
+            <a
+                href="leaderboard.php?scope=company"
+                class="leaderboard-button"
+            >
                 Company
             </a>
 
-            <a href="#" class="leaderboard-button">
+
+            <a
+                href="leaderboard.php?scope=lab"
+                class="leaderboard-button"
+            >
                 Lab Group
             </a>
 
+
         </div>
+
 
         <!-- Ranking table -->
 
         <table class="leaderboard-table">
 
+
             <thead>
+
                 <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Points</th>
+
+                    <th>
+                        Rank
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Points
+                    </th>
+
                 </tr>
+
             </thead>
+
 
             <tbody>
 
-                <?php foreach ($users as $index => $user): ?>
+
+                <?php if (count($users) > 0): ?>
+
+
+                    <?php foreach ($users as $index => $user): ?>
+
+
+                        <tr>
+
+
+                            <td class="rank">
+
+                                <?php
+                                echo $index + 1;
+                                ?>
+
+                            </td>
+
+
+                            <td>
+
+                                <?php
+                                echo htmlspecialchars(
+                                    $user["name"]
+                                );
+                                ?>
+
+                            </td>
+
+
+                            <td class="points">
+
+                                <?php
+                                echo $user["points"];
+                                ?>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    <?php endforeach; ?>
+
+
+                <?php else: ?>
+
 
                     <tr>
 
-                        <td class="rank">
-                            <?php echo $index + 1; ?>
-                        </td>
+                        <td colspan="3">
 
-                        <td>
-                            <?php echo htmlspecialchars($user["name"]); ?>
-                        </td>
+                            No users found.
 
-                        <td class="points">
-                            <?php echo $user["points"]; ?>
                         </td>
 
                     </tr>
 
-                <?php endforeach; ?>
+
+                <?php endif; ?>
+
 
             </tbody>
 
+
         </table>
 
+
     </main>
+
+
 </body>
 
 </html>
-
