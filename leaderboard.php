@@ -1,13 +1,9 @@
 <?php
-<<<<<<< Updated upstream
 require_once "session/init.php"; // Start the session and initialize session variables
 require_once "session/check_user_logged_in.php"; // Check if the user is logged in
 require_once 'database/db.php';
 
 
-=======
-require_once 'Session/init.php';
->>>>>>> Stashed changes
 // Temporary leaderboard data
 $users = [
     [

@@ -1,5 +1,4 @@
 <?php
-<<<<<<< Updated upstream
     ini_set('display_errors', true);
     ini_set('log_errors', true);
     error_reporting(E_ALL);
@@ -8,9 +7,6 @@
     require_once "session/init.php"; // Start the session and initialize session variables
     // No check for user logged in here, registration page
 
-=======
-    require_once 'Session/init.php';
->>>>>>> Stashed changes
     require_once 'database/db.php';
 
     $message = "";
@@ -101,7 +97,13 @@
         </style>
 </head>
 
-
+<style>
+    body {
+            min-height: 100vh;
+             background: linear-gradient(120deg, #7794b6, #d4f6fd);
+            color: #263c55;
+        }
+</style>
 
 
 <body>
@@ -115,6 +117,10 @@
                 color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
         <?php echo htmlspecialchars($message); ?>
     </div>
+
+
+
+    
     
     <?php endif;?>
 
