@@ -12,7 +12,7 @@ require_once 'session/check_user_logged_in.php';
 require_once 'database/db.php';
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
-
+// echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
 
 // //startar sessionen och kopplar till min exempel profil
 // session_start();
@@ -50,13 +50,13 @@ $stmt = $conn->prepare(
 
 
 //gets the profile form scriba database 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-
+// print_r($user); // Print the entire $user array for debugging
 
 
 
@@ -71,12 +71,12 @@ $stmt = $conn->prepare(
 );
 
 //gets the profile form scriba database 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
-//
+// print_r($points); // Print the entire $points array for debugging
 
 
 
@@ -95,58 +95,66 @@ $points = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <title>Document</title>
+    <!-- <title>Document</title> -->
 
     <!-- i want nav bar here -->
-    <?php// include "includes/navbar.php";?>
+    <?php // include "includes/navbar.php";?>
 
-    <body style="background-image: url('assets/website_background.jpg');">
+    <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
-<title>User Page</title>
-
-
-<style>
-
-.welcome {
-  background-color: lightblue;
-  color: white;
-  border: 4px solid white;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-right: 1200px;
-  margin-left: 70px;
-  padding: 10px; 
-}
+    <title>User Page</title>
 
 
-.user {
-  background-color: lightblue;
-  color: white;
-  border: 4px solid white;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-right: 50px;
-  margin-left: 1200px;
-  padding: 10px;
-  
-}
+    <style>
 
-/* Gjorde alla till buttons.. får fixa det sen : )  */
-.user {
-  background-color: #8bc1e3;
-  color: white;
-  font-size: 15px;
-  padding: 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .welcome {
+    background-color: lightblue;
+    color: white;
+    border: 4px solid white;
+    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
+    /* margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 1200px;
+    margin-left: 70px; */
+    padding: 10px; 
+    }
 
 
+    /* .user {
+    background-color: lightblue;
+    color: white;
+    border: 4px solid white;
+    margin: 50px 40% 50px 70%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    margin-left: 1200px;
+    padding: 10px;
+    } */
 
-</style>
+
+    /* Gjorde alla till buttons.. får fixa det sen : )  */
+    .user {
+    background-color: #8bc1e3;
+    color: white;
+    font-size: 15px;
+    padding: 12px;
+    border: none;
+    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
+    border-radius: 5px;
+    cursor: pointer;
+    }
+
+
+
+    </style>
 </head>
-<body>
+<body style="background-image: url('assets/website_background.jpg');">
+
+<!-- i want nav bar here -->
+    <?php 
+    include "includes/navbar.php";
+    ?>
 
 <!-- Here is the php scirpt where i link to a bunch of diff -->
 
@@ -200,7 +208,7 @@ $points = $result->fetch_assoc();
 
 <div class="user">
 <h2>Display name</h2>
-<p>Your display name is: </p>
+<p>Your display name is:
 <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?>
 </p>
 </div>
