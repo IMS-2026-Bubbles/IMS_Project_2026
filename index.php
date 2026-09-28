@@ -77,23 +77,24 @@ require_once "session/init.php"; // Start the session and initialize session var
             if ($logincredentials) {
                 // Since login = success, add profile_id to session so we can access it on other pages.
                 $_SESSION['profile_id'] = $profile['profile_id'];
-                // Add company_id to session if user has one. 
 
                 // Fetch the user's affiliations from the database. Need if they are scriba admin
                 // and if they belong to at least one company.
                 $profile_id = $profile['profile_id'];
                 require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
+                // Add company_id to session if user has one.
+                $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
 
                 // Scriba admin
                 $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
 
                 // User with any company_id
-                $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
+                // $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
 
                 if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
                     header ("Location:scriba_admin.php");
                     exit();
-                } elseif (count($user_company_ids) > 0) { // User with company_id => project_library.php
+                } elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
                     header ("Location:project_library.php");
                     exit();
                 } else { // User that doesn't belong to a company => user_profile.php

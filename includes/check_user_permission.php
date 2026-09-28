@@ -27,7 +27,7 @@
 // 
 // Return the permission level as an integer. (split into different functions?)
 
-function check_user_permission(mysqli $conn, string $profile_id, string $entity_type, string|NULL $entity_id): int {
+function check_user_permission(mysqli $conn, string|NULL $profile_id, string $entity_type, string|NULL $entity_id): int {
     // Check if $profile_id isset/exists
     $profile_id = $profile_id ?? null;
     if ($profile_id === null) {
@@ -57,6 +57,10 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
 
     // Check the permission level for the given entity type and ID
     if ($entity_type === 'experiment') {
+        // experiment_id == NULL => no access
+        if ($entity_id === null) {
+            return 0; // No access
+        }
         // Check permission for an experiment
             // Create query
         $sql_exp_permission = 
@@ -127,6 +131,10 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
 
 
     } elseif ($entity_type === 'project') {
+        // project_id == NULL => no access
+        if ($entity_id === null) {
+            return 0; // No access
+        }
         // Check permission for a project
             // Create query
         $sql_proj_permission = 
@@ -189,6 +197,10 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
 
 
     } elseif ($entity_type === 'lab') {
+        // lab_id == NULL => no access
+        if ($entity_id === null) {
+            return 0; // No access
+        }
         // Check permission for a lab
             // Create query
         $sql_lab_permission = 
@@ -243,6 +255,10 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
 
 
     } elseif ($entity_type === 'company') {
+        // company_id == NULL => no access
+        if ($entity_id === null) {
+            return 0; // No access
+        }
         // Check permission for a company
             // Create query
         $sql_company_permission = 
@@ -289,6 +305,7 @@ function check_user_permission(mysqli $conn, string $profile_id, string $entity_
 
 
     } elseif ($entity_type === 'scriba') {
+        // Scriba admin check is independent of entity_id, so we don't need to check entity_id here
         // Check permission for Scriba
             // Create query
         $sql_scriba_permission =

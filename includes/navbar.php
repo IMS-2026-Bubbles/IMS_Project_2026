@@ -21,7 +21,7 @@ require_once "check_user_permission.php"; // Include the user permission check f
 // $entity_type = $entity_type ?? null; // Get entity type from the page that includes the navbar
 // $entity_id = $entity_id ?? null; // Get entity ID from the page that includes the navbar
 // Currently used for navbar buttons are:
-    // $company_id
+    // $_SESSION['company_id'] for company admin page
     // $lab_id
     // profile_id to check scriba admin status is already in the session variable $_SESSION['profile_id']
 ?>
@@ -76,7 +76,7 @@ require_once "check_user_permission.php"; // Include the user permission check f
             // -----------------------------------------------------------------
 
             if (isset($company_id)) {
-                $company_admin_access_level = check_user_permission($conn, $_SESSION['profile_id'], 'company', $company_id); 
+                $company_admin_access_level = check_user_permission($conn, $_SESSION['profile_id'], 'company', $_SESSION['company_id']); 
                 if ($company_admin_access_level >= 3) { // 3 = admin access level
                     echo "<li class='nav-item'>
                             <a class='nav-link active' href='company_admin.php'>Company Admin</a>
