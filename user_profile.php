@@ -1,13 +1,14 @@
 
+echo " This is the user profile page :)";
+?>
 
 <?php
 
 //startar sessionen och kopplar till min exempel profil
-//test solution to se one example user 
 session_start();
-$_SESSION["profile_id"] = 1111111111; //this is the one logged in
-include "database/db.php"; 
-$profile_ID = $_SESSION["profile_id"]; 
+$_SESSION["profile_id"] = 1;
+include "database/db.php";
+$profile_ID = 1;
 
 
 
@@ -40,12 +41,13 @@ $stmt = $conn->prepare( //statement
 
 
 //gets the profile form scriba database 
-$stmt->bind_param("i", $profile_ID);
+$stmt->bind_param("i", $profile_id);
 $stmt->execute();
 
-$result = $stmt->get_result();  
-//fetch assoc() PHP mysqli function makes result as an associative array 
-$user = $result->fetch_assoc(); 
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+
 
 
 
@@ -59,95 +61,13 @@ $stmt = $conn->prepare(
     "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
 );
 
-//gets the profile form scriba database makes a variable with $
+//gets the profile form scriba database 
 $stmt->bind_param("i", $profile_ID);
 $stmt->execute();
 
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
-
-
-
-
-//selecting company & department?? lab now 
-
-$stmt = $conn->prepare(
-    "SELECT companies.name FROM companies JOIN company_members ON companies.company_id = company_members.company_id WHERE company_members.profile_id = ?"
-);
-
-
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$company = $result->fetch_assoc();
-
-
-// lab aswell 
-
-$stmt = $conn->prepare(
-    "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
-);
-
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$lab = $result->fetch_assoc();
-
-
-
-
-
-
-
-
-
-
-//delete user account with SQL DELETE statement
-//i know i should use the is_deleted from profiles but rn its what it is 
-
-// UPDATE profiles SET is_delted = TRUE smth like this 
-
-
-if (isset($_POST["delete_account"])) {
-
-    $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
-    $stmt->bind_param("i", $profile_ID);
-
-    if ($stmt->execute()) {
-        echo "Record deleted successfully";
-    } else {
-        echo "Error deleting user profile: " . $conn->error;
-    }
-}
-
-
-
-//retrieve all information we have about our user 
-
-//this is work in progress on how i should retreive all information 
-
-/* $stmt = $conn->prepare(
-  "SELECT *
-FROM (
-    SELECT * FROM profiles
-    UNION
-    SELECT * FROM companies
-    UNION
-    SELECT * FROM labs
-)
-WHERE ...
-);
-
-
-$stmt->bind_param("i", $profile_ID);
-$stmt->execute();
-
-$result = $stmt->get_result();
-$ = $result->fetch_assoc(); */
-
-
+//
 
 
 
@@ -166,68 +86,66 @@ $ = $result->fetch_assoc(); */
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <title>Document</title>
+    <!-- <title>Document</title> -->
 
     <!-- i want nav bar here -->
-    <?php include "includes/navbar.php";?>
+    <?php// include "includes/navbar.php";?>
 
-    <body style="background-image: url('assets/website_background.jpg');">
+    <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
-<title>User Page</title>
-
-
-<style>
-
-.welcome {
-  background-color: lightblue;
-  color: white;
-  border: 4px solid white;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-right: 1200px;
-  margin-left: 70px;
-  padding: 10px; 
-}
+    <title>User Page</title>
 
 
-.user {
-  background-color: lightblue;
-  color: white;
-  border: 4px solid white;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  margin-right: 50px;
-  margin-left: 1200px;
-  padding: 10px;
-  
-}
+    <style>
 
-/* Gjorde alla till buttons.. får fixa det sen : )  */
-.user {
-  background-color: #8bc1e3;
-  color: white;
-  font-size: 15px;
-  padding: 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .welcome {
+    background-color: lightblue;
+    color: white;
+    border: 4px solid white;
+    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
+    /* margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 1200px;
+    margin-left: 70px; */
+    padding: 10px; 
+    }
 
 
+    /* .user {
+    background-color: lightblue;
+    color: white;
+    border: 4px solid white;
+    margin: 50px 40% 50px 70%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    margin-left: 1200px;
+    padding: 10px;
+    } */
 
-}
+
+    /* Gjorde alla till buttons.. får fixa det sen : )  */
+    .user {
+    background-color: #8bc1e3;
+    color: white;
+    font-size: 15px;
+    padding: 12px;
+    border: none;
+    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
+    border-radius: 5px;
+    cursor: pointer;
+    }
+
+
+
+    </style>
 </head>
+<body style="background-image: url('assets/website_background.jpg');">
 
-
-
-
-
-
-
-
-</style>
-</head>
-<body>
+<!-- i want nav bar here -->
+    <?php 
+    include "includes/navbar.php";
+    ?>
 
 <!-- Here is the php scirpt where i link to a bunch of diff -->
 
@@ -290,7 +208,7 @@ $ = $result->fetch_assoc(); */
 
 <div class="user">
 <h2>Display name</h2>
-<p>Your display name is: </p>
+<p>Your display name is:
 <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?>
 </p>
 </div>
