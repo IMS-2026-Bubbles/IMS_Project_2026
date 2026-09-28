@@ -6,10 +6,15 @@ ini_set('display_startup_errors', 1);
 
 // Start session
 require_once "session/init.php";
-require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+require_once "session/check_user_logged_in.php";
 
 // Connect to database
 require_once "database/db.php";
+
+
+// Get current user
+$profileId = (int) $_SESSION["profile_id"];
+
 
 // Search projects
 $search = "";
@@ -18,14 +23,45 @@ if (isset($_GET["search"])) {
     $search = trim($_GET["search"]);
 }
 
+
 // Add project
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
     $projectName = trim($_POST["project_name"]);
-    $labId = (int) $_POST["lab_id"];
+    $labId = trim($_POST["lab_id"]);
 
-    if ($projectName != "" && $labId > 0) {
+    if ($projectName != "" && $labId != "") {
 
+        // Check that the selected lab belongs to one of the user's companies
+        $checkSql = "
+            SELECT labs.lab_id
+            FROM labs
+            JOIN company_members
+                ON labs.company_id = company_members.company_id
+            WHERE labs.lab_id = ?
+              AND company_members.profile_id = ?
+        ";
+
+        $checkStmt = $conn->prepare($checkSql);
+
+        $checkStmt->bind_param(
+            "si",
+            $labId,
+            $profileId
+        );
+
+        $checkStmt->execute();
+
+        $checkResult = $checkStmt->get_result();
+
+        if ($checkResult->num_rows == 0) {
+            die("You do not have permission to use this lab.");
+        }
+
+        $checkStmt->close();
+
+
+        // Add new project
         $sql = "
             INSERT INTO projects
             (name, lab_id)
@@ -35,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
         $stmt = $conn->prepare($sql);
 
         $stmt->bind_param(
-            "si",
+            "ss",
             $projectName,
             $labId
         );
@@ -46,59 +82,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
         $stmt->close();
 
-        // Add current user as project owner if logged in
-        if (isset($_SESSION["profile_id"])) {
 
-            $profileId = (int) $_SESSION["profile_id"];
+        // Add current user as project owner
+        $sql = "
+            INSERT INTO project_members
+            (project_id, profile_id, role)
+            VALUES (?, ?, 'owner')
+        ";
 
-            $sql = "
-                INSERT INTO project_members
-                (project_id, profile_id, role)
-                VALUES (?, ?, 'owner')
-            ";
+        $stmt = $conn->prepare($sql);
 
-            $stmt = $conn->prepare($sql);
+        $stmt->bind_param(
+            "ii",
+            $newProjectId,
+            $profileId
+        );
 
-            $stmt->bind_param(
-                "ii",
-                $newProjectId,
-                $profileId
-            );
+        $stmt->execute();
 
-            $stmt->execute();
+        $stmt->close();
 
-            $stmt->close();
-        }
 
         // Refresh the project library
         header("Location: project_library.php");
-
         exit();
     }
 }
 
-// Get labs
+
+// Get labs from the user's companies
 $labs = [];
 
 $sql = "
-    SELECT
-        lab_id,
-        name
+    SELECT DISTINCT
+        labs.lab_id,
+        labs.name
     FROM labs
-    ORDER BY name
+    JOIN company_members
+        ON labs.company_id = company_members.company_id
+    WHERE company_members.profile_id = ?
+    ORDER BY labs.name
 ";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+
+$stmt->bind_param(
+    "i",
+    $profileId
+);
+
+$stmt->execute();
+
+$result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc()) {
     $labs[] = $row;
 }
 
-// Get projects
+$stmt->close();
+
+
+// Get projects from the user's companies
 $projects = [];
 
 $sql = "
-    SELECT
+    SELECT DISTINCT
         projects.project_id,
         projects.name AS project_name,
         projects.lab_id,
@@ -106,26 +154,39 @@ $sql = "
     FROM projects
     JOIN labs
         ON projects.lab_id = labs.lab_id
+    JOIN company_members
+        ON labs.company_id = company_members.company_id
+    WHERE company_members.profile_id = ?
 ";
 
 if ($search != "") {
-
-    $sql .= " WHERE projects.name LIKE ?";
+    $sql .= " AND projects.name LIKE ?";
 }
 
 $sql .= " ORDER BY projects.name";
 
+
 $stmt = $conn->prepare($sql);
+
 
 if ($search != "") {
 
     $searchValue = "%" . $search . "%";
 
     $stmt->bind_param(
-        "s",
+        "is",
+        $profileId,
         $searchValue
     );
+
+} else {
+
+    $stmt->bind_param(
+        "i",
+        $profileId
+    );
 }
+
 
 $stmt->execute();
 
