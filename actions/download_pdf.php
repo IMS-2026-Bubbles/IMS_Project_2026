@@ -6,6 +6,8 @@
 // See Alex V reply at https://stackoverflow.com/a/8122372/17852580 for reference.
 // Returns
 
+// Doesn't need session, login check, or database connection
+
 $file = $_GET['file'];
 $allowed_files = [
     'terms_of_service' => 'docs/terms_of_service.pdf'

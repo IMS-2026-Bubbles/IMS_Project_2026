@@ -11,7 +11,9 @@
 // with the same experiment_id after processing.
 
 // Session initialization
-include "../session/init.php"; // Make the session available
+require_once "../session/init.php"; // Make the session available
+require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
+
 $messages = array(); // Create message array
 
 // Variables from POST request
@@ -41,7 +43,7 @@ if (!in_array($experiment_section, $valid_sections)) {
 }
 
 // Connect to database
-include "../database/db.php";
+require_once "../database/db.php";
 
 // Check if the user has permission to edit progress for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function

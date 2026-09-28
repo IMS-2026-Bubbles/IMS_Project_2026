@@ -7,7 +7,9 @@
 // Return to experiment.php with messages stored in session for display.
 
 // Session initialization
-include "../session/init.php"; // Make the session available
+require_once "../session/init.php"; // Make the session available
+require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
+
     // Create message array
 $messages = array();
 
@@ -25,7 +27,7 @@ $add_experiment_tags = $_POST['add_tags'] ?? "";
 $remove_experiment_tags = $_POST['remove_tags'] ?? "";
 
 // Connect to database
-include "../database/db.php";
+require_once "../database/db.php";
 
 // Check if the user has permission to edit tags for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
