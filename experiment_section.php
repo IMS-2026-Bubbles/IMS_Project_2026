@@ -8,7 +8,7 @@ include "session/init.php"; // Make the session available
 include "session/check_user_logged_in.php";
 
 // Variables
-    // $user_id from session
+    // $profile_id from session
     // $experiment_id from URL (URL is always a GET request)
 $experiment_id = $_GET['experiment_id'] ?? NULL;
 if ($experiment_id === null) {
@@ -19,9 +19,9 @@ if ($experiment_id === null) {
     header("Location: ../../project_library.php");
     exit();
 }
-$exp_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
+$experiment_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
     // Check for NULL section name
-if ($exp_section === null) {
+if ($experiment_section === null) {
     $messages[] = "Error: No experiment section provided.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
@@ -32,8 +32,8 @@ if ($exp_section === null) {
     // Whitelist section names
 // TODO(schema-migration): section values become lowercase ('plan', 'log', 'result'),
 // matching the new column names plan_text/plan_is_done/plan_updated_at, etc.
-$valid_sections = ['Plan', 'Log', 'Result'];
-if (!in_array($exp_section, $valid_sections)) {
+$valid_sections = ['plan', 'log', 'result'];
+if (!in_array($experiment_section, $valid_sections)) {
     $messages[] = "Error: Invalid experiment section provided.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
@@ -51,7 +51,7 @@ include "includes/check_user_permission.php"; // Include the user permission che
 // $experiment_id becomes $experiment_id; the array keys used below
 // ($project_experiment_name, $experiment_progress, $experiment_updated_at) follow the new
 // column names
-$user_access = check_user_permission($conn, $_SESSION['user_id'], 'experiment', $experiment_id);
+$user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
@@ -74,30 +74,30 @@ include "includes/navbar.php"; // Include the navbar
 include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $project_experiment_name
 
 // Diplay the project, experiment, and section name
-echo "Project: " . htmlspecialchars($project_experiment_name['Project_Name']) . "<br>";
-echo "Experiment: " . htmlspecialchars($project_experiment_name['Experiment_Name']) . "<br>";
-echo "Section: " . htmlspecialchars($exp_section) . "<br><br>";
+echo "Project: " . htmlspecialchars($project_experiment_name['project_name']) . "<br>";
+echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name']) . "<br>";
+echo "Section: " . htmlspecialchars($experiment_section) . "<br><br>";
 ?>
 
 <!-- Link back to main experiment page -->
-<a href="experiment.php?experiment_id=<?php echo urlencode($experiment_id); ?>">Back to <?php echo htmlspecialchars($project_experiment_name['Experiment_Name']); ?></a><br><br>
+<a href="experiment.php?experiment_id=<?php echo urlencode($experiment_id); ?>">Back to: <?php echo htmlspecialchars($project_experiment_name['experiment_name']); ?></a><br><br>
 
 <!-- Tags (static), Done toggle, save/submit -->
 <?php
 // Display current tags for the experiment
 include "includes/fetch_experiment_tags.php"; // Fetches the tags for the specified experiment ID
-echo "Experiment tags: " . implode(", ", $exp_tags_array) . "<br><br>";
+echo "Experiment tags: " . implode(", ", $experiment_tags) . "<br><br>";
 
 // Display last updated timestamp for the experiment section
 include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the specified experiment ID and section
-echo "Last updated: " . $experiment_updated_at[$exp_section . '_Updated'] . "<br><br>";
+echo "Last updated: " . $experiment_updated_at[$experiment_section . '_updated_at'] . "<br><br>";
 
 // Display the "Done" toggle for the experiment plan
 include "includes/fetch_experiment_progress.php"; // Fetches the progress status for the specified experiment ID
 // Define the progress flag display helper.
 include "includes/render_progress_badge.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_badge($exp_section, $experiment_progress[$exp_section . '_Done'])
+    . experiment_progress_badge($experiment_section, $experiment_progress[$experiment_section . '_is_done'])
     . "</div>";
 echo "<br>";
 
@@ -109,24 +109,26 @@ if ($user_access >= 2) {
     echo "<form action='actions/save_experiment_section.php' method='post'>"
         // Hidden inputs for the experiment ID and section
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
-        . "<input type='hidden' name='section' value='" . htmlspecialchars($exp_section) . "'>"
+        . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$exp_section . '_Done'] ? 'checked' : '') . "> Mark as Done<br>"
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . "> Mark as Done<br>"
+        . "<br>"
         // Save button
         . "<input type='submit' value='Save Changes'>"
+        . "<br><br>"
         // Textbox for the experiment plan
-        . "<textarea name='text' rows='10' cols='50'>" . htmlspecialchars($exp_section_text) . "</textarea><br>"
+        . "<textarea name='text' rows='10' cols='50'>" . htmlspecialchars($experiment_section_text) . "</textarea><br>"
         . "</form>";
 } else {
     // We already check for access level < 1 at the start and >=2 here, 
     // so only access level = 1 remains, which is read-only access.
     // User has read only access, display as static text
-    echo "<div class='exp_plan_text'>" . nl2br(htmlspecialchars($exp_section_text)) . "</div>";
+    echo "<h3>Experiment " . htmlspecialchars($experiment_section) . " (Read Only)</h3>";
+    echo "<div class='experiment_section_text'>" . nl2br(htmlspecialchars($experiment_section_text)) . "</div>";
 }
 
 // Close the database connection when done
 include "database/close_db.php";
-
 // Display messages from save_experiment_section.php if they exist
 if (isset($messages_save_experiment_section)) {
     foreach ($messages_save_experiment_section as $message) {

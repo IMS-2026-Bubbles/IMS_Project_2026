@@ -97,27 +97,27 @@ if (isset($messages_save_experiment_tags)) {
 include "includes/fetch_experiment_progress.php"; // Fetches the progress flags as $experiment_progress
 // Retrieve the last update timestamp for the experiment
 include "includes/fetch_experiment_timestamps.php"; // Fetches the last updated timestamp for the experiment as $experiment_updated_at
-echo "Experiment created: " . $experiment_updated_at['Date_Created'] . "<br>";
-echo "Experiment updated: " . $experiment_updated_at['Date_Updated'] . "<br><br>";
+echo "Experiment created: " . $experiment_updated_at['created_at'] . "<br>";
+echo "Experiment updated: " . $experiment_updated_at['updated_at'] . "<br><br>";
 
 // Define the progress flag display helper.
 include "includes/render_progress_badge.php";
 echo "<div class='exp_progress_flags'>" // String structured vertically for code readability.
-    . exp_progress_badge("Plan", $experiment_progress['Plan_Done'])
-    . "(" . $experiment_updated_at['Plan_Updated'] . ")<br>"
-    . exp_progress_badge("Log", $experiment_progress['Log_Done'])
-    . "(" . $experiment_updated_at['Log_Updated'] . ")<br>"
-    . exp_progress_badge("Result", $experiment_progress['Result_Done'])
-    . "(" . $experiment_updated_at['Result_Updated'] . ")<br>"
+    . experiment_progress_badge("Plan", $experiment_progress['plan_is_done'])
+    . "(" . $experiment_updated_at['plan_updated_at'] . ")<br>"
+    . experiment_progress_badge("Log", $experiment_progress['log_is_done'])
+    . "(" . $experiment_updated_at['log_updated_at'] . ")<br>"
+    . experiment_progress_badge("Result", $experiment_progress['result_is_done'])
+    . "(" . $experiment_updated_at['result_updated_at'] . ")<br>"
     . "</div>";
 echo "<br><br>";
 ?>
 
 
 <!-- Create links for sub-pages, plan/log/result -->
-<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Plan">Experiment Plan</a><br>
-<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Log">Experiment Log</a><br>
-<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=Result">Experiment Result</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=plan">Experiment Plan</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=log">Experiment Log</a><br>
+<a href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&section=result">Experiment Result</a><br>
 
 
 <?php

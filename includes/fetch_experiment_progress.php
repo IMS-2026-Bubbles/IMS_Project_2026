@@ -10,20 +10,20 @@
 // old style. Becomes: SELECT plan_is_done, log_is_done, result_is_done FROM experiments
 // WHERE experiment_id = ? — so the $experiment_progress keys become plan_is_done, etc.
     // Create query
-$sql_exp_progress = "SELECT Plan_Done, Log_Done, Result_Done FROM Proj_Experiments WHERE experiment_id = ?";
+$sql_experiment_progress = "SELECT plan_is_done, log_is_done, result_is_done FROM experiments WHERE experiment_id = ?";
     // Prepare query
-$stmt_exp_progress = $conn->prepare($sql_exp_progress);
+$stmt_experiment_progress = $conn->prepare($sql_experiment_progress);
     // Bind the experiment ID parameter
-$stmt_exp_progress->bind_param("s", $experiment_id);
+$stmt_experiment_progress->bind_param("s", $experiment_id);
     // Execute query
-if ($stmt_exp_progress->execute()) {
+if ($stmt_experiment_progress->execute()) {
     // Get the result set from the executed query
-    $result_exp_progress = $stmt_exp_progress->get_result(); // get_result() returns a mysqli_result object
+    $result_experiment_progress = $stmt_experiment_progress->get_result(); // get_result() returns a mysqli_result object
     // Fetch the progress flags into an associative array
-    $experiment_progress = $result_exp_progress->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array
+    $experiment_progress = $result_experiment_progress->fetch_assoc(); // fetch_assoc() fetches a single row as an associative array
 } elseif (isset($messages)) {
-    $messages[] = "Error retrieving progress flags for experiment " . $experiment_id . " : " . $stmt_exp_progress->error . "<br>";
+    $messages[] = "Error retrieving progress flags for experiment " . $experiment_id . " : " . $stmt_experiment_progress->error . "<br>";
 } else {
-    echo "Error retrieving progress flags for experiment " . $experiment_id . " : " . $stmt_exp_progress->error . "<br>";
+    echo "Error retrieving progress flags for experiment " . $experiment_id . " : " . $stmt_experiment_progress->error . "<br>";
 }
 ?>

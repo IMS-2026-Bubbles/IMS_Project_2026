@@ -7,7 +7,7 @@
 // 'badge-open' for open.
 // Returns a string containing the HTML for the badge.
 
-function exp_progress_badge(string $label, bool $flag): string {
+function experiment_progress_badge(string $label, bool $flag): string {
     $label = htmlspecialchars($label); // Sanitize label to prevent XSS
     $class = $flag ? "badge-done" : "badge-open";
     $symbol = $flag ? "&#9745;" : "&#9744;"; // Checked or empty box (unicode characters html entities)
