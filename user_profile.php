@@ -281,7 +281,7 @@ $stmt->close();
         // if you don't belong to a company, have the possibility to join one
         if (empty($lab["name"])){ ?>
             <br>No lab group<br>
-            <form action="" method= "POST" class = "join_lab"> 
+            <form action="actions/join_company_lab.php" method= "POST" class = "join_lab"> 
             <label for="companies">Join a lab group</label><br>
             <input type="text" class="" name="unique_code_lab" required><br>
             <input type="submit" class="" name="join_lab" value="Join"><br><br>
@@ -301,7 +301,7 @@ $stmt->close();
         // if you don't belong to a company, have the possibility to join one
         if (empty($company["name"])){ ?>
             <br>No company <br>
-            <form action="" method= "POST" class = "join_company"> 
+            <form action="actions/join_company_lab.php" method= "POST" class = "join_company"> 
             <label for="companies">Join a company</label><br>
             <input type="text" class="" name="unique_code" required><br>
             <input type="submit" class="" name="join_company" value="Join"><br><br>

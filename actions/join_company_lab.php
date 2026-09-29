@@ -11,11 +11,11 @@
 
 
 // starts the session
-require_once 'session/init.php';
+require_once '../session/init.php';
 //check user is logged in 
-require_once 'session/check_user_logged_in.php';
+require_once '../session/check_user_logged_in.php';
 // Connect to database
-require_once 'database/db.php';
+require_once '../database/db.php';
 
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];

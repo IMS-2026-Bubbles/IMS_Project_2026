@@ -11,10 +11,10 @@
 
 
     
-require_once "session/init.php"; // Make the session available
-require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+require_once "../session/init.php"; // Make the session available
+require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
 // connect to database
-require_once "database/db.php";
+require_once "../database/db.php";
 
 
 
