@@ -14,7 +14,7 @@
 // 
 // Permission levels for admin pages:
 // - Company
-//     - 'admin' (2) => Add users to company; create and manage labs, projects, and users within the company
+//     - 'admin' (3) => Add users to company; create and manage labs, projects, and users within the company
 //     - 'member' (1) => View labs within the company (not projects or users?)
 // - Lab
 //     - 'admin' (2) => Add users from company to lab; manage projects
@@ -276,7 +276,7 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
         "SELECT MAX(CASE -- Highest permission => access level
             -- Scriba admin => no access for privacy reasons
             -- Company admin => edit (Company member -> no access)
-            WHEN company_members.role = 'admin'    THEN 2
+            WHEN company_members.role = 'admin'    THEN 3
             -- Company member => read
             WHEN company_members.role = 'member'   THEN 1
             -- None of the above => no access

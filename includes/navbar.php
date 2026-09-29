@@ -65,17 +65,18 @@ require_once "check_user_permission.php"; // Include the user permission check f
         <ul class="navbar-nav">
         <!-- Company/lab admin page = company/lab admin only -->
             <?php
-            $company_id = $_SESSION['company_id'] ?? null; // Get company_id from session if it exists
+            // $company_id = $_SESSION['company_id'] ?? null; // Get company_id from session if it exists
             // -------------------------- TEMP DEBUG - remove when done -------------
             echo "<pre>";
-            echo "company_id set? "; var_dump(isset($company_id));
-            echo "company_id value: "; var_dump($company_id ?? null);
+            echo $_SESSION['company_id'];
+            echo "company_id set? "; var_dump(isset($_SESSION['company_id']));
+            echo "company_id value: "; var_dump($_SESSION['company_id'] ?? null);
             echo "profile_id: "; var_dump($_SESSION['profile_id'] ?? null);
-            echo "DEBUG company_id=" . var_export($company_id ?? null, true) . "<br>";
+            echo "DEBUG company_id=" . var_export($_SESSION['company_id'] ?? null, true) . "<br>";
 
             // -----------------------------------------------------------------
 
-            if (isset($company_id)) {
+            if (isset($_SESSION['company_id'])) {
                 $company_admin_access_level = check_user_permission($conn, $_SESSION['profile_id'], 'company', $_SESSION['company_id']); 
                 if ($company_admin_access_level >= 3) { // 3 = admin access level
                     echo "<li class='nav-item'>
