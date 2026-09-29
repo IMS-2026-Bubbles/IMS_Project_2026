@@ -5,7 +5,10 @@
     // navigation bar (click on "Company admin" link)
 // Action:
     // Display company admin information, including lab groups and members
-    // 
+    // Create new labs inside company
+// Redirect to:
+    // navigation bar options
+    // create_lab.php (after clicking "Register" button to create a new lab group)
 
 
 
