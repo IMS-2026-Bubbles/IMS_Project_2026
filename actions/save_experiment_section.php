@@ -69,6 +69,8 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
     // UPDATE experiments SET <section>_is_done = ? WHERE experiment_id = ?
     // and the key above becomes $experiment_section . '_is_done'
     // Update the progress flag in the database
+    // NOTE: $experiment_id is bound as "i" here but as "s" in the fetchers.
+    // It can be bound as "i" everywhere since the column is INT — normalize when convenient.
     $sql_update_progress = "UPDATE experiments SET " . $experiment_section . "_is_done = ? WHERE experiment_id = ?";
     $stmt_update_progress = $conn->prepare($sql_update_progress);
     $stmt_update_progress->bind_param("ii", $done_flag, $experiment_id);

@@ -49,9 +49,9 @@ if(isset($_POST["login"]))
 
         else {
                 # use placeholders to protect against sql injection
-                // TODO(schema-migration): becomes INSERT INTO profiles
-                // for the new columns (agreed_to_tos, saved_changes, streak) and write
-                // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
+                // TODO: write a login_log row (email, success/failure) for rate limiting
+                // and lockout, and set profiles.last_login_at on successful login,
+                // per the ARCHITECTURE.md TODO items.
 
                 $sql = "SELECT password, profile_id FROM profiles WHERE email = ?";
                 $stmt = $conn->prepare($sql);

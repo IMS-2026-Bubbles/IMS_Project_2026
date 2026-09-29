@@ -45,10 +45,10 @@ if(isset($_POST['register']))
 
     else {
             # use placeholders to protect against sql injection
-            // TODO(schema-migration): becomes INSERT INTO profiles
-            // (email, first_name, last_name, password) — also decide values
-            // for the new columns (agreed_to_tos, saved_changes, streak) and write
-            // a login_log row / set last_login_at per ARCHITECTURE.md TODOs
+            // TODO: decide values for the remaining new columns at registration time
+            // (saved_changes, streak — rely on schema defaults or set explicitly).
+            // TODO: write a login_log row / set last_login_at after registration,
+            // per the ARCHITECTURE.md TODO items.
             $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_tos) VALUES (?, ?, ?, ?, ?)";
                                                                         // I know, I made a typo in the db, toc should be tos.
                                                                         // This has been changed in the db schema file. -RH

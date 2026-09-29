@@ -79,6 +79,10 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                     WHEN project_members.role = 'edit'     THEN 2
                     WHEN project_members.role = 'read'     THEN 1 ELSE 0 END,
                 -- Experiment owner is project owner
+                -- TODO: the schema defines an 'owner' role on experiments, but this
+                -- CASE has no `WHEN experiment_members.role = 'owner' THEN 3` branch,
+                -- so an experiment owner who is not the project owner is capped at
+                -- level 2. Decide whether owners should get level 3 here.
                 CASE
                     WHEN experiment_members.role = 'edit'  THEN 2
                     WHEN experiment_members.role = 'read'  THEN 1 ELSE 0 END
@@ -121,6 +125,8 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException("`access` column missing");
             } elseif ($exp_permission_level['access'] === null) {
                 // 'access' is null => invalid Experiment_ID
+                // NOTE: message still uses the old identifier spelling (Experiment_ID);
+                // update to experiment_id for consistency with the schema vocabulary.
                 throw new RunTimeException("Invalid Experiment_ID: " . $entity_id);
             }
                 // Return the permission level
@@ -187,6 +193,8 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException("`access` column missing");
             } elseif ($proj_permission_level['access'] === null) {
                 // 'access' is null => invalid Project_ID
+                // NOTE: message still uses the old identifier spelling (Project_ID);
+                // update to project_id for consistency with the schema vocabulary.
                 throw new RunTimeException("Invalid Project_ID: " . $entity_id);
             }
                 // Return the permission level
@@ -245,6 +253,8 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException("`access` column missing");
             } elseif ($lab_permission_level['access'] === null) {
                 // 'access' is null => invalid Lab_Group_ID
+                // NOTE: message still uses the old table name (Lab_Group_ID);
+                // update to lab_id for consistency with the schema vocabulary.
                 throw new RunTimeException("Invalid Lab_Group_ID: " . $entity_id);
             }
                 // Return the permission level
@@ -306,6 +316,9 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
 
     } elseif ($entity_type === 'scriba') {
         // Scriba admin check is independent of entity_id, so we don't need to check entity_id here
+        // TODO: ARCHITECTURE.md says the Scriba-admin check should return level 3,
+        // but this returns is_scriba_admin as-is (1). Scriba admin pages only block
+        // on < 1 so this works, but the doc and the code should agree on the intended level.
         // Check permission for Scriba
             // Create query
         $sql_scriba_permission =
@@ -329,6 +342,8 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException("`access` column missing");
             } elseif ($scriba_permission_level['access'] === null) {
                 // 'access' is null => invalid User_ID
+                // NOTE: message still uses the old identifier spelling (User_ID);
+                // update to profile_id for consistency with the schema vocabulary.
                 throw new RunTimeException("Invalid User_ID: " . $profile_id);
             }
                 // Return the permission level

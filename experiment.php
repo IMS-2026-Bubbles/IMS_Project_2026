@@ -69,8 +69,9 @@ echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name
  <?php
 // Retrieve project ID for the experiment
 include "includes/fetch_experiment_project_id.php"; // This script fetches the project ID for the specified experiment ID
-// Create link back to parent project page
-echo "<a href='project.php?proj_ID=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
+// The experiment library page doubles as the parent project page (lists the
+// project's experiments), filtered by the project_id parameter.
+echo "<a href='experiment_library.php?project_id=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
 ?>
 
 
