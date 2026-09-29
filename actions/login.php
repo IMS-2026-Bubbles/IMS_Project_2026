@@ -87,7 +87,7 @@ if(isset($_POST["login"]))
             // Fetch the user's affiliations from the database. Need if they are scriba admin
             // and if they belong to at least one company.
             $profile_id = $profile['profile_id'];
-            require_once 'includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
+            require_once '../includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
             // Add company_id to session if user has one.
             $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
 
@@ -98,13 +98,13 @@ if(isset($_POST["login"]))
             // $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
 
             if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
-                header ("Location:scriba_admin.php");
+                header ("Location:../scriba_admin.php");
                 exit();
             } elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
-                header ("Location:project_library.php");
+                header ("Location:../project_library.php");
                 exit();
             } else { // User that doesn't belong to a company => user_profile.php
-                header ("Location:user_profile.php");
+                header ("Location:../user_profile.php");
                 exit();
             }
 
@@ -112,7 +112,7 @@ if(isset($_POST["login"]))
             // If login credentials are invalid, redirect back to the login page with an error message
             $_SESSION['login_error'] = $message;
             $_SESSION['toastClass'] = $toastClass;
-            header("Location: index.php");
+            header("Location: ../index.php");
             exit();
         }
 

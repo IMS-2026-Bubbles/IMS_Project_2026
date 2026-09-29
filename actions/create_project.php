@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
 
         // Redirect back to project library
-        header("Location: project_library.php");
+        header("Location: ../project_library.php");
         exit();
     }
 }

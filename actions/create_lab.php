@@ -72,7 +72,7 @@ require_once "database/db.php";
     $_SESSION['create_lab_message'] = $message;
     $_SESSION['create_lab_toastClass'] = $toastClass;
 
-    header("Location: company_admin.php");
+    header("Location: ../company_admin.php");
     exit();
 
     }

@@ -37,7 +37,7 @@ if(isset($_POST['join_company']))
     # if the company doesn't exist
     if (!$exists){
         $_SESSION['error_join_company'] = "The company you want to join doesn't exist. Make sure your code is correct.";
-        header("Location: user_profile.php");
+        header("Location: ../user_profile.php");
         exit;
     }
     else{
@@ -47,7 +47,7 @@ if(isset($_POST['join_company']))
         $stmt->bind_param("si", $company_code, $profile_id);
         $result = $stmt->execute();
         $stmt->close();
-        header("Location: user_profile.php");   // use your real filename
+        header("Location: ../user_profile.php");   // use your real filename
         exit;
         }
     }
@@ -74,7 +74,7 @@ if(isset($_POST['join_lab']))
     if (!$exists){
         $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
         $_SESSION['error_join_lab'] = $error_join_lab;
-        header("Location: user_profile.php");
+        header("Location: ../user_profile.php");
     }
     else{
         # use placeholders to protect against sql injection
@@ -83,7 +83,7 @@ if(isset($_POST['join_lab']))
         $stmt->bind_param("si", $lab_code, $profile_id);
         $result = $stmt->execute();
         $stmt->close();
-        header("Location: user_profile.php");
+        header("Location: ../user_profile.php");
         exit;}
     }
 

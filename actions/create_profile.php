@@ -69,11 +69,11 @@ if(isset($_POST['register']))
     if (isset($result) && $result) {
         $_SESSION['register_user_message'] = $message;
         $_SESSION['register_user_toastClass'] = $toastClass;
-        header("Location: index.php");
+        header("Location: ../index.php");
         session_destroy();
         exit();
     }
-    include 'database/close_db.php';
+    include '../database/close_db.php';
 }
 
 

@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
         // Return to current project
         header(
-            "Location: experiment_library.php?project_id=" . urlencode($project_id)
+            "Location: ../experiment_library.php?project_id=" . urlencode($project_id)
         );
 
         exit();
