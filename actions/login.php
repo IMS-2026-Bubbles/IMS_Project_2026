@@ -16,9 +16,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 
-require_once "session/init.php"; // Start the session and initialize session variables
+require_once "../session/init.php"; // Start the session and initialize session variables
 // No check for user logged in here, login action
-require_once 'database/db.php';
+require_once '../database/db.php';
 
 $message = "";
 $toastClass = "";
