@@ -53,7 +53,7 @@ require_once "check_user_permission.php"; // Include the user permission check f
     <!-- Adds an image, here we can add scriba logo later on -->
     <div class="container-fluid"> <!-- fluid = full width-->
         <a class="navbar-brand">
-        <img src="assets/placeholder.avif" alt="logo" width="30" height="40" class="d-inline-block align-text-middle">
+        <img src="assets/logo_updated.png" alt="logo" width="30" height="40" class="d-inline-block align-text-middle">
         Scriba    
         </a>
 
