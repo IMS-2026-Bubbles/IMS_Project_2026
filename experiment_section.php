@@ -1,6 +1,20 @@
-<!Doctype html>
-<html>
 <?php
+// Experiment sub-section page
+
+// Arrive from:
+    // TODO: experiment_section.php (click on section link)
+    // experiment.php (click on section link)
+    // actions/save_experiment_section.php (after saving changes to a section)
+// Action:
+    // Display experiment section information, including tags, progress flags, and last updated timestamps
+    // Allow users with sufficient permissions to edit the section text and mark it as done
+// Redirect to:
+    // navbar options
+    // experiment.php (click on section link)
+    // actions/save_experiment_section.php (after saving changes to a section)
+
+
+
 // Session initialization
 require_once "session/init.php"; // Make the session available
 // Check if the user is logged in
@@ -63,12 +77,23 @@ if (isset($_SESSION['messages_save_experiment_section'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['messages_save_experiment_section']);
 }
-
-// Navbar
-include "includes/navbar.php"; // Include the navbar
 ?>
 
+
+
+<!Doctype html>
+<html>
+
+<!--  -->
+<!-- Front end starts here -->
+<!--  -->
+
+
 <?php
+// Navbar
+include "includes/navbar.php"; // Include the navbar
+
+
 // Display project name, experiment name, and experiment section name
 include "includes/fetch_project_experiment_names.php"; // fetch the name and ID for project and experiment as $project_experiment_name
 

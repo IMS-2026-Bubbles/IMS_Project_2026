@@ -1,4 +1,20 @@
 <?php
+// Experiment page
+
+// Arrive from:
+    // project.php (click on experiment link)
+    // experiment_section.php (click on plan/log/result link)
+    // actions/save_experiment_tags.php (after adding/removing tags)
+// Action:
+    // Display experiment information, including tags, progress flags, and last updated timestamps
+    // Allow users with sufficient permissions to add/remove tags
+// Redirect to:
+    // navbar options
+    // experiment_section.php (click on plan/log/result link)
+    // actions/save_experiment_tags.php (after adding/removing tags)
+    // project.php (click on "Back to parent project" link)
+
+
 // Session initialization
 include "session/init.php"; // Make the session available
 // Check if the user is logged in
@@ -30,6 +46,10 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
     unset($_SESSION['messages_save_experiment_tags']);
 }
 ?>
+
+<!--  -->
+<!-- Front end starts here -->
+<!--  -->
 
 <!-- Navbar -->
 <?php

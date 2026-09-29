@@ -1,5 +1,5 @@
 <?php
-// Project Library
+// Project Library (change to library.php?)
 
 // Arrive from: 
     // login.php (after logging in)

@@ -1,4 +1,19 @@
 <?php
+// Experiment Library Page (change to project.php?)
+
+// Arrive from:
+    // project_library.php (click on project link)
+    // actions/create_experiment.php (after creating a new experiment)
+// Action:
+    // Display a list of experiments for the selected project
+    // Add experiments to the project if the user has permission
+// Redirect to:
+    // navbar options
+    // experiment.php (click on experiment link)
+    // actions/create_experiment.php (add experiment form submission)
+    // project_library.php (click on "Back to library" link)
+
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -7,7 +22,6 @@ ini_set('display_startup_errors', 1);
 // Start session
 require_once "session/init.php";
 require_once "session/check_user_logged_in.php";
-
 // Connect to database
 require_once "database/db.php";
 
@@ -17,19 +31,19 @@ $profile_id = (int) $_SESSION["profile_id"];
 
 
 // Get project ID
-$projectId = 0;
+$project_id = 0;
 
 if (isset($_GET["project_id"])) {
-    $projectId = (int) $_GET["project_id"];
+    $project_id = (int) $_GET["project_id"];
 }
 
 if (isset($_POST["project_id"])) {
-    $projectId = (int) $_POST["project_id"];
+    $project_id = (int) $_POST["project_id"];
 }
 
 
 // Check that the project belongs to the user's company
-if ($projectId > 0) {
+if ($project_id > 0) {
 
     $checkSql = "
         SELECT projects.project_id
@@ -46,7 +60,7 @@ if ($projectId > 0) {
 
     $checkStmt->bind_param(
         "ii",
-        $projectId,
+        $project_id,
         $profile_id
     );
 
@@ -62,41 +76,41 @@ if ($projectId > 0) {
 }
 
 
-// Add experiment
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
+// // Add experiment
+// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
-    $experimentName = trim($_POST["experiment_name"]);
+//     $experimentName = trim($_POST["experiment_name"]);
 
-    if ($projectId > 0 && $experimentName != "") {
+//     if ($project_id > 0 && $experimentName != "") {
 
-        // Add new experiment
-        $sql = "
-            INSERT INTO experiments
-            (name, project_id)
-            VALUES (?, ?)
-        ";
+//         // Add new experiment
+//         $sql = "
+//             INSERT INTO experiments
+//             (name, project_id)
+//             VALUES (?, ?)
+//         ";
 
-        $stmt = $conn->prepare($sql);
+//         $stmt = $conn->prepare($sql);
 
-        $stmt->bind_param(
-            "si",
-            $experimentName,
-            $projectId
-        );
+//         $stmt->bind_param(
+//             "si",
+//             $experimentName,
+//             $project_id
+//         );
 
-        $stmt->execute();
+//         $stmt->execute();
 
-        $stmt->close();
+//         $stmt->close();
 
 
-        // Return to current project
-        header(
-            "Location: experiment_library.php?project_id=" . $projectId
-        );
+//         // Return to current project
+//         header(
+//             "Location: experiment_library.php?project_id=" . $project_id
+//         );
 
-        exit();
-    }
-}
+//         exit();
+//     }
+// }
 
 
 // Search experiments
@@ -110,7 +124,7 @@ if (isset($_GET["search"])) {
 // Get experiments
 $projectExperiments = [];
 
-if ($projectId > 0) {
+if ($project_id > 0) {
 
     $sql = "
         SELECT
@@ -144,7 +158,7 @@ if ($projectId > 0) {
         $stmt->bind_param(
             "iis",
             $profile_id,
-            $projectId,
+            $project_id,
             $searchValue
         );
 
@@ -153,7 +167,7 @@ if ($projectId > 0) {
         $stmt->bind_param(
             "ii",
             $profile_id,
-            $projectId
+            $project_id
         );
     }
 
@@ -397,7 +411,7 @@ if ($projectId > 0) {
             <input
                 type="hidden"
                 name="project_id"
-                value="<?php echo htmlspecialchars($projectId); ?>"
+                value="<?php echo htmlspecialchars($project_id); ?>"
             >
 
             <input
@@ -435,7 +449,7 @@ if ($projectId > 0) {
                 <input
                     type="hidden"
                     name="project_id"
-                    value="<?php echo htmlspecialchars($projectId); ?>"
+                    value="<?php echo htmlspecialchars($project_id); ?>"
                 >
 
                 <input
