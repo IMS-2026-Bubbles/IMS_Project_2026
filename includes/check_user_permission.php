@@ -79,10 +79,11 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                     WHEN project_members.role = 'edit'     THEN 2
                     WHEN project_members.role = 'read'     THEN 1 ELSE 0 END,
                 -- Experiment owner is project owner
-                -- TODO: the schema defines an 'owner' role on experiments, but this
-                -- CASE has no `WHEN experiment_members.role = 'owner' THEN 3` branch,
-                -- so an experiment owner who is not the project owner is capped at
-                -- level 2. Decide whether owners should get level 3 here.
+                -- TODO: the schema has no explicit 'owner' role on experiments
+                -- (experiment_members.role is ENUM('edit', 'read')), so level 3
+                -- for an experiment can only come from the project_members CASE
+                -- above. Confirm this is intended; the file header comment still
+                -- lists 'owner' as an experiment role and should be corrected if so.
                 CASE
                     WHEN experiment_members.role = 'edit'  THEN 2
                     WHEN experiment_members.role = 'read'  THEN 1 ELSE 0 END

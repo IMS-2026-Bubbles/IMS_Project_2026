@@ -1,5 +1,52 @@
 # NEWS — Experiment_pages branch
 
+## 2026-09-29 — Schema-name migration verified in code, link and documentation fixes
+
+### Schema migration verified against the code
+A full audit confirmed the PHP code now runs against the new schema: the
+queries use the renamed tables (`experiments`, `profiles`, `companies`,
+`labs`, the `*_members` junctions, `experiment_tags`), renamed columns
+(`experiment_id`, `profile_id`, `*_text`, `*_is_done`, `*_updated_at`),
+lowercase section values (`plan` / `log` / `result` in the whitelists and
+links), and `$_SESSION['profile_id']`. The `Scriba_Member` table is gone from
+the code — the Scriba-admin check reads `profiles.is_scriba_admin` instead.
+The manual `SET <section>_Updated = NOW()` statement was removed from
+`save_experiment_section.php` (the new schema's `ON UPDATE CURRENT_TIMESTAMP`
+columns and generated `experiments.updated_at` handle it). Remaining
+`TODO(schema-migration)` markers in the code describe work that is already
+done and can be cleaned up.
+
+### Fixed: broken "Back to parent project" link
+`experiment.php` linked to a non-existent `project.php?proj_ID=...` page. It
+now links to `experiment_library.php?project_id=...`, which lists the
+project's experiments and doubles as the parent project page.
+
+### New TODO / NOTE markers
+- `check_user_permission()`: TODO noting the schema has no explicit `owner`
+  role on experiments (level 3 for an experiment only comes via project
+  ownership) and a TODO on the Scriba-admin level (code returns 1,
+  ARCHITECTURE.md says 3 — decide which is intended).
+- NOTE comments on exception messages still using old identifier spellings
+  (`Experiment_ID`, `Project_ID`, `Lab_Group_ID`, `User_ID`).
+- NOTE in `save_experiment_section.php`: `$experiment_id` can be bound as
+  `"i"` everywhere (it is `"s"` in the fetchers).
+- TODOs in `create_profile.php` / `login.php` for the remaining registration
+  and login work (`saved_changes` / `streak` values at registration,
+  `login_log` rows for rate limiting, `last_login_at` on successful login).
+
+### Schema and documentation
+- `database_schema.sql` / `mock_data.sql`: note that `streak` (and
+  `saved_changes`) are reset to 0 on profile anonymization/deletion where
+  reasonable; the `profile_points` view also excludes deleted profiles.
+- `ARCHITECTURE.md` corrected: experiments have no explicit `owner` role —
+  the owner of an experiment is the owner of its parent project
+  (`experiment_members.role` is `ENUM('edit', 'read')`), and `profile_points`
+  counts done experiments through project owners.
+- Mock data checked against the schema: table/column names, ENUM values,
+  generated columns (never inserted), and retention windows all conform.
+
+## 2026-09-21 — Experiment pages
+
 Date: 2026-09-21
 
 Summary of the website structure implemented on this branch, as a starting
@@ -61,7 +108,11 @@ session and displayed once on the page they land on.
 - ~~The log and result section pages are placeholders; only the plan page
   is implemented so far.~~ Resolved: the section pages were consolidated
   into `experiment_section.php`, which serves all three sections.
-- `check_user_permission()` only implements the 'experiment' entity type;
-  project / lab / company are placeholders.
-- The database connection uses local credentials and an empty database name
-  in `database/db.php`; this needs configuration before deployment.
+- ~~`check_user_permission()` only implements the 'experiment' entity type;
+  project / lab / company are placeholders.~~ Resolved: all entity types
+  ('experiment', 'project', 'lab', 'company', 'scriba') are implemented
+  against the new schema.
+- ~~The database connection uses local credentials and an empty database name
+  in `database/db.php`.~~ Partially resolved: the database name is set
+  (`scriba_db`, matching `database_schema.sql`), but credentials are still
+  local and need configuration before deployment.

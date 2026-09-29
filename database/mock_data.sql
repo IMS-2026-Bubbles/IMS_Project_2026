@@ -56,7 +56,7 @@ VALUES
      TRUE, 64,  '2026-09-23 11:45:00', 3,  FALSE, FALSE),
     (5, 'deleted_5@example.com', 'Deleted', 'Deleted',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKK',
-     TRUE, 95,  '2026-09-20 16:00:00', 0,  FALSE, TRUE),  -- anonymized (GDPR)
+     TRUE, 95,  '2026-09-20 16:00:00', 0,  FALSE, TRUE),  -- anonymized (GDPR); streak/saved_changes reset to 0 on deletion
     (6, 'eva.novak@example.com', 'Eva', 'Novak',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
      TRUE, 142, '2026-09-23 10:20:00', 15, FALSE, FALSE),
@@ -128,7 +128,7 @@ INSERT INTO `project_members` (`project_id`, `profile_id`, `role`) VALUES
     (4, 7, 'owner'),
     (4, 8, 'read'),
     (5, 7, 'owner'),
-    (5, 8, 'edit');
+    (5, 8, 'read');
 
 -- ---------------------------------------------------------------------------
 -- Experiments

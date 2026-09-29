@@ -93,6 +93,9 @@ CREATE TABLE `profiles` (
   `saved_changes` INT NOT NULL DEFAULT 0, -- start from 0
   `last_login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on login
   `streak` INT NOT NULL DEFAULT 1, -- start from 1, creating the account counts as the first day of the streak
+    -- NOTE: on profile anonymization/deletion, reset streak (and saved_changes)
+    -- to 0 where reasonable — the profile_points view also excludes deleted
+    -- profiles, so points can never resurface after deletion.
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
   `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
   -- see delete restrictions/cascades above.

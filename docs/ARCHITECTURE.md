@@ -469,8 +469,12 @@ views: project_updates (project + latest experiment update),
 
 Containment is strict: a company holds labs, a lab holds projects, a project
 holds experiments. Memberships connect a profile to exactly one entity each,
-with a per-level `role` (`owner`/`edit`/`read` on projects and experiments,
-`admin`/`member` on labs and companies).
+with a per-level `role` (`owner`/`edit`/`read` on projects, `edit`/`read` on
+experiments, `admin`/`member` on labs and companies). **Experiments have no
+explicit `owner` role**: the owner of an experiment is the owner of its parent
+project (`experiment_members.role` is `ENUM('edit', 'read')`), and the
+`profile_points` view counts done experiments through project owners for the
+same reason.
 
 ### Naming and conventions
 
