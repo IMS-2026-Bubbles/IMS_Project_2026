@@ -162,12 +162,14 @@ $stmt->close();
     background-color: #8bc1e3;
     color: white;
     font-size: 15px;
-    padding: 12px;
+    padding: 16px 20px;
     border: none;
-    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
-    border-radius: 5px;
-    /* cursor: pointer; */ /* FOR CORNELIA: i removed this as a button/ Tilda */
-    }
+    width: 50%;
+    max-width: 700px;
+    margin: 25px 0 25px 5%;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
 
 
 
