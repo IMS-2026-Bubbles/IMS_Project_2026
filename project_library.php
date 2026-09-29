@@ -2,7 +2,7 @@
 // Project Library (change to library.php?)
 
 // Arrive from: 
-    // login.php (after logging in)
+    // actions/login.php (after logging in)
     // navigation bar (project library button)
     // project_library.php (after adding a new project)
 // Action:

@@ -7,7 +7,7 @@
     // Register a new user in the database
 // Redirect to:
     // index.php (return to login button)
-    // create_profile.php (register new user form submission)
+    // actions/create_profile.php (register new user form submission)
 
 
 ini_set('display_errors', true);

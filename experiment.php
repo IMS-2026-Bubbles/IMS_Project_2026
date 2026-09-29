@@ -2,7 +2,7 @@
 // Experiment page
 
 // Arrive from:
-    // project.php (click on experiment link)
+    // experiment_library.php (click on experiment link)
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
 // Action:
@@ -12,7 +12,7 @@
     // navbar options
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
-    // project.php (click on "Back to parent project" link)
+    // experiment_library.php (click on "Back to parent project" link)
 
 
 // Session initialization

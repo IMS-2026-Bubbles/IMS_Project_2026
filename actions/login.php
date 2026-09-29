@@ -9,6 +9,7 @@
     // and redirect to the appropriate page based on user type
 // Redirect to: 
     // scriba_admin.php, project_library.php, or user_profile.php (depending on user type)
+    // index.php (invalid login credentials)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

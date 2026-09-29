@@ -2,7 +2,7 @@
 // Scriba admin page
 
 // Arrive from: 
-    // index.php (after logging in as a Scriba admin)
+    // index.php (after logging in as a Scriba admin, redirected from actions/login.php)
     // scriba_admin.php (after making/removing a user as admin)
     // scriba_admin.php (after registering a new company)
 // Action:
@@ -11,7 +11,7 @@
     // Allow admins to make users admins or remove admin rights
     // Allow admins to register new companies
 // Redirect to:
-    // manage_company.php (register company, make/remove admin rights)
+    // actions/manage_company.php (register company, make/remove admin rights)
 
 
 require_once "session/init.php"; // Start the session and initialize session variables

@@ -2,7 +2,7 @@
 // Join company/lab action
 
 // Arrive from: 
-    // index.php (join company or lab form)
+    // user_profile.php (join company or lab form)
 // Action:
     // Update company_members table to add the user to the specified company
     // Update lab_members table to add the user to the specified lab

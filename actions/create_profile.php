@@ -1,4 +1,13 @@
 <?php
+// Create profile action
+
+// Arrive from:
+    // register_user.php (register new user form submission)
+// Action:
+    // Register a new profile in the database,
+    // destroy the session, and set a success/failure message
+// Redirect to:
+    // index.php (with message indicating success or failure)
 
 
 

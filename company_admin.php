@@ -8,7 +8,7 @@
     // Create new labs inside company
 // Redirect to:
     // navigation bar options
-    // create_lab.php (after clicking "Register" button to create a new lab group)
+    // actions/create_lab.php (after clicking "Register" button to create a new lab group)
 
 
 

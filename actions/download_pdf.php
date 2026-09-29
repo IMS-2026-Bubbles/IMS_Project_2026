@@ -4,7 +4,8 @@
 // Lets a user download a PDF file from the server. Expects a GET parameter 'file' with the base filename.
 // Whitelist permitted pdf files to prevent directory traversal attacks.
 // See Alex V reply at https://stackoverflow.com/a/8122372/17852580 for reference.
-// Returns
+// Returns: the file itself as a download (with Content-Disposition headers),
+// or exits with an error message if the file is not in the whitelist or doesn't exist.
 
 // Doesn't need session, login check, or database connection
 
