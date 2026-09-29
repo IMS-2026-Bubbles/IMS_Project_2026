@@ -18,9 +18,15 @@ patterns the code follows.
 ```
 /                           Page scripts (one PHP file per page)
 ├── index.php               Login / start page
+├── register_user.php       Registration page
+├── project_library.php     Project listing page
+├── experiment_library.php  Experiment listing page
 ├── experiment.php          Experiment overview page
-├── experiment_section.php Experiment section page (plan/log/result via ?section=)
-├── project_library.php     Listing pages, profile pages, etc.
+├── experiment_section.php  Experiment section page (plan/log/result via ?section=)
+├── leaderboard.php         Leaderboard page
+├── user_profile.php        Profile page
+├── company_admin.php       Company admin page
+├── scriba_admin.php        Scriba admin page
 │
 ├── session/                Session handling
 │   ├── init.php            Starts the session (guarded, safe to include anywhere)
@@ -29,7 +35,8 @@ patterns the code follows.
 ├── database/               Database connection
 │   ├── db.php              Opens $conn (mysqli)
 │   ├── close_db.php        Closes $conn
-│   └── database_schema.sql The MySQL schema (canonical)
+│   ├── database_schema.sql The MySQL schema (canonical)
+│   └── mock_data.sql       Mock dataset for development/testing
 │
 ├── includes/               Reusable includes
 │   ├── check_user_permission.php  check_user_permission(): access level per entity
@@ -40,11 +47,20 @@ patterns the code follows.
 │   ├── fetch_experiment_tags.php             variable ($exp_tags_array, ...)
 │   ├── fetch_experiment_section_text.php
 │   ├── fetch_experiment_timestamps.php
+│   ├── fetch_profile_affiliation.php        (expects $conn and $profile_id)
 │   └── render_progress_badge.php Helper function returning HTML for a progress badge
 │
 ├── actions/                Write endpoints (PRG POST handlers, never render)
-│   ├── create_profile.php          Registration handler
-│   ├── logout.php                  Destroys session, redirects
+│   ├── login.php                  Login handler (sets session, redirects by role)
+│   ├── logout.php                 Destroys session, redirects
+│   ├── create_profile.php         Registration handler
+│   ├── create_project.php         Project creation handler
+│   ├── create_experiment.php       Experiment creation handler
+│   ├── create_lab.php             Lab creation handler
+│   ├── manage_company.php         Company management handler
+│   ├── join_company_lab.php       Join company / lab handlers
+│   ├── delete_profile.php         Profile anonymization handler
+│   ├── download_pdf.php          PDF download handler
 │   ├── save_experiment_section.php Section text/done-flag handler
 │   └── save_experiment_tags.php    Tag add/remove handler
 │
@@ -55,7 +71,10 @@ patterns the code follows.
 └── docs/                   Documentation (README.md stays at the root)
     ├── ARCHITECTURE.md     This document (rendered to ARCHITECTURE.pdf)
     ├── NEWS.md             Feature changelog
-    └── 20260924_ERD_Scriba.png  Database ER diagram
+    ├── readme_tos.md       Notes for the terms of service
+    ├── terms_of_service.qmd    Terms of service source
+    ├── terms_of_service.pdf   Rendered terms of service
+    └── 20260925_ERD_Scriba.png  Database ER diagram
 ```
 
 ## Request flow
@@ -108,7 +127,7 @@ missing row degrades to blank output rather than a fatal error. In practice
 defensive.
 
 ### Access levels
-Access levels come from one central query in `user_permission.php` that walks
+Access levels come from one central query in `check_user_permission.php` that walks
 the membership hierarchy (company → lab group → project → experiment) and
 returns the highest applicable level. Invalid or unknown IDs make the
 function throw `RuntimeException`; unimplemented entity types ('project',
@@ -287,17 +306,17 @@ one, so each commit diffs cleanly.
 
 | Old table | New table | Used in |
 |---|---|---|
-| `Proj_Experiment` (also misspelled `Proj_Experiments` in `exp_fetch_progress.php`) | `experiments` | fetchers, `exp_edit_section.php`, `user_permission.php` |
-| `Project` | `projects` | `exp_fetch_name.php`, `user_permission.php` |
-| `Exp_Tag` | `experiment_tags` | `exp_fetch_tags.php`, `exp_edit_tags.php` |
-| `User` | `profiles` | registration, admin pages, `user_permission.php` |
-| `Company` | `companies` | admin pages, `user_permission.php` |
-| `Lab_Group` | `labs` | admin pages, `user_permission.php` |
-| `Company_Member` | `company_members` | admin pages, `user_permission.php` |
-| `Lab_Group_Member` | `lab_members` | admin pages, `user_permission.php` |
-| `Project_Member` | `project_members` | `user_permission.php` |
-| `Experiment_Member` | `experiment_members` | `user_permission.php` |
-| `Scriba_Member` | *(dissolved)* — query `profiles.is_scriba_admin = TRUE` instead | `user_permission.php` |
+| `Proj_Experiment` (also misspelled `Proj_Experiments` in `fetch_experiment_progress.php`) | `experiments` | fetchers, `save_experiment_section.php`, `check_user_permission.php` |
+| `Project` | `projects` | `fetch_project_experiment_names.php`, `check_user_permission.php` |
+| `Exp_Tag` | `experiment_tags` | `fetch_experiment_tags.php`, `save_experiment_tags.php` |
+| `User` | `profiles` | registration, admin pages, `check_user_permission.php` |
+| `Company` | `companies` | admin pages, `check_user_permission.php` |
+| `Lab_Group` | `labs` | admin pages, `check_user_permission.php` |
+| `Company_Member` | `company_members` | admin pages, `check_user_permission.php` |
+| `Lab_Group_Member` | `lab_members` | admin pages, `check_user_permission.php` |
+| `Project_Member` | `project_members` | `check_user_permission.php` |
+| `Experiment_Member` | `experiment_members` | `check_user_permission.php` |
+| `Scriba_Member` | *(dissolved)* — query `profiles.is_scriba_admin = TRUE` instead | `check_user_permission.php` |
 
 The last row is **TODO: a rewrite, not a rename**: the Scriba-admin check
 becomes `SELECT is_scriba_admin FROM profiles WHERE profile_id = ?`
@@ -325,14 +344,14 @@ The section whitelist and query-parameter values change from
 `Plan`/`Log`/`Result` to `plan`/`log`/`result`, which changes every
 string-concatenated column name built from `$exp_section`:
 
-- `$valid_sections` in `experiment_section.php` and `exp_edit_section.php`.
+- `$valid_sections` in `experiment_section.php` and `save_experiment_section.php`.
 - Column interpolation: `"... SET " . $exp_section . "_Text"` becomes
   `$exp_section . '_text'`; likewise `_Done` → `_is_done` and
   `_Updated` → `_updated_at`.
 - Array keys from `fetch_assoc()` (`$exp_progress_flags[$exp_section .
   '_Done']`, `$exp_last_update[...]`) follow the new column names.
 - Links in `experiment.php` (`&section=Plan`) and the redirects in
-  `exp_edit_section.php`.
+  `save_experiment_section.php`.
 - Display labels may stay capitalized ("Experiment Plan"); only the
   machine values change.
 
@@ -357,21 +376,21 @@ Everything below is a code change over and above substituting new names.
 Each item must be marked with a `// TODO(schema-migration): ...` comment
 in the code during the pass, so the changes stay reviewable and greppable.
 
-- **TODO — delete the manual timestamp update**: `exp_edit_section.php`
+- **TODO — delete the manual timestamp update**: `save_experiment_section.php`
   runs `UPDATE ... SET <section>_Updated = NOW()`. In the new schema the
   `*_updated_at` columns have `ON UPDATE CURRENT_TIMESTAMP` (they update
   automatically when the row's text changes) and `experiments.updated_at`
   is a **generated column** — writing it raises an error. The whole
   timestamp-update statement goes away.
-- **TODO — rework `exp_fetch_updated.php`**: it should not select
+- **TODO — rework `fetch_experiment_timestamps.php`**: it should not select
   `updated_at` for display via the generated column — it derives from the
   `*_updated_at` columns and defaults to the epoch sentinel
   (`1970-01-01`) when none exist; prefer showing `created_at` and the
   section timestamps.
-- **TODO — fix `exp_fetch_progress.php`**: it has a typo table name
+- **TODO — fix `fetch_experiment_progress.php`**: it has a typo table name
   (`Proj_Experiments`) and fails against both old and new schemas; this
   pass fixes it, which is a fix, not a rename.
-- **TODO — fix `exp_fetch_proj_ID.php`**: it selects `Project_ID` while
+- **TODO — fix `fetch_experiment_project_id.php`**: it selects `Project_ID` while
   the same query's `WHERE` uses `Experiment_ID` and the join keys use
   `Proj_ID`/`Exp_ID` — the old code is internally inconsistent; resolving
   that is a fix beyond the rename.
@@ -382,8 +401,8 @@ in the code during the pass, so the changes stay reviewable and greppable.
   against the old tables; beyond the table/column mapping, the
   `company_admin.php` `$admin_ID = ""` placeholder must be resolved from
   the session (`$_SESSION['profile_id']`).
-- **TODO — registration**: `insert_new_user.php` and
-  `register_user_page.php` (which duplicate the same query) need the new
+- **TODO — registration**: `create_profile.php` and
+  `register_user.php` (which duplicate the same query) need the new
   `profiles` columns (`agreed_to_toc`, and defaults for `saved_changes` /
   `streak` — decide the values at registration time), and should set
   `last_login_at` or write a `login_log` row per the TODO items.

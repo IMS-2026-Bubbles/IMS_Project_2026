@@ -87,7 +87,7 @@ if(isset($_POST["login"]))
             // Fetch the user's affiliations from the database. Need if they are scriba admin
             // and if they belong to at least one company.
             $profile_id = $profile['profile_id'];
-            require_once '../includes/fetch_user_affiliation.php'; // expects $conn and $profile_id
+            require_once '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
             // Add company_id to session if user has one.
             $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
 
