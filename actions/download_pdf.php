@@ -7,6 +7,15 @@
 // Returns: the file itself as a download (with Content-Disposition headers),
 // or exits with an error message if the file is not in the whitelist or doesn't exist.
 
+// Arrive from:
+    // register_user.php (click on "Download Terms of Service" link)
+// Action:
+    // Download the specified PDF file from the server
+// Redirect to:
+    // register_user.php (if file is not in whitelist or doesn't exist)
+
+
+    
 // Doesn't need session, login check, or database connection
 
 $file = $_GET['file'];
