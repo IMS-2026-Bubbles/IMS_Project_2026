@@ -221,7 +221,7 @@ require_once "database/db.php";
 
     <!-- adding a lab group -->
      
-    <form action="" method= "POST" class = "register_form"> 
+    <form action="actions/create_lab.php" method= "POST" class = "register_form"> 
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->

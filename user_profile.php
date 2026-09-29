@@ -49,72 +49,6 @@ if (isset($_SESSION['delete_account_message'])) {
     $delete_account_message = "";
 }
 
-// -------- handle POST methods -------- 
-
-// join lab
-// if(isset($_POST['join_lab']))
-//     {
-//     # fetch data from POST request
-//     $lab_code = $_POST['unique_code_lab'];
-
-//     # check so that this code actually exists:
-//     $stmt = $conn->prepare(
-//         "SELECT lab_id 
-//         FROM lab_members 
-//         WHERE lab_id = ?"
-//         );
-//     $stmt->bind_param("s", $lab_code);
-//     $stmt->execute();
-//     $exists = $stmt->get_result()->fetch_assoc();
-//     $stmt->close();
-
-//     # if the lab doesn't exist
-//     if (!$exists){
-//         $error_join_lab = "The lab group you want to join doesn't exist. Make sure your code is correct.";
-//     }
-//     else{
-//         # use placeholders to protect against sql injection
-//         $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
-//         $stmt = $conn->prepare($sql);
-//         $stmt->bind_param("si", $lab_code, $profile_id);
-//         $result = $stmt->execute();
-//         $stmt->close();
-//         header("Location: user_profile.php");
-//         exit;}
-//     }
-
-
-
-// if(isset($_POST['join_company']))
-//     {
-//     # fetch data from POST request
-//     $company_code = $_POST['unique_code'];
-
-//     # check so that this code actually exists:
-//     $stmt = $conn->prepare(
-//     "SELECT company_id FROM companies WHERE company_id = ?");
-//     $stmt->bind_param("s", $company_code);
-//     $stmt->execute();
-//     $exists = $stmt->get_result()->fetch_assoc();
-//     $stmt->close();
-
-//     # if the company doesn't exist
-//     if (!$exists){
-//         $error_join_company = "The company you want to join doesn't exist. Make sure your code is correct.";
-//     }
-//     else{
-//         # use placeholders to protect against sql injection
-//         $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
-//         $stmt = $conn->prepare($sql);
-//         $stmt->bind_param("si", $company_code, $profile_id);
-//         $result = $stmt->execute();
-//         $stmt->close();
-//         header("Location: user_profile.php");   // use your real filename
-//         exit;
-//         }
-//     }
-
-
 
 
 
@@ -170,25 +104,6 @@ $result = $stmt->get_result();
 $lab = $result->fetch_assoc();
 $stmt->close();
 
-
-
-
-
-
-// //delete user account with SQL DELETE statement
-// //i know i should use the is_deleted from profiles but rn its what it is 
-// // UPDATE profiles SET is_delted = TRUE smth like this 
-// if (isset($_POST["delete_account"])) {
-
-//     $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
-//     $stmt->bind_param("i", $profile_id);
-
-//     if ($stmt->execute()) {
-//         echo "Record deleted successfully";
-//     } else {
-//         echo "Error deleting user profile: " . $conn->error;
-//     }
-// }
 
 
 

@@ -34,7 +34,9 @@ if (isset($_POST["delete_account"])) {
         $_SESSION['delete_account_message'] = "Error deleting user profile: " . $conn->error;
     }
 
-    header("Location: ../user_profile.php");
+    # once you have deleted your account you should be logged out
+    header("Location: ../actions/logout.php")
+    #header("Location: ../user_profile.php");
     exit;
 }
 

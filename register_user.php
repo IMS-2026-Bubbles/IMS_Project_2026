@@ -148,7 +148,7 @@ if (isset($_SESSION['register_user_toastClass'])) {
 
     
      <!-- Create the action + call function to check if Passwords match-->
-    <form method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
+    <form action="actions/create_profile.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->

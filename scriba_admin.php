@@ -124,7 +124,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
                 if($role == "member"){
                     $rows_to_display .= 
 
-                    "<form action='' method='POST' style='display:inline;'>" .
+                    "<form action='actions/manage_company.php' method='POST' style='display:inline;'>" .
                     # make it hidden so that the user id is saved in the post - is needed to change in database
                     "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
                     "<input type='submit' name='make_admin' value='Make admin'>" .
@@ -133,7 +133,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 
                 if($role == "admin"){
                     $rows_to_display .= 
-                    "<form action='' method= 'POST' style='display:inline;'>" .
+                    "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>" .
                     "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
                     "<input type='submit' name='admin_removal' value='Remove as admin' >" .
                     "</form>";}
@@ -240,7 +240,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 
     <!-- adding a company -->
      
-    <form action="" method= "POST" class = "register_form"> 
+    <form action="actions/manage_company.php" method= "POST" class = "register_form"> 
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->

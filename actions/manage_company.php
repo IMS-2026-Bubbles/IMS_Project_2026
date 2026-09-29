@@ -92,6 +92,11 @@ require_once '../database/db.php';
     } else {
         echo "Error: " . $stmt->error;
     }
-    }}
+
+    }
+    
+    }
+    header("Location: ../scriba_admin.php");
+    exit;
 
 ?>
