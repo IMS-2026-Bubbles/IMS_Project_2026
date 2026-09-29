@@ -65,7 +65,7 @@ require_once "check_user_permission.php"; // Include the user permission check f
         <ul class="navbar-nav">
         <!-- Company/lab admin page = company/lab admin only -->
             <?php
-
+            $company_id = $_SESSION['company_id'] ?? null; // Get company_id from session if it exists
             // -------------------------- TEMP DEBUG - remove when done -------------
             echo "<pre>";
             echo "company_id set? "; var_dump(isset($company_id));
