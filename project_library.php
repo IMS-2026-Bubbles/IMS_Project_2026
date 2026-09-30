@@ -451,7 +451,7 @@ $stmt->close();
         >
 
             <form
-                action="project_library.php"
+                action="actions/create_project.php"
                 method="POST"
             >
 

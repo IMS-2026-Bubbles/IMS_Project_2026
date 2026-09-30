@@ -74,7 +74,7 @@ if ($scope === "global") {
 
         $users[] = [
             "name" =>
-                $row["first_name"] . " " . $row["last_name"],
+                $row["first_name"],
 
             "points" =>
                 (int) $row["scriba_points"]
@@ -131,7 +131,7 @@ elseif ($scope === "company") {
 
         $users[] = [
             "name" =>
-                $row["first_name"] . " " . $row["last_name"],
+                $row["first_name"],
 
             "points" =>
                 (int) $row["scriba_points"]
@@ -188,7 +188,7 @@ elseif ($scope === "lab") {
 
         $users[] = [
             "name" =>
-                $row["first_name"] . " " . $row["last_name"],
+                $row["first_name"] ,
 
             "points" =>
                 (int) $row["scriba_points"]
