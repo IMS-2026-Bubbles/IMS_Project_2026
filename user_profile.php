@@ -85,7 +85,11 @@ $stmt->close();
 
 //selecting company
 $stmt = $conn->prepare(
-    "SELECT companies.name FROM companies JOIN company_members ON companies.company_id = company_members.company_id WHERE company_members.profile_id = ?"
+    "SELECT companies.name, company_members.role 
+     FROM companies 
+     JOIN company_members 
+     ON companies.company_id = company_members.company_id 
+     WHERE company_members.profile_id = ?"
 );
 $stmt->bind_param("i", $profile_id);
 $stmt->execute();
@@ -197,40 +201,59 @@ $stmt->close();
         <?php 
         // if you don't belong to a company, have the possibility to join one
         if (empty($lab["name"])){ ?>
-            <br>No lab group<br>
-            <form action="actions/join_company_lab.php" method= "POST" class = "join_lab"> 
-            <label for="companies">Join a lab group</label><br>
-            <input type="text" class="" name="unique_code_lab" required><br>
-            <input type="submit" class="" name="join_lab" value="Join"><br><br>
-            </form>
-            <?php 
-            // if the lab already exist
-            if (!empty($error_join_lab)){echo htmlspecialchars($error_join_lab);}}
-       
-        // if user has a company it just shows
+             <br>No lab group<br>
+        
+        <?php 
+        }
+        // if user has a lab it just shows
         else {
-            echo htmlspecialchars($lab["name"]);
-        } ?> 
+             echo htmlspecialchars($lab["name"]);
+         }  
+    
+
+?>
         <br>
 
         Company:
         <?php 
-        // if you don't belong to a company, have the possibility to join one
         if (empty($company["name"])){ ?>
             <br>No company <br>
-            <form action="actions/join_company_lab.php" method= "POST" class = "join_company"> 
-            <label for="companies">Join a company</label><br>
-            <input type="text" class="" name="unique_code" required><br>
-            <input type="submit" class="" name="join_company" value="Join"><br><br>
+        <?php 
+        }
+
+        # if invited
+        elseif ($company["role"]=="pending"){ ?>
+            <br>You have been invited to join <?php echo htmlspecialchars($company["name"])?> <br>
+            
+            <form action="actions/join_company_lab.php" method= "POST"> 
+            <!-- Accept button -->
+            <button type="submit" 
+                    name="submit_type" value="accept">
+                Accept
+            </button>
+
+            <!-- Decline Button 2 -->
+            <button type="submit"  
+                    name="submit_type" value="decline">
+                Decline
+            </button>
+            
             </form>
-            <?php 
-            // if the company already exist
-            if (!empty($error_join_company)){ echo htmlspecialchars($error_join_company);}}
-       
-        // if user has a company it just shows
+
+
+
+        
+  
+        <?php 
+        }
+
+        //if user has a company it just shows
         else {
-            echo htmlspecialchars($company["name"]);
-        } ?>
+             echo htmlspecialchars($company["name"]);
+         }
+
+
+        ?>
         <br>
         
 

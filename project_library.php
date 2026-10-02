@@ -128,16 +128,12 @@ if (isset($_GET["search"])) {
 // Get labs from the user's companies
 $labs = [];
 
-$sql = 
-    "SELECT DISTINCT
-        labs.lab_id,
-        labs.name
-    FROM labs
-    JOIN company_members
-        ON labs.company_id = company_members.company_id
-    WHERE company_members.profile_id = ?
-    ORDER BY labs.name
-";
+$sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
+        FROM profiles
+        LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
+        LEFT JOIN labs on lab_members.lab_id = labs.lab_id
+        WHERE profiles.profile_id = ?";
+
 
 $stmt = $conn->prepare($sql);
 
@@ -160,19 +156,12 @@ $stmt->close();
 // Get projects from the user's companies
 $projects = [];
 
-$sql = 
-    "SELECT DISTINCT
-        projects.project_id,
-        projects.name AS project_name,
-        projects.lab_id,
-        labs.name AS lab_name
-    FROM projects
-    JOIN labs
-        ON projects.lab_id = labs.lab_id
-    JOIN company_members
-        ON labs.company_id = company_members.company_id
-    WHERE company_members.profile_id = ?
-";
+
+
+$sql = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
+        FROM projects
+        JOIN project_members ON project_members.project_id = projects.project_id
+        WHERE project_members.role = 'owner' AND project_members.profile_id = ?";
 
 if ($search != "") {
     $sql .= " AND projects.name LIKE ?";
@@ -532,21 +521,21 @@ $stmt->close();
 
                                 <?php
                                 echo htmlspecialchars(
-                                    $project["project_name"]
+                                    $project["name"]
                                 );
                                 ?>
 
                             </div>
 
-                            <div class="project-lab">
+                            <!-- <div class="project-lab">
 
                                 <?php
-                                echo htmlspecialchars(
-                                    $project["lab_name"]
-                                );
+                                // echo htmlspecialchars(
+                                //     $project["lab_name"]
+                                // );
                                 ?>
 
-                            </div>
+                            </div> -->
 
                         </a>
 

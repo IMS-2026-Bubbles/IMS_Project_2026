@@ -442,7 +442,7 @@ if ($project_id > 0) {
         >
 
             <form
-                action="experiment_library.php"
+                action="actions/create_experiment.php"
                 method="POST"
             >
 

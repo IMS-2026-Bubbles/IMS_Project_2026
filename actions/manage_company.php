@@ -44,6 +44,24 @@ require_once '../database/db.php';
         }
     }
 
+    # for admin to add a person to company: 
+    if(isset($_POST['add_to_company'])){
+        echo "wohooo";
+        $profile_id = $_POST['profile_id'];
+        $company_id = $_POST['add_to_company'];
+        $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $company_id, $profile_id);
+        $result = $stmt->execute();
+        $stmt->close();
+        }
+    // if(isset($_POST['admin_removal'])){
+    //     $profile_id = $_POST['profile_id'];
+    //     $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
+    //     $stmt = $conn->prepare($sql_admin);
+    //     $stmt->bind_param("i", $profile_id);
+    //     $result = $stmt->execute();}
+
 
 
     # if button to register new:
@@ -57,7 +75,7 @@ require_once '../database/db.php';
         $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
         $code = "C"; # all company ids start with C
         # for loop that generates a random number and pick the char with that position
-        for ($i = 0; $i < 9; $i++) {
+        for ($i = 0; $i < 14; $i++) {
             $random_number = random_int(0, strlen($characters) - 1);
             $code .= $characters[$random_number];}
         return $code;}
