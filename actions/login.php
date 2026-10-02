@@ -74,8 +74,7 @@ if(isset($_POST["login"]))
                 
             }
     
-        # redirect here instead of in the form down below
-        # now the form is sent as a post, it would not be otherwise
+
         // Adding a decision tree for what type of account you are logging into,
             // and redirecting accordingly. Using $profile['profile_id'] (see above).
             // Scriba admin => scriba_admin.php
@@ -89,6 +88,7 @@ if(isset($_POST["login"]))
             // and if they belong to at least one company.
             $profile_id = $profile['profile_id'];
             require_once '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+            
             // Add company_id to session if user has one.
             $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
 
@@ -101,10 +101,12 @@ if(isset($_POST["login"]))
             if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
                 header ("Location:../scriba_admin.php");
                 exit();
-            } elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
+            }
+            elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
                 header ("Location:../project_library.php");
                 exit();
-            } else { // User that doesn't belong to a company => user_profile.php
+            }
+            else { // User that doesn't belong to a company => user_profile.php
                 header ("Location:../user_profile.php");
                 exit();
             }
