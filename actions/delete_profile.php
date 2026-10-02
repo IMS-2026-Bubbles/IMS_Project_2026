@@ -5,8 +5,9 @@
     // user_profile.php (delete profile form)
 // Action:
     // Delete the user profile from the database
+    // Personal information is removed, but profile_id stays so the projects and so on are still there
 // Redirect to: 
-    // user_profile.php (with message indicating success or failure)
+    // actions/logout.php
 
 
 // starts the session
@@ -24,8 +25,19 @@ $profile_id = $_SESSION['profile_id'];
 //i know i should use the is_deleted from profiles but rn its what it is 
 // UPDATE profiles SET is_delted = TRUE smth like this 
 if (isset($_POST["delete_account"])) {
+    $sql = "UPDATE profiles
+            SET email = CONCAT(profile_id, '@deleted.invalid'), # .invalid is reserved so noone has this as email
+                first_name = NULL,
+                last_name = NULL,
+                password =  '*', # this is not a valid hash, use any characater but special ones are prefered
+                saved_changes = 0, # this is set to 0 originally
+                last_login_at = NULL, # otherwise it might be considered personal info??
+                streak = 0, # set to 0, originally it is 1, but a deleted acoount won't have a streak
+                is_scriba_admin = FALSE,
+                is_deleted = TRUE
+            WHERE profile_id = ?";
 
-    $stmt = $conn->prepare("DELETE FROM profiles WHERE profile_id = ?"); 
+    $stmt = $conn->prepare($sql); 
     $stmt->bind_param("i", $profile_id);
 
     if ($stmt->execute()) {
@@ -35,9 +47,10 @@ if (isset($_POST["delete_account"])) {
     }
 
     # once you have deleted your account you should be logged out
-    header("Location: ../actions/logout.php")
+    header("Location: ../actions/logout.php");
     #header("Location: ../user_profile.php");
     exit;
 }
 
 ?>
+

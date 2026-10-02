@@ -162,12 +162,14 @@ $stmt->close();
     background-color: #8bc1e3;
     color: white;
     font-size: 15px;
-    padding: 12px;
+    padding: 16px 20px;
     border: none;
-    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
-    border-radius: 5px;
-    /* cursor: pointer; */ /* FOR CORNELIA: i removed this as a button/ Tilda */
-    }
+    width: 50%;
+    max-width: 700px;
+    margin: 25px 0 25px 5%;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
 
 
 
@@ -268,7 +270,7 @@ $stmt->close();
 <h2>Delete account</h2>
 <p>You can choose to delete your account here </p>
 <!--  this is a form, thought abou making a button but it is better to send a form to PHP that answers with f (isset($_POST["delete_account"])) { --> 
-   <form method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+   <form method="POST" action="actions/delete_profile.php" onsubmit="return confirm('Are you sure you want to delete your account?');">
     <button type="submit" name="delete_account">Delete account</button>
 </form>
 <?php 

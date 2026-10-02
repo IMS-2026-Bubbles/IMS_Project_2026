@@ -23,6 +23,7 @@ require_once 'database/db.php';
 // Retrieve login error messages from the session if they exist
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];
+    
     // Clear the messages from the session after retrieving them
     unset($_SESSION['login_error']);
 } else {
@@ -31,6 +32,7 @@ if (isset($_SESSION['login_error'])) {
 
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
+
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 } else {

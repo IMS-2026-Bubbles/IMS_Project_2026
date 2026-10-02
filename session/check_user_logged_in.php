@@ -11,4 +11,8 @@ if (!isset($_SESSION['profile_id'])) {
     echo "You must be logged in to view this page.";
     exit();
 }
+
+// Set standard variables for logged-in user
+$profile_id = $_SESSION['profile_id'];
+$company_id = $_SESSION['company_id'] ?? null; // Get company_id from session if it exists
 ?>
