@@ -296,15 +296,8 @@ $stmt->close();
 </div>--> 
 
 
-<!-- JavaScript Operators are used to assign values, compare values, perform arithmetic operations, and much more. -->
+<!-- JavaScript Operators are used to assign values, compare values, perform arithmetic operations, and much more, did never use..  -->
 
-<script>
-function confirmDelete() {
-    if (confirm("Are you sure?")) {
-        alert("You clicked Yes, your account is now deleted");
-    }
-}
-</script>
 
 
 
