@@ -53,6 +53,22 @@ body {
     align-items: center;
     justify-content: space-between;
 
+<<<<<<< HEAD
+    
+/*we're gonna use a linking element in the HTML files (php) <link> */
+
+/* from yooutube video, how to make stylish buttons, can also use suns maybe?
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center; height:100vh;
+    background-color: aqua;
+
+
+}
+
+*/
+=======
     padding: 0 35px;
 
     box-sizing: border-box;
@@ -758,3 +774,4 @@ body {
 
     color: white !important;
 }
+>>>>>>> 4ad11781cdb50bd677704a35daaa90ab97b94faf
