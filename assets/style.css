@@ -797,6 +797,37 @@ body {
 /* The selector points to the HTML element you want to style. */
 /* The declaration block contains one or more declarations separated by semicolons.  */
 
+/*I want some general designs for all my pages, like button stles, text styles etc */
+/*inspiration from w3 schools css button */ 
+.button {
+  background-color: var(--scriba-light-blue);
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.text {
+    color: black;
+    text-align: center;
+    size: 36px;
+    
+
+}
+
+
+h1 {
+  color: black;
+  text-decoration-color: #263c55;
+  text-align: center;
+  margin-top: 100px;
+}
+
+
 
 /*Login form design in order up to down and left to right */
 
@@ -851,31 +882,26 @@ body {
 
 .login_form {
   color: var(--scriba-dark);
+  
   text-align: center;
-  width: 300px;
-  border: 45px var(--scriba-light-blue);
+  width: 600px;
   padding: 50px;
-  margin-top: 250px;
-  margin-left: 300px;
-  color: var(--scriba-dark);
-    background-color: var(--scriba-light-blue);
-    /* suns button style */
-     min-width: 150px;
-
-    padding: 10px 25px;
+  margin-top: 200px;
+  margin-left: 100px;
+  display: flex; /*makes the email + password be under each other*/ 
+  flex-direction: column;
+  gap: 10px;
 
     border: 2px solid var(--scriba-dark);
-    border-radius: 20px;
-
-    background:
-        linear-gradient(
+    border-radius: 30.px;
+    background:linear-gradient(
             100deg,
-            var(--scriba-soft-blue),
-            var(--scriba-white)
-        );
+            var(--scriba-soft-blue), var(--scriba-white));
 
-    color: var(--scriba-dark);
-    font-size: 18px;
+  
+
+
+
 
 }
 
@@ -884,10 +910,27 @@ body {
     margin-top: 30px;
     font-size: 18px;
 
-    text-decoration: none;
+    
 
     text-align: center;
 }
+
+.login_button {
+    
+     background-color: rgb(24, 248, 39);
+  border-radius: 2px;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+
+
 
 
 .register_user_button {
@@ -895,7 +938,7 @@ body {
     color: var(--scriba-dark);
     background-color: var(--scriba-light-blue);
     /* suns button style */
-     min-width: 500px;
+     min-width: 550px;
     padding: 10px 25px;
     border: 2px solid var(--scriba-dark);
     border-radius: 20px;
@@ -906,14 +949,9 @@ body {
             var(--scriba-white)
         );
 
-    
-
     color: var(--scriba-dark);
-
     font-size: 18px;
-
     text-decoration: none;
-
     text-align: center;
 
     
@@ -921,6 +959,14 @@ body {
 
 .container {
   display: grid;
+
+}
+
+
+
+/*regiater uaer page*/
+.register_user_page{
+
 }
 
 

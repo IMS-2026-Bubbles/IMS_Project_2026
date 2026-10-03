@@ -57,7 +57,14 @@ else {
             padding: 70px ; /* Adds 50px of space around the inside of the web browser*/
         }
         </style>
+
+
+
 </head>
+
+
+
+
 
 <style>
     body {
@@ -93,20 +100,20 @@ else {
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
         <label for="first_name">First name</label><br>
-        <input type="text" class="" name="first_name" required><br>
+        <input type="text" class="register_user_button" name="first_name" required><br>
 
         <label for="last_name">Last name</label><br>
-        <input type="text" class="" name="last_name" required><br>
+        <input type="text" class="register_user_button" name="last_name" required><br>
 
         <label for="email">email adress</label><br>
-        <input type="email" class="" name="email" required><br> <!-- @ is needed -->
+        <input type="email" class="register_user_button" name="email" required><br> <!-- @ is needed -->
 
         <!-- setting type as Password makes characters hidden + supports Password control -->
         <label for="password">Password</label><br>
-        <input type="password" class="" name="password1" minlength= "8" required> <br> <!-- must use 8 characters -->
+        <input type="password" class="register_user_button" name="password1" minlength= "8" required> <br> <!-- must use 8 characters -->
 
         <label for="password2">Repeat Password</label><br>
-        <input type="password" class="" name="password2" minlength= "8" required><br><br>
+        <input type="password" class="register_user_button" name="password2" minlength= "8" required><br><br>
 
         <!-- https://www.geeksforgeeks.org/javascript/Password-matching-using-javascript/ -->
         

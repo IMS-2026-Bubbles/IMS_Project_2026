@@ -100,7 +100,7 @@ if (isset($_SESSION['toastClass'])) {
 
   <!-- Want the title + logo on the left side, making a class for left side and further a class for right side for login forms etc-->
     <div class = "left_side_loginpage">
-    <h1 class = "loginpage_title" > Welcome to Scriba; your personal Electronic Lab Notebook!</h1>
+    <h1 class = "h1" > Welcome to Scriba; your personal Electronic Lab Notebook!</h1>
 
 
     <img
@@ -129,14 +129,14 @@ if (isset($_SESSION['toastClass'])) {
     <form class="login_form" action = "actions/login.php" method="POST">
     <label>Email address</label> <input type="email" name="email">
     <label>Password</label> <input type="password" name="password">
-    <input type="submit" value="Log in">
+    <input type="submit" class="login_button" value="Log in">
 
     <!-- get directed to register user page if the person wants to make an account  -->
     </form>
 
-    
+
     <div class="register_user">
-    <p>Do you want to make an account?</p>
+    <p class = "text" > Do you want to make an account?</p>
      <a class="register_user_button" href="register_user.php"> Register new user
     </a>
 
