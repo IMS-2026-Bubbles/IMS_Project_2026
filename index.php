@@ -80,7 +80,7 @@ if (isset($_SESSION['toastClass'])) {
  <!-- According to w3 schools:-->
   <!-- Bootstrap also gives you the ability to easily create responsive designs, Bootstrap is a free front-end framework for faster and easier web development  -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
-<!-- Linked to our stylesheet  -->
+<!-- Linked to our stylesheet, linked is often used to link to the stylesheet but also other files  -->
     <link rel="stylesheet" href="assets/style.css">
 
 
@@ -93,31 +93,60 @@ if (isset($_SESSION['toastClass'])) {
 
 
 
+
+
 <body>
-    <h1>Welcome to Scriba!</h1>
-        <div class="b"> 
+    <main class = "loginpage">
 
-        <h3>Register new user</h3>
+  <!-- Want the title + logo on the left side, making a class for left side and further a class for right side for login forms etc-->
+    <div class = "left_side_loginpage">
+    <h1 class = "loginpage_title" > Welcome to Scriba; your personal Electronic Lab Notebook!</h1>
 
-        <a href="register_user.php" class="btn btn-dark rounded-pill"> Register new user</a>
-        <br><br>
-        
-        <h3>Log in</h3>
-        <!-- Create the action-->
 
-            <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
+    <img
+                src="Scriba_logo1.png"
+                alt="Scriba logo"
+                class="loginpage_logo"
+            >
+    </div>
+
+
+
+
+
+<!-- Divide right side-->
+ <!-- Login + make new account-->
+
+    <div class = "right_side_loginpage">
+
+       <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
+       <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
         <?php if ($message): ?>
-            
+            <p><?php echo htmlspecialchars($message); ?></p>
         <?php endif;?>
 
-
 <!-- Create login class-->
- <form class="login_form" action = "actions/login.php" method="POST">
+    <form class="login_form" action = "actions/login.php" method="POST">
     <label>Email address</label> <input type="email" name="email">
     <label>Password</label> <input type="password" name="password">
     <input type="submit" value="Log in">
 
-        </form>
+    <!-- get directed to register user page if the person wants to make an account  -->
+    </form>
+
+    
+    <div class="register_user">
+    <p>Do you want to make an account?</p>
+     <a class="register_user_button" href="register_user.php"> Register new user
+    </a>
+
+
+
+ 
+
+    </div>
+
+</main>
 
 
         

@@ -683,6 +683,7 @@ body {
    13. NAVBAR
    ========================================================= */
 
+   /* why do we have 2 navbars in this stylesheet*/ 
 .scriba-navbar {
     background-color: #e3f2fd !important;
 
@@ -797,9 +798,129 @@ body {
 /* The declaration block contains one or more declarations separated by semicolons.  */
 
 
-/*Login form design*/
+/*Login form design in order up to down and left to right */
+
+
+
+/* Style the side navigation with inspiration from w3 schools*/
+/* Divides the page into two parts so this is just where the logo and ewlcome text*/
+.left_side_loginpage {
+  height: 100%;
+  width: 900px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: var(--scriba-soft-blue);
+  overflow-x: hidden;
+}
+
+/*going to make this better */
+.loginpage_title {
+
+    color:  #263c55;
+    text-align: center;
+    font-size: 50px;
+    margin-top: 30px;
+
+
+}
+
+/* adjusting placement of the logo*/ 
+.loginpage_logo {
+    
+    width: 600px;
+    height: auto;
+    margin-top: 80px;
+    margin-left: 100px;
+}
+
+
+/* right side */ 
+.right_side_loginpage {
+  height: 100%;
+  width: 850px;
+  position: fixed;
+  z-index: 1; /* dont know*/ 
+  top: 0;
+  right: 0;
+  background-color: var(--scriba-light-blue);
+  overflow-x: hidden;
+}
+
 
 .login_form {
-  color: #c4d3ee;
+  color: var(--scriba-dark);
   text-align: center;
+  width: 300px;
+  border: 45px var(--scriba-light-blue);
+  padding: 50px;
+  margin-top: 250px;
+  margin-left: 300px;
+  color: var(--scriba-dark);
+    background-color: var(--scriba-light-blue);
+    /* suns button style */
+     min-width: 150px;
+
+    padding: 10px 25px;
+
+    border: 2px solid var(--scriba-dark);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            100deg,
+            var(--scriba-soft-blue),
+            var(--scriba-white)
+        );
+
+    color: var(--scriba-dark);
+    font-size: 18px;
+
 }
+
+.register_user {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 18px;
+
+    text-decoration: none;
+
+    text-align: center;
+}
+
+
+.register_user_button {
+    display: inline-block;
+    color: var(--scriba-dark);
+    background-color: var(--scriba-light-blue);
+    /* suns button style */
+     min-width: 500px;
+    padding: 10px 25px;
+    border: 2px solid var(--scriba-dark);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            100deg,
+            var(--scriba-soft-blue),
+            var(--scriba-white)
+        );
+
+    
+
+    color: var(--scriba-dark);
+
+    font-size: 18px;
+
+    text-decoration: none;
+
+    text-align: center;
+
+    
+}
+
+.container {
+  display: grid;
+}
+
+
