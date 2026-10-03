@@ -96,7 +96,7 @@ CREATE TABLE `profiles` (
     -- NOTE: on profile anonymization/deletion, reset streak (and saved_changes)
     -- to 0 where reasonable — the profile_points view also excludes deleted
     -- profiles, so points can never resurface after deletion.
-  `is_verified` BOOLEAN NOT NULL DEFAULT FALSE -- this is about email
+  `is_verified` BOOLEAN NOT NULL DEFAULT FALSE, -- this is about email
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
   `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
   -- see delete restrictions/cascades above.

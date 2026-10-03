@@ -41,27 +41,30 @@ if (isset($_SESSION['toastClass'])) {
 ?>
 
 
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
-    <link rel="stylesheet" href="assets/style.css"> <!-- We can define our own design in this -->
+<!--    <link rel="stylesheet" href="assets/style.css">  We can define our own design in this -->
     <!-- To get premade buttons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+   <!--  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> --> 
     
     
-    <style>
-        body{
-            padding: 70px ; /* Adds 50px of space around the inside of the web browser*/
-            min-height: 100vh;
-            background: linear-gradient(120deg, #7794b6, #d4f6fd);
-            color: #263c55;
-        }
-    </style>
-    
+  <!--Deleted all css code in the INDEX.php page cause its going to be linked in style.css -->
+  
 
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in account</title> <!-- This is what you see on the tab in safari/chrome -->
+<!-- old CSS in this page just commented it so it doesnt show 
     <style> div.a {
         position: absolute;
         center;
@@ -70,10 +73,30 @@ if (isset($_SESSION['toastClass'])) {
         position: absolute;
         right: 25px;
     }  </style>
+
+-->
+
+<!-- Linked to bootstrap -->
+ <!-- According to w3 schools:-->
+  <!-- Bootstrap also gives you the ability to easily create responsive designs, Bootstrap is a free front-end framework for faster and easier web development  -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+<!-- Linked to our stylesheet  -->
+    <link rel="stylesheet" href="assets/style.css">
+
+
 </head>
+
+
+
+
+
+
+
+
 <body>
     <h1>Welcome to Scriba!</h1>
         <div class="b"> 
+
         <h3>Register new user</h3>
 
         <a href="register_user.php" class="btn btn-dark rounded-pill"> Register new user</a>
@@ -84,16 +107,52 @@ if (isset($_SESSION['toastClass'])) {
 
             <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
         <?php if ($message): ?>
-            <div style="background-color: <?php echo htmlspecialchars($toastClass); ?>; 
-                        color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
+            
         <?php endif;?>
 
-        <form action="actions/login.php" method= "POST">  <!-- change action so you end up somewhere! -->
 
-            <!-- forms for all free text info that is needed-->
-            <!-- required so that the field is mandatory before registering -->
+<!-- Create login class-->
+ <form class="login_form" action = "actions/login.php" method="POST">
+    <label>Email address</label> <input type="email" name="email">
+    <label>Password</label> <input type="password" name="password">
+    <input type="submit" value="Log in">
+
+        </form>
+
+
+        
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
+        <form action="actions/login.php" method= "POST">   change action so you end up somewhere! 
+
+             forms for all free text info that is needed
+            required so that the field is mandatory before registering 
             <label for="email">Email adress</label><br>
             <input type="email" class="" name="email" required ><br>
 
@@ -107,4 +166,4 @@ if (isset($_SESSION['toastClass'])) {
 </body>
 </html>
 
-
+-->

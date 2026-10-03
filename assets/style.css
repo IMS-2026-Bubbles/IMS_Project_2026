@@ -1,3 +1,11 @@
+
+
+
+/* A global stylesheet for scriba*/ 
+/* With an external style sheet, you can change the look of an entire website by changing just one file!
+
+Each HTML page must include a reference to the external style sheet file inside the <link> element, inside the head section.*/
+
 /* =========================================================
    SCRIBA GLOBAL STYLE
    ========================================================= */
@@ -53,22 +61,6 @@ body {
     align-items: center;
     justify-content: space-between;
 
-<<<<<<< HEAD
-    
-/*we're gonna use a linking element in the HTML files (php) <link> */
-
-/* from yooutube video, how to make stylish buttons, can also use suns maybe?
-body{
-    display: flex;
-    justify-content: center;
-    align-items: center; height:100vh;
-    background-color: aqua;
-
-
-}
-
-*/
-=======
     padding: 0 35px;
 
     box-sizing: border-box;
@@ -774,4 +766,40 @@ body{
 
     color: white !important;
 }
->>>>>>> 4ad11781cdb50bd677704a35daaa90ab97b94faf
+
+
+
+
+
+
+
+
+
+
+
+
+/*root again so i can easy access colours..*/
+:root {
+    --scriba-blue: #7794b6;
+    --scriba-light-blue: #d4f6fd;
+    --scriba-dark: #263c55;
+    --scriba-soft-blue: #cbd8f2;
+    --scriba-card-blue: #c4d3ee;
+    --scriba-white: #ffffff;
+    --scriba-border: #263c55;
+}
+
+
+
+
+/* Cornelia deisgns index.php (login page) */
+/* The selector points to the HTML element you want to style. */
+/* The declaration block contains one or more declarations separated by semicolons.  */
+
+
+/*Login form design*/
+
+.login_form {
+  color: #c4d3ee;
+  text-align: center;
+}
