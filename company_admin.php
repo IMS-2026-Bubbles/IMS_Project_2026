@@ -145,7 +145,11 @@ require_once "database/db.php";
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
         crossorigin="anonymous"
+        
     >
+    <link rel="stylesheet" href="assets/style.css">
+
+
 </head>
 
 
@@ -184,42 +188,45 @@ require_once "database/db.php";
 
 <body>
 
+
+<main class="company_admin_page">
+     <h1 class="page_title">Company admin page</h1>
+
+
 <!-- i want nav bar here -->
     <?php 
     include "includes/navbar.php";
     ?>
 
-    <h1>Company admin page</h1>
 
     <!-- adding a lab group -->
-     
-    <form action="actions/create_lab.php" method= "POST" class = "register_form"> 
+      <!-- Theese were under each other before, but i would like them to be ebside each other  -->
+<div class="company_admin_forms">  <!-- gathering them and giivng them heir own style -->
+    <form action="actions/create_lab.php" method= "POST" class = "admin_form"> 
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="companies">Register a new lab group</label><br>
-        <input type="text" class="" name="name" required><br>
+         <label>Register a new lab group</label>
+        <input type="text" class="scriba_input" name="name" required>
 
-    <input type="submit" class="btn btn-dark rounded-pill" name="register_lab_group" value="Register"><br><br>
+    <input type="submit" class="login_button" name="register_lab_group" value="Register">
     </form>
 
-
+<form action="actions/join_company_lab.php" method="POST" class="admin_form">
     <!-- adding a new person to company group -->
-     
-    <form action="actions/join_company_lab.php" method= "POST" class = "register_form"> 
-
-        <!-- forms for all free text info that is needed-->
+       <label>Invite a new member</label>
+   <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="invite">Invite a new member</label><br>
-        <input type="text" class="" name="invite_person" required><br>
+        <input type="text" class="scriba_input" name="invite_person" required>
 
-    <input type="submit" class="btn btn-dark rounded-pill"  value="Invite"><br><br>
+    <input type="submit" class="login_button"  value="Invite">
     </form>
+</div>
 
     <!-- Table 1 -->
     <div class = "container">
     <div>
-    <table class = "table table-striped"> <!-- update to another class maybe -->
+    <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
         <thead>
         <tr>
             <!-- specifying the column names names -->
@@ -239,7 +246,7 @@ require_once "database/db.php";
 
     <!-- Table 2 -->
     <div>
-        <table class = "table table-striped"> <!-- update to another class maybe -->
+        <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -256,7 +263,7 @@ require_once "database/db.php";
 
     <!-- Table 3 -->
     <div>
-        <table class = "table table-striped"> <!-- update to another class maybe -->
+        <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -284,3 +291,4 @@ require_once "database/db.php";
     include "database/close_db.php";
 
 ?>
+

@@ -183,20 +183,24 @@ $stmt->close();
 
 
 </head>
-<body style="background-image: url('assets/website_background.jpg');">
 
 
+
+<body>
 <!-- readfile() - reads a file and writes it to the output buffer -->
 
 
-<!-- Här e mina bästa fina design buttons-->
-
-<div class="welcome">
+<div class="profile_container">
+<div class="profile_left">
+    <div class="welcome">
     <!-- I added so that the display name is showed up here instead / Tilda -->
 <h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
 <p>You have possibilities to overwiev your profile, add experiments and wiev your points. Log it or it didnt happen! </p>
 </div>
+    </div>
 
+
+<div class="profile_right">
 <div class="user">
 <h2>Company & Department</h2>
 <p>
@@ -298,7 +302,7 @@ $stmt->close();
 <p>You can choose to delete your account here </p>
 <!--  this is a form, thought abou making a button but it is better to send a form to PHP that answers with f (isset($_POST["delete_account"])) { --> 
    <form method="POST" action="actions/delete_profile.php" onsubmit="return confirm('Are you sure you want to delete your account?');">
-    <button type="submit" name="delete_account">Delete account</button>
+    <button type="submit" class = "btn-81"  name="delete_account">Delete account</button>
 </form>
 <?php 
     if (!empty($delete_account_message)) {
@@ -307,8 +311,18 @@ $stmt->close();
         echo "<br>";
     }
 ?>
+        </div>
 
 </div>
+
+
+
+
+  
+</div>
+
+
+
 
 
 <!-- I SUGGEST THAT WE REMOVE THIS PART AS THE PERSONAL INFORMATION IS DISPLAYED ABOVE -->

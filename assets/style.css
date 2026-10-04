@@ -38,8 +38,8 @@ Each HTML page must include a reference to the external style sheet file inside 
    ========================================================= */
 
 :root {
-    --scriba-blue: #7794b6;
-    --scriba-light-blue: #d4f6fd;
+    --scriba-blue: #0c8eae;
+    --scriba-light-blue: #98eefa;
     --scriba-dark: #263c55;
     --scriba-soft-blue: #cbd8f2;
     --scriba-card-blue: #c4d3ee;
@@ -831,7 +831,9 @@ body {
     margin-bottom: 40px;
 }
 
-.button {
+/* stylish button inspiration https://www.css-buttons.com/buttons/34/gradient-color-button */
+
+ .button_OLD_DRaft {
   background-color: var(--scriba-light-blue); /* makes bakcground colour on the btutton light blues*/
    border: none; /* no border around the button  */
   color: white; 
@@ -841,7 +843,35 @@ body {
   display: inline-block;
   font-size: 16px;
   cursor: pointer;
+} */
+
+.btn-81 {
+    padding: 10px 20px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 500;
+    color: #fd0b0b;
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid #ff1307;
+    transition: 0.5s ease;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    user-select: none;
+    /*** full width block ***/
+    /* width: 100%; */
 }
+
+.btn-81:hover,
+.btn-81:focus {
+    color: #000000;
+    background: #f03405;
+    border: 1px solid #ff4107;
+    box-shadow: 0 0 5px #faa390, 0 0 20px #db0808, 0 0 50px #9a471d, 0 0 100px #c94808;
+}
+
 
 
 .text {
@@ -872,6 +902,7 @@ h1 {
 
 
 /*Login form design in order up to down and left to right */
+/* https://getbootstrap.com/docs/5.3/content/tables/?utm_source=chatgpt.com */
 
 
 
@@ -972,9 +1003,7 @@ h1 {
 }
 
 
-
-
-
+ 
 
 
 .register_user_button {
@@ -1016,9 +1045,7 @@ h1 {
 
     /* auto makes the conatiner in the middle! (centered) */
     margin: 60px auto; 
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+    display: flex; flex-direction: column; text-align: center;
 }
 
 .add_company_button{
@@ -1067,6 +1094,7 @@ width: 90%;
         }
         
         /* If div class = container, the tables will be next to each other */
+        
         .container{ 
             display: flex; 
             justify-content: center;  /* the tables are in the center of page */
@@ -1079,6 +1107,51 @@ width: 90%;
         } 
 
 
+/* center eveyrthing on the page all html elemnts on the page  */
+.company_admin_page {
+    width: 90%; /* elemnt can be 90% of the screen */ 
+    max-width: 1500px; /*max width cant get bigger than 1500 px */ 
+    /* auto gives 50 px up and down but auto in the sides, like a short command but also centering the box horisontally */
+    margin: 50px auto; 
+}
+
+/* display flex enables the elemnts, in this case the fors to be beside each other usually its udner each other  */
+.company_admin_forms {display: flex; gap: 30px; margin-bottom: 50px;}
+
+.admin_form {
+    /* flex 1 enables the forms to be beside each other  */
+    /* this flex is on another level, thsi is for the thing IN the forms  */
+
+    flex: 1; 
+/* flex direction to columns makes theese under each other adn gap 12 px is so much better than br br and all thosw things  */
+    display: flex;
+    flex-direction: column; gap: 12px; 
+    padding: 25px; 
+    background-color: white; border: 2px solid var(--scriba-dark); border-radius: 18px;
+}
 
 
+/* hover pesudo class https://www.w3schools.com/cssref/sel_hover.php */
+
+.admin_table{
+    --bs-table-striped-bg: var(--scriba-soft-blue);
+    --bs-table-hover-bg: var(--scriba-light-blue); border-radius: 15px; overflow: hidden;
+}
+
+
+
+
+/* user pfrofile page  */
+/* https://coder-coder.com/display-divs-side-by-side/ */
+
+.profile_container {
+    display: flex;
+    gap: 30px; width: 90%; max-width: 1200px; margin: 50px auto;}
+
+    /* from the visonboard were we want to part up the page 50-50  */
+.profile_left,
+.profile_right {
+    flex: 1; /* parted and get same amount of the page*/ 
+
+}
 
