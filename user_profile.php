@@ -125,6 +125,7 @@ $stmt->close();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- <title>Document</title> -->
 
+    <link rel="stylesheet" href="assets/style.css">
     <!-- i want nav bar here -->
     <?php include "includes/navbar.php";?>
 
@@ -133,19 +134,22 @@ $stmt->close();
     <title>User Page</title>
 
 
-    <style>
 
-    .welcome {
+
+    
+<!--
+/*.welcome {
     background-color: lightblue;
     color: white;
     border: 4px solid white;
-    margin: 50px 45% 50px 5%; /* top, right, bottom, left */
-    /* margin-top: 50px;
+    margin: 50px 45% 50px 5%; top, right, bottom, left 
+    margin-top: 50px;
     margin-bottom: 50px;
     margin-right: 1200px;
-    margin-left: 70px; */
+    margin-left: 70px; 
     padding: 10px; 
-    }
+    } 
+*/
 
 
     /* .user {
@@ -162,7 +166,7 @@ $stmt->close();
 
 
     /* Gjorde alla till buttons.. får fixa det sen : )  */
-    .user {
+   /* .user {
     background-color: #8bc1e3;
     color: white;
     font-size: 15px;
@@ -172,12 +176,12 @@ $stmt->close();
     max-width: 700px;
     margin: 25px 0 25px 5%;
     border-radius: 8px;
-    box-sizing: border-box;
+    box-sizing: border-box; */
 }
 
+-->
 
 
-    </style>
 </head>
 <body style="background-image: url('assets/website_background.jpg');">
 

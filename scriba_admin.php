@@ -138,35 +138,25 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 
     <!-- Loads Bootstrap -->
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-        crossorigin="anonymous"
+
+        
+      
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous"
+>
+
+<!-- Scriba CSS  -->
+<link rel="stylesheet" href="assets/style.css">
+        
+
     >
 
 
+
     <!-- When improving front end, this is where updates can be made -->
-    <style>
-        /* For tables */
-        .table{
-            --bs-table-hover-bg: #D6EEEE; /* Added so that colour changes over a row */
-
-        }
-        
-        /* If div class = container, the tables will be next to each other */
-        .container{ 
-            display: flex; 
-            justify-content: center;  /* the tables are in the center of page */
-            gap: 50px;}
-
-        /* I don't manage to make this look nice, but this is the start :) */
-        .register_form{
-            padding: 10px ; /* adds 50px of space between the content of the container and its edges */
-            margin: 0 auto; /* centers the container in the web browser */ 
-        } 
-        
-    </style>
-
+   
 
 
     <title>Admin</title>
@@ -176,28 +166,31 @@ if (isset($_SESSION['manage_company_toastClass'])) {
     <?php 
     include "includes/navbar.php";
     ?>
+
+
+
+
+
+
+
+
 <body>
-    <h1>Admin Page</h1>
+    <main class = "admin_page">
+
+    <h1 class = "page_title" Admin Page</h1>
+
     <!-- Makes sure that the message is actually displayed -->
     <?php if (!empty($manage_company_message)): ?>
-        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; >
             <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
-
-    
-
-    
-
 <!--
     <p>This is the page that ONLY Scriba admin (superadmin) will be able to see. This is also the only page this type of admin will have access to. </p>
 
         Look at this link on how you sort a table by clicking on header:<br> 
         https://www.w3schools.com/howto/howto_js_sort_table.asp
     </p> -->
-
-
-
 
     <!-- adding a company -->
      
@@ -206,9 +199,9 @@ if (isset($_SESSION['manage_company_toastClass'])) {
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
         <label for="companies">Register a new company</label><br>
-        <input type="text" class="" name="name" required><br><br>
+        <input type="text" class="scriba_input" name="name" required><br><br>
 
-    <input type="submit" class="btn btn-dark rounded-pill" name="register_company" value="Register"><br><br>
+    <input type="submit" class="login_button" name="register_company" value="Register"><br><br>
     </form>
 
 
@@ -219,7 +212,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
     <div class = "container">
     <div>
         <!--<table class = "table table-striped">  update to another class maybe -->
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover">  <!-- moved hover to css style document in class table  -->
 
         <thead>
             <tr>

@@ -66,31 +66,18 @@ else {
 
 
 
-<style>
-    body {
-            min-height: 100vh;
-             background: linear-gradient(120deg, #7794b6, #d4f6fd);
-            color: #263c55;
-        }
-</style>
 
 
 <body>
-    <h1>Welcome to Scriba!</h1>
-    <h2>Add the following information to create an account</h2>
+     <div class="register_user_page"> <!-- makes the form centered from css class  -->
+     <h1 style = "h1" > Welcome to Scriba!</h1>
+    <h2 style = "h2" Add the following information to create an account</h2>
 
 
     <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
     <?php if ($message): ?>
-    <div style="background-color: <?php echo htmlspecialchars($toastClass); ?>; 
-                color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px;">
-        <?php echo htmlspecialchars($message); ?>
+    
     </div>
-
-
-
-    
-    
     <?php endif;?>
 
     
@@ -140,9 +127,9 @@ else {
             <span class="slider round" name=agreed_to_tos></span>
             <!-- create hyperlink (<a>) so you can view GDPR rules-->
             <!-- # so that you don't change page -->
-            I accept the <a href=# onclick="return GDPR();">Terms of Service and GDPR policy</a><br>
+            I accept the <a class = "register_user_button" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a><br>
         </label><br><br>
-        <a href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a><br><br>
+        <a class = "register_user_button" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a><br><br>
 
         <script>
         function GDPR() {

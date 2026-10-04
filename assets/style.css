@@ -6,6 +6,28 @@
 
 Each HTML page must include a reference to the external style sheet file inside the <link> element, inside the head section.*/
 
+
+/* all the things that are universal of scriba 
+- color palette 
+- the font 
+- background 
+- buttons
+- text style / size 
+- cards / boxes
+- error messages 
+- title style 
+- navbar 
+- forms.. 
+-dropdown / select 
+*/ 
+
+
+
+
+
+
+
+
 /* =========================================================
    SCRIBA GLOBAL STYLE
    ========================================================= */
@@ -799,23 +821,43 @@ body {
 
 /*I want some general designs for all my pages, like button stles, text styles etc */
 /*inspiration from w3 schools css button */ 
+/* want to make buttons universal for all in  scriba */
+
+.page_title {
+    color: var(--scriba-dark);
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
 .button {
-  background-color: var(--scriba-light-blue);
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
+  background-color: var(--scriba-light-blue); /* makes bakcground colour on the btutton light blues*/
+   border: none; /* no border around the button  */
+  color: white; 
+  padding: 15px 32px; /* mkaes space between text and borders*/ 
+  text-align: center; /* centrera texten*/ 
+  text-decoration: none; /* if the button is a link or similar then the text will look normal */
   display: inline-block;
   font-size: 16px;
   cursor: pointer;
 }
 
+
 .text {
     color: black;
     text-align: center;
-    size: 36px;
-    
+    size: 36px;}
+
+
+.scriba_input{
+    background-color: var(--scriba-white);
+    color: var(--scriba-dark);
+    border: 2px solid var(--scriba-dark); /*text border so its a little gap between text*/ 
+    border-radius: 15px; /*mkaes it round*/
+    width: 100%; /*fyller container till bredd*/ 
+    padding: 12px 15px;
+    font-size: 16px; /*size of the text u writing*/ 
 
 }
 
@@ -835,6 +877,9 @@ h1 {
 
 /* Style the side navigation with inspiration from w3 schools*/
 /* Divides the page into two parts so this is just where the logo and ewlcome text*/
+
+
+
 .left_side_loginpage {
   height: 100%;
   width: 900px;
@@ -842,7 +887,6 @@ h1 {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: var(--scriba-soft-blue);
   overflow-x: hidden;
 }
 
@@ -852,7 +896,7 @@ h1 {
     color:  #263c55;
     text-align: center;
     font-size: 50px;
-    margin-top: 30px;
+    margin-top: 50px;
 
 
 }
@@ -862,8 +906,8 @@ h1 {
     
     width: 600px;
     height: auto;
-    margin-top: 80px;
-    margin-left: 100px;
+    margin-top: 40px;
+    margin-left: 150px;
 }
 
 
@@ -875,7 +919,6 @@ h1 {
   z-index: 1; /* dont know*/ 
   top: 0;
   right: 0;
-  background-color: var(--scriba-light-blue);
   overflow-x: hidden;
 }
 
@@ -917,8 +960,8 @@ h1 {
 
 .login_button {
     
-     background-color: rgb(24, 248, 39);
-  border-radius: 2px;
+  background-color: rgb(65, 190, 115);
+  border-radius: 18px; /* makes corners rounded*/ 
   color: white;
   padding: 15px 32px;
   text-align: center;
@@ -933,12 +976,13 @@ h1 {
 
 
 
+
 .register_user_button {
     display: inline-block;
     color: var(--scriba-dark);
     background-color: var(--scriba-light-blue);
     /* suns button style */
-     min-width: 550px;
+    min-width: 550px;
     padding: 10px 25px;
     border: 2px solid var(--scriba-dark);
     border-radius: 20px;
@@ -964,9 +1008,77 @@ h1 {
 
 
 
-/*regiater uaer page*/
-.register_user_page{
+/*regiater user page */
+
+.register_user_page {
+    width: 100%;
+    max-width: 600px;
+
+    /* auto makes the conatiner in the middle! (centered) */
+    margin: 60px auto; 
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.add_company_button{
+height: 48px;
+
+    width: 100%;
+
+    border: 2px solid var(--scriba-dark);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            100deg,
+            var(--scriba-soft-blue),
+            var(--scriba-white)
+        );
+
+    color: var(--scriba-dark);
+
+    font-size: 20px;
+
+    cursor: pointer;
 
 }
+
+
+/* admin page  */
+.admin_page{
+width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+
+
+.table {
+    --bs-table-hover-bg: var(--scriba-light-blue); /* hover gets light blue colour*/ 
+    border-radius: 15px;
+    overflow: hidden; } /* this makes the corners round, deleted the oevrflow*/ 
+
+
+        /* For tables */
+       
+
+        }
+        
+        /* If div class = container, the tables will be next to each other */
+        .container{ 
+            display: flex; 
+            justify-content: center;  /* the tables are in the center of page */
+            gap: 50px;}
+
+        /* I don't manage to make this look nice, but this is the start :) */
+        .register_form{
+            padding: 10px ; /* adds 50px of space between the content of the container and its edges */
+            margin: 0 auto; /* centers the container in the web browser */ 
+        } 
+
+
+
 
 
