@@ -7,7 +7,7 @@
 // (e.g., 'experiment', 'project', 'lab', 'company', 'scriba'), and entity ID as parameters.
 // 
 // Permission levels for experiment/project:
-// - 'owner' (3) => Full access, can edit and manage the entity
+// - 'owner' (3) => Full access, can edit and manage the entity (experiment owner = project owner)
 // - 'edit'  (2) => Can edit the entity but not manage it (admin for company/lab = 2)
 // - 'read'  (1) => Can view the entity but not edit it
 // - 'none'  (0) => No access (admin for Scriba = 0 for privacy reasons)
@@ -78,12 +78,7 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                     WHEN project_members.role = 'owner'    THEN 3
                     WHEN project_members.role = 'edit'     THEN 2
                     WHEN project_members.role = 'read'     THEN 1 ELSE 0 END,
-                -- Experiment owner is project owner
-                -- TODO: the schema has no explicit 'owner' role on experiments
-                -- (experiment_members.role is ENUM('edit', 'read')), so level 3
-                -- for an experiment can only come from the project_members CASE
-                -- above. Confirm this is intended; the file header comment still
-                -- lists 'owner' as an experiment role and should be corrected if so.
+                -- Experiment owner = project owner
                 CASE
                     WHEN experiment_members.role = 'edit'  THEN 2
                     WHEN experiment_members.role = 'read'  THEN 1 ELSE 0 END
