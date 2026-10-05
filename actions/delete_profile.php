@@ -25,6 +25,17 @@ $profile_id = $_SESSION['profile_id'];
 //i know i should use the is_deleted from profiles but rn its what it is 
 // UPDATE profiles SET is_delted = TRUE smth like this 
 if (isset($_POST["delete_account"])) {
+    // Log the deletion action
+    $sql_log_deletion = 
+        "INSERT INTO activity_log (profile_id, entity_type, entity_id, activity_type, detail)
+            VALUES (?, 'profile', ?, 'delete', 'User requested account deletion')";
+        $stmt_log_deletion = $conn->prepare($sql_log_deletion);
+        $stmt_log_deletion->bind_param("ii", $profile_id, $profile_id);
+        $stmt_log_deletion->execute();
+        $stmt_log_deletion->close();
+
+
+    // Delete the user profile from the database (soft delete)
     $sql = "UPDATE profiles
             SET email = CONCAT(profile_id, '@deleted.invalid'), # .invalid is reserved so noone has this as email
                 first_name = NULL,
