@@ -33,81 +33,14 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 } else {
     $manage_company_toastClass = "";
 }
-    // # HANDLE POST METHOD TO CHANGE ADMIN STATUS
-    // # post methods should be at top in order to reload page directly
-    // if(isset($_POST['make_admin'])){
-    //     $profile_id = $_POST['profile_id'];
-    //     $sql_admin = "UPDATE company_members SET role = 'admin' WHERE  profile_id = ?";
-    //     $stmt = $conn->prepare($sql_admin);
-    //     $stmt->bind_param("i", $profile_id);
-    //     $result = $stmt->execute();}
-
-    // if(isset($_POST['admin_removal'])){
-    //     $profile_id = $_POST['profile_id'];
-    //     $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
-    //     $stmt = $conn->prepare($sql_admin);
-    //     $stmt->bind_param("i", $profile_id);
-    //     $result = $stmt->execute();}
-
-
-
-
-    // # if button to register new:
-    // if(isset($_POST['register_company']))
-    // {
-    // # fetch data from POST request
-    // $name = $_POST['name'];
-
-    // # write a function that creates unique ID
-    // function createUniqueCompanyID($conn) {
-    //     $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
-    //     $code = "C"; # all company ids start with C
-    //     # for loop that generates a random number and pick the char with that position
-    //     for ($i = 0; $i < 9; $i++) {
-    //         $random_number = random_int(0, strlen($characters) - 1);
-    //         $code .= $characters[$random_number];}
-    //     return $code;}
-
-    // $company_id = createUniqueCompanyID($conn);
-
-    // # add a check here as well so that the same companies isn't added twice
-    // $checkCompStmt = $conn->prepare("SELECT name FROM companies WHERE name = ?");
-    // $checkCompStmt->bind_param("s", $name);
-    // $checkCompStmt->execute();
-    // $checkCompStmt->store_result();
-    // error_log("Checking company name: [$name], num_rows = " . $checkCompStmt->num_rows);
-
-
-    // // check if the number of rows are more than 0 => Email exists
-    // if ($checkCompStmt->num_rows > 0) {
-    //     $message = "Company already exists";
-    //     $toastClass = "#ff0019"; // Primary color
-    // } 
-    
-    // else {
-    // # use placeholders to protect against sql injection
-    // $sql = "INSERT INTO companies(name, company_id) VALUES (?, ?)";
-    // $stmt = $conn->prepare($sql);
-    // $stmt->bind_param("ss", $name, $company_id);
-    // $result = $stmt->execute();
-
-    // # echos how it went
-    // if ($result) {
-    //     $message = "Company created";
-    //     $toastClass = "#1ea324"; // Primary color
-    // } else {
-    //     echo "Error: " . $stmt->error;
-    // }
-    // }}
-
-
 
     # DISPLAY TABLE WITH USERS AND COMPANIES
     $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name, companies.name, company_members.role
             FROM profiles
             LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
             LEFT JOIN companies ON company_members.company_id = companies.company_id
-            ORDER BY companies.name ASC";
+            WHERE profiles.is_deleted = 0 AND profiles.is_scriba_admin = 0
+            ORDER BY companies.name ASC;";
     
     $result = $conn->query($sql);
 
@@ -121,6 +54,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
                 "<td>" . htmlspecialchars($row["role"] ?? '') . "</td>" .
                 "<td>";
                 
+                # if you are only a member
                 if($role == "member"){
                     $rows_to_display .= 
 
@@ -130,13 +64,40 @@ if (isset($_SESSION['manage_company_toastClass'])) {
                     "<input type='submit' name='make_admin' value='Make admin'>" .
                     "</form>";}
 
-
+                # if you are admin
                 if($role == "admin"){
                     $rows_to_display .= 
                     "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>" .
                     "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
                     "<input type='submit' name='admin_removal' value='Remove as admin' >" .
                     "</form>";}
+                
+                # if you don't belong to a company - there is no name of the company from query above
+                if(empty($row["name"])){
+                    $company_options = "";
+                    $sql_show_comp = "SELECT *
+                                    FROM companies
+                                    ORDER BY name ASC";
+                    $result_com = $conn->query($sql_show_comp);
+                    while($r = $result_com->fetch_assoc()){
+                        $company_options .= "<option value='" . htmlspecialchars($r["company_id"]) . "'>" .
+                       htmlspecialchars($r["name"]) . "</option>";
+                    }
+
+
+                    $rows_to_display .= 
+                    "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>" .
+                    "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
+                    
+                    "<select name='add_to_company'>" .
+                    "<option value='' disabled selected >Assign to a company</option>".
+                    $company_options .
+                    "</select> " .
+
+                    "<button type='submit'>Add</button>" .
+
+                    "</form>";}
+            
             
             $rows_to_display .= "</td></tr>";
                 
@@ -159,7 +120,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
     if ($result_company->num_rows > 0) {
         while($row = $result_company->fetch_assoc()) {
             $rows_to_display_company .= "<tr> <td>" . $row["name"] .
-                "</td><td>" . $row["company_id"] .  "</td></tr>";
+                "</td></tr>";
         }
     } else {
         $rows_to_display_company = "No added companies";
@@ -177,35 +138,25 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 
     <!-- Loads Bootstrap -->
     <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-        crossorigin="anonymous"
+
+        
+      
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous"
+>
+
+<!-- Scriba CSS  -->
+<link rel="stylesheet" href="assets/style.css">
+        
+
     >
 
 
+
     <!-- When improving front end, this is where updates can be made -->
-    <style>
-        /* For tables */
-        .table{
-            --bs-table-hover-bg: #D6EEEE; /* Added so that colour changes over a row */
-
-        }
-        
-        /* If div class = container, the tables will be next to each other */
-        .container{ 
-            display: flex; 
-            justify-content: center;  /* the tables are in the center of page */
-            gap: 50px;}
-
-        /* I don't manage to make this look nice, but this is the start :) */
-        .register_form{
-            padding: 10px ; /* adds 50px of space between the content of the container and its edges */
-            margin: 0 auto; /* centers the container in the web browser */ 
-        } 
-        
-    </style>
-
+   
 
 
     <title>Admin</title>
@@ -215,28 +166,31 @@ if (isset($_SESSION['manage_company_toastClass'])) {
     <?php 
     include "includes/navbar.php";
     ?>
+
+
+
+
+
+
+
+
 <body>
-    <h1>Admin Page</h1>
+    <main class = "admin_page">
+
+    <h1 class = "page_title" Admin Page</h1>
+
     <!-- Makes sure that the message is actually displayed -->
     <?php if (!empty($manage_company_message)): ?>
-        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; >
             <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
-
-    
-
-    
-
 <!--
     <p>This is the page that ONLY Scriba admin (superadmin) will be able to see. This is also the only page this type of admin will have access to. </p>
 
         Look at this link on how you sort a table by clicking on header:<br> 
         https://www.w3schools.com/howto/howto_js_sort_table.asp
     </p> -->
-
-
-
 
     <!-- adding a company -->
      
@@ -245,17 +199,20 @@ if (isset($_SESSION['manage_company_toastClass'])) {
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
         <label for="companies">Register a new company</label><br>
-        <input type="text" class="" name="name" required><br><br>
+        <input type="text" class="scriba_input" name="name" required><br><br>
 
-    <input type="submit" class="btn btn-dark rounded-pill" name="register_company" value="Register"><br><br>
+    <input type="submit" class="login_button" name="register_company" value="Register"><br><br>
     </form>
+
+
+    
 
 
     <!-- Table 1 -->
     <div class = "container">
     <div>
         <!--<table class = "table table-striped">  update to another class maybe -->
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover">  <!-- moved hover to css style document in class table  -->
 
         <thead>
             <tr>
@@ -280,8 +237,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
             <thead>
             <tr>
                 <!-- specifying the column names names -->
-            <th scope="col">Company</th>
-            <th scope="col">Company ID</th>  <!-- Come up with a way for connecting to companies table -->
+            <th scope="col">Companies</th>
             </tr>
         <thead> 
         <tbody>
