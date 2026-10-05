@@ -32,7 +32,7 @@ require_once "../database/db.php";
         $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
         $code = "L"; # all company ids start with C
         # for loop that generates a random number and pick the char with that position
-        for ($i = 0; $i < 14; $i++) {
+        for ($i = 0; $i < 9; $i++) {
             $random_number = random_int(0, strlen($characters) - 1);
             $code .= $characters[$random_number];}
         return $code;}
