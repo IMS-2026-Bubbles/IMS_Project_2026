@@ -2,12 +2,17 @@
 // Join company/lab action
 
 // Arrive from: 
-    // user_profile.php (join company or lab form)
+    // company_admin.php (join company or lab form)
+    // user_profile.php
 // Action:
-    // Update company_members table to add the user to the specified company
-    // Update lab_members table to add the user to the specified lab
+    // user can accept invite/deny to company
+    // company admin can invite someone to company
+    // company admin can assign someone to a lab group
+    // company admin can create lab groups
+    // company admin can assign an orphaned project to a person
 // Redirect to: 
-    // user_profile.php (with message indicating success or failure)
+    // company_admin.php for company actions
+    // user_profile.php for user actions
 
 
 // starts the session
@@ -22,6 +27,7 @@ $profile_id = $_SESSION['profile_id'];
 $admin_company_ID = $_SESSION["company_id"];
 
 
+# ----------- THIS PART IS FOR ADMIN ----------- 
 # for company admin to make someone join the lab
 # here there is no need for invite, the admin decides
 if(isset($_POST['add_to_lab']))
@@ -85,6 +91,42 @@ if(isset($_POST['invite_person'])){
     }
 
 
+# Assign project to someone
+if(isset($_POST['orphan_proj']))
+    {
+
+    # get old owner - but using sql
+
+
+
+    # fetch data from POST request
+    $project_id = $_POST['orphan_proj'];
+    $profile_id = $_POST['new_owner'];
+    $old_profile_id = $_POST['old_owner']; # this is temporary
+    
+
+    # change owner of project
+    $sql = "UPDATE project_members 
+            SET profile_id = ?  # profile_id
+            WHERE project_members.project_id = ? AND project_members.profile_id = ?"; # project_id, old_profile_id
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii", $profile_id, $project_id, $old_profile_id);
+    $result = $stmt->execute();
+    $stmt->close();
+
+    header("Location: ../company_admin.php");
+    exit;
+
+
+    }
+
+
+# ----------------------------------------------------- 
+
+
+
+# ----------- THIS IS FROM USER PROFILE ----------- 
 # reply on invitation
 if(isset($_POST['submit_type'])){
     if ($_POST['submit_type'] == "accept"){

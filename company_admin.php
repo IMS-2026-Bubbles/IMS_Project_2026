@@ -8,7 +8,7 @@
     // Create new labs inside company
 // Redirect to:
     // navigation bar options
-    // actions/create_lab.php (after clicking "Register" button to create a new lab group)
+    // actions/join_company_lab.php (after clicking "Register" button to create a new lab group)
 
 
 
@@ -23,10 +23,6 @@ require_once "database/db.php";
     $profile_ID = $_SESSION["profile_id"];
     $admin_company_ID = $_SESSION["company_id"];
 
-
-    # remove later!!
-    echo "current company id for the admin: ";
-    var_dump($admin_company_ID);
 
     if (isset($_SESSION['create_lab_message'])) {
         $message = $_SESSION['create_lab_message'];
@@ -52,11 +48,12 @@ require_once "database/db.php";
             JOIN companies ON company_members.company_id = companies.company_id
             LEFT JOIN lab_members ON profiles.profile_id = lab_members.profile_id
             LEFT JOIN labs ON lab_members.lab_id = labs.lab_id
-            WHERE company_members.company_ID = '$admin_company_ID' AND profiles.is_deleted = 0"; # this is hardcoded
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0";
 
-
-
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $admin_company_ID);  
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $rows_to_display = "";
 
@@ -68,7 +65,6 @@ require_once "database/db.php";
                 "<td>" . htmlspecialchars($row["name"] ?? '') . "</td>" .
                 "<td>" . htmlspecialchars($row["role"] ?? '') . "</td>" .
                 "<td>";
-
 
             # if you don't belong to a lab group - there is no name of the company from query above
                 if(empty($row["name"]) && ($row["role"] == "member")){
@@ -100,13 +96,10 @@ require_once "database/db.php";
                     "<button type='submit'>Add</button>" .
 
                     "</form>";}
-
-
         }
-    } else {
-        echo "No members of this company.";
-    }
+    } 
 
+    
     // ------------
 
 
@@ -114,22 +107,84 @@ require_once "database/db.php";
     # DISPLAY TABLE WITH lab groups
     $sql_lab = "SELECT name, lab_id
             FROM labs
-            WHERE company_id = '$admin_company_ID'";
-    
-    $result_lab = $conn->query($sql_lab);
+            WHERE company_id = ?";
+
+    $stmt = $conn->prepare($sql_lab);
+    $stmt->bind_param("s", $admin_company_ID);  
+    $stmt->execute();
+    $result_lab = $stmt->get_result();
 
     $rows_to_display_lab = "";
     if ($result_lab->num_rows > 0) {
         while($row = $result_lab->fetch_assoc()) {
-            $rows_to_display_lab .= "<tr> <td>" . $row["name"] . "</td></tr>";
+            $rows_to_display_lab .= "<tr> <td>" . htmlspecialchars($row["name"]) . "</td></tr>";
         }
-    } else {
-        $rows_to_display_lab = "No added companies";
     }
 
+    // ------------ TABLE SHOWING ORPHANED PROJECTS ------------
+    # shows projects in admins comp that is owned by a profile that has been deleted
+    $sql_orphan_proj = "SELECT projects.name, projects.project_id, project_members.profile_id, profiles.first_name, profiles.last_name, profiles.is_deleted, company_members.company_id
+                        FROM projects
+                        LEFT JOIN project_members on projects.project_id = project_members.project_id
+                        LEFT JOIN profiles on project_members.profile_id = profiles.profile_id
+                        LEFT JOIN company_members on profiles.profile_id =company_members.profile_id
+                        WHERE project_members.role = 'owner' AND profiles.is_deleted = 1 AND company_id = ?";
+    
+    $stmt = $conn->prepare($sql_orphan_proj);
+    $stmt->bind_param("s", $admin_company_ID);  
+    $stmt->execute();
+    $result_proj = $stmt->get_result();
+
+    
+    
+     # get all people in company
+    $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name
+            FROM profiles
+            JOIN company_members ON profiles.profile_id = company_members.profile_id
+            JOIN companies ON company_members.company_id = companies.company_id
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $admin_company_ID);  
+    $stmt->execute();
+    $result_people = $stmt->get_result();
+
+    $people_in_comp = "";
+    while($r = $result_people->fetch_assoc()){ # using the query used to display people in company
+        $people_in_comp .= "<option value='" . htmlspecialchars($r["profile_id"]) . "'>" .
+        htmlspecialchars($r["first_name"]) ." ". htmlspecialchars($r["last_name"])."</option>";
+        }
+
+
+
+    # prepare what to show in table
+    $rows_to_display_proj = "";
+    if ($result_proj->num_rows > 0) {
+        while($row = $result_proj->fetch_assoc()) {
+            $rows_to_display_proj .= "<tr> <td>" . htmlspecialchars($row["name"]) . "</td>";
+            $rows_to_display_proj .= "<td>" .
+                    "<form action='actions/join_company_lab.php' method= 'POST' style='display:inline;'>" .
+                    "<input type='hidden' name='orphan_proj' value='" . htmlspecialchars($row["project_id"]) . "'>" .
+                    "<input type='hidden' name='old_owner' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
+
+                    
+                    "<select name='new_owner'>" .
+                    "<option value='' disabled selected >Choose new project owner</option>".
+                    $people_in_comp .
+                    "</select> " .
+
+                    "<button type='submit'>Add</button>" .
+                    "</form>". 
+                    "</td></tr>";
+
+                 
+        }
+        
+    } 
+    
     
    
-    ?>
+?>
 
 
 <!DOCTYPE html>
@@ -272,11 +327,12 @@ require_once "database/db.php";
             </tr>
         <thead> 
         <tbody>
-            <?php echo $rows_to_display_lab; ?>
+            <?php echo $rows_to_display_proj; ?>
             
         </tbody>
         
         </table>
+        
     </div>
 
    
