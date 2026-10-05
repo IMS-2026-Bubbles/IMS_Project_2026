@@ -280,7 +280,7 @@ CREATE TABLE `login_log` (
   `ip_address` VARCHAR(45) NOT NULL, -- IP address of login attempt (IPv4 or IPv6)
   `success` BOOLEAN NOT NULL, -- whether the login attempt was successful
   `detail` VARCHAR(255), -- additional details about the login attempt, 
-    -- e.g. "Incorrect password", "Email not found", "Account locked", etc.
+    -- e.g. "Incorrect password", "Email not found", "Login locked", etc.
   PRIMARY KEY (`login_id`),
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
