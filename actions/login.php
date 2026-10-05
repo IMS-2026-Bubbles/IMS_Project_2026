@@ -41,13 +41,7 @@ if(isset($_POST["login"]))
         error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
         // IP-address
-            // Direct
-        $ip_address = $_SERVER['REMOTE_ADDR'] ?? NULL;
-        $ip_address = filter_var($ip_address, FILTER_VALIDATE_IP) ? $ip_address : NULL; // Validate IP address
-            // Proxy (how to use this?)
-        $ip_address_proxy = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? NULL;
-        $ip_address_proxy = $ip_address_proxy ? explode(',', $ip_address_proxy)[0] : NULL; // Get the first IP in the list if multiple
-        $ip_address_proxy = filter_var($ip_address_proxy, FILTER_VALIDATE_IP) ? $ip_address_proxy : NULL; // Validate IP address
+        require_once '../includes/get_ip_address.php'; // provides $ip_address and $ip_address_proxy 
 
         // Rate limiting and lockout to prevent brute-force attacks
         // If 5 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
