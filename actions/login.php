@@ -147,6 +147,7 @@ if(isset($_POST["login"]))
             $stmt_login_success = $conn->prepare($sql_login_success);
             $stmt_login_success->bind_param("iss", $profile['profile_id'], $email, $ip_address);
             $stmt_login_success->execute();
+            $stmt_login_success->close();
 
             // Since login = success, add profile_id to session so we can access it on other pages.
             $_SESSION['profile_id'] = $profile['profile_id'];

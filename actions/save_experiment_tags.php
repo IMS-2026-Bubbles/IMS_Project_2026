@@ -67,8 +67,6 @@ if ($remove_experiment_tags !== '') {
     }
 
     // Remove tags from the database
-// TODO(schema-migration): old table/column names. Becomes
-// DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?
         // Create query to delete tag
     $sql_delete_tag = "DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?";
         // Prepare query
