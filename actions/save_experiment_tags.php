@@ -10,6 +10,10 @@
 require_once "../session/init.php"; // Make the session available
 require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
 
+
+// Log activity helper function
+require_once "../includes/log_activity.php"; // Include the log_activity function
+
     // Create message array
 $messages = array();
 
@@ -77,8 +81,26 @@ if ($remove_experiment_tags !== '') {
         $stmt_delete_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_delete_tag->execute()) {
+            // Log the tag removal
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'User removed tag: ' . $tag
+            );
             $messages[] = "Tag " . $tag . " removed successfully.<br>";
         } else {
+            // Log the error
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'Error removing tag ' . $tag . ': ' . $stmt_delete_tag->error
+            );
             $messages[] = "Error removing tag " . $tag . " : " . $stmt_delete_tag->error . "<br>";
         }
     }
@@ -123,8 +145,26 @@ if ($add_experiment_tags !== '') {
         $stmt_insert_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_insert_tag->execute()) {
+            // Log the tag addition
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'User added tag: ' . $tag
+            );
             $messages[] = "Tag " . $tag . " added successfully.<br>";
         } else {
+            // Log the error
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'Error adding tag ' . $tag . ': ' . $stmt_insert_tag->error
+            );
             $messages[] = "Error adding tag " . $tag . " : " . $stmt_insert_tag->error . "<br>";
         }
     }

@@ -30,14 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
     if ($projectName != "" && $labId != "") {
 
         // Check that the selected lab belongs to one of the user's companies
-        $checkSql = "
-            SELECT labs.lab_id
+        $checkSql = 
+            "SELECT labs.lab_id
             FROM labs
             JOIN company_members
                 ON labs.company_id = company_members.company_id
             WHERE labs.lab_id = ?
-              AND company_members.profile_id = ?
-        ";
+              AND company_members.profile_id = ?";
 
         $checkStmt = $conn->prepare($checkSql);
 
@@ -60,10 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
         // Add new project
         $sql = 
-            "INSERT INTO projects
-            (name, lab_id)
-            VALUES (?, ?)
-        ";
+            "INSERT INTO projects (name, lab_id)
+                VALUES (?, ?)";
 
         $stmt = $conn->prepare($sql);
 
@@ -98,6 +95,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
         $stmt->execute();
 
         $stmt->close();
+
+        // Log activity for project creation
+        require_once '../includes/log_activity.php';
+        log_activity(
+            $conn, 
+            $profile_id, 
+            'project', 
+            $newProjectId, 
+            'create', 
+            'User created a new project'
+        );
 
 
         // Redirect back to project library
