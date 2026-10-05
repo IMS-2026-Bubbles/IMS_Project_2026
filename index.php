@@ -96,7 +96,22 @@ if (isset($_SESSION['toastClass'])) {
 
 
 <body>
-    
+
+<!-- Plan to have the nav bar in the nav element for all pages and maybe the cookies thing in the footer-->
+ <!-- Main class is just for all main content in the page-->
+   <!-- Can also make section elements but i think that all information we have is in the main?? we'll see-->
+
+<!--  https://www.youtube.com/watch?v=pAl7TrV7gpg  this series of making a webpage by Dani Krossing-->
+
+
+<nav> </nav> 
+<main> </main> 
+<footer></footer> 
+   <!--The div tag means absolutely nothing more than strucutring the webpage up-->
+      <!--Ratjer use the heather tag for the things at the top of the webpage and also the footer for content further down, but for fucntinality i can use div for everything :)-->
+<div></div> 
+
+   <!--Note for myself; can always have elements in the elements but i need to make sure i have a open and closing tag for everythign -->
 
     
 
