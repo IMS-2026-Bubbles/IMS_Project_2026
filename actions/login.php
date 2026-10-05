@@ -148,6 +148,15 @@ if(isset($_POST["login"]))
             $stmt_login_success->bind_param("iss", $profile['profile_id'], $email, $ip_address);
             $stmt_login_success->execute();
             $stmt_login_success->close();
+            // Update last login timestamp in profiles table
+            $sql_update_last_login = 
+                "UPDATE profiles 
+                    SET last_login_at = NOW() 
+                    WHERE profile_id = ?";
+            $stmt_update_last_login = $conn->prepare($sql_update_last_login);
+            $stmt_update_last_login->bind_param("i", $profile['profile_id']);
+            $stmt_update_last_login->execute();
+            $stmt_update_last_login->close();
 
             // Since login = success, add profile_id to session so we can access it on other pages.
             $_SESSION['profile_id'] = $profile['profile_id'];
