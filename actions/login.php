@@ -40,11 +40,28 @@ if(isset($_POST["login"]))
         $checkemailStmt->store_result();
         error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
+        // IP-address
+            // Direct
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? NULL;
+        $ip_address = filter_var($ip_address, FILTER_VALIDATE_IP) ? $ip_address : NULL; // Validate IP address
+            // Proxy
+        $ip_address_proxy = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? NULL;
+        $ip_address_proxy = $ip_address_proxy ? explode(',', $ip_address_proxy)[0] : NULL; // Get the first IP in the list if multiple
+        $ip_address_proxy = filter_var($ip_address_proxy, FILTER_VALIDATE_IP) ? $ip_address_proxy : NULL; // Validate IP address
+
 
         // check if the number of rows are more than 0 => email exists
         if ($checkemailStmt->num_rows < 1) {
             $message = "Invalid email or password.";
             $toastClass = "#dc3545"; // Danger color
+
+            // Log a failed login attempt (email not found)
+            $sql_login_failed = 
+                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
+                    VALUES (NULL, ?, ?, 0, 'Email not found')";
+            $stmt_login_failed = $conn->prepare($sql_login_failed);
+            $stmt_login_failed->bind_param("ss", $email, $ip_address);
+            $stmt_login_failed->execute();
         } 
 
         else {
@@ -63,12 +80,20 @@ if(isset($_POST["login"]))
                 if (password_verify($password, $profile['password'])) {
                         //correct log in info
                         $logincredentials = True;
-                    }
+                }
                     
                 else {
                     $message = "Invalid email or password.";
                     $toastClass = "#dc3545"; // Danger color
-                    }
+
+                    // Log a failed login attempt (incorrect password)
+                    $sql_login_failed = 
+                        "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
+                            VALUES (?, ?, ?, 0, 'Incorrect password')";
+                    $stmt_login_failed = $conn->prepare($sql_login_failed);
+                    $stmt_login_failed->bind_param("iss", $profile['profile_id'], $email, $ip_address);
+                    $stmt_login_failed->execute();
+                }
             
                 $stmt->close();
                 
@@ -76,17 +101,25 @@ if(isset($_POST["login"]))
     
 
         // Adding a decision tree for what type of account you are logging into,
-            // and redirecting accordingly. Using $profile['profile_id'] (see above).
+            // and redirecting accordingly. Using $_SESSION['profile_id'] (see above) and $_SESSION['company_id'].
             // Scriba admin => scriba_admin.php
             // User with company_id => project_library.php
             // User that doesn't belong to a company => user_profile.php
         if ($logincredentials) {
+            // Log successful login attempt
+            $sql_login_success = 
+                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
+                    VALUES (?, ?, ?, 1, 'Successful login')";
+            $stmt_login_success = $conn->prepare($sql_login_success);
+            $stmt_login_success->bind_param("iss", $profile['profile_id'], $email, $ip_address);
+            $stmt_login_success->execute();
+
             // Since login = success, add profile_id to session so we can access it on other pages.
             $_SESSION['profile_id'] = $profile['profile_id'];
 
             // Fetch the user's affiliations from the database. Need if they are scriba admin
             // and if they belong to at least one company.
-            $profile_id = $profile['profile_id'];
+            $profile_id = $_SESSION['profile_id'];
             require_once '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
             
             // Add company_id to session if user has one.
