@@ -212,7 +212,7 @@ $stmt->close();
     <div class="profile_card">
     <!-- I added so that the display name is showed up here instead / Tilda -->
     <h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
-    <p>You have possibilities to overwiev your profile, add experiments and wiev your points. Log it or it didnt happen! </p>
+    <p>You have possibilities to overview your profile, add experiments and view your points. Log it or it didn't happen! </p>
 
 </div>
 </section>

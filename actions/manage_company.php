@@ -51,7 +51,7 @@ require_once '../database/db.php';
         $company_id = $_POST['add_to_company'];
         $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("si", $company_id, $profile_id);
+        $stmt->bind_param("ii", $company_id, $profile_id);
         $result = $stmt->execute();
         $stmt->close();
         }
@@ -71,16 +71,16 @@ require_once '../database/db.php';
     $name = $_POST['name'];
 
     # write a function that creates unique ID
-    function createUniqueCompanyID($conn) {
-        $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
-        $code = "C"; # all company ids start with C
-        # for loop that generates a random number and pick the char with that position
-        for ($i = 0; $i < 9; $i++) {
-            $random_number = random_int(0, strlen($characters) - 1);
-            $code .= $characters[$random_number];}
-        return $code;}
+    // function createUniqueCompanyID($conn) {
+    //     $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
+    //     $code = "C"; # all company ids start with C
+    //     # for loop that generates a random number and pick the char with that position
+    //     for ($i = 0; $i < 9; $i++) {
+    //         $random_number = random_int(0, strlen($characters) - 1);
+    //         $code .= $characters[$random_number];}
+    //     return $code;}
 
-    $company_id = createUniqueCompanyID($conn);
+    // $company_id = createUniqueCompanyID($conn);
 
     # add a check here as well so that the same companies isn't added twice
     $checkCompStmt = $conn->prepare("SELECT name FROM companies WHERE name = ?");
@@ -98,9 +98,9 @@ require_once '../database/db.php';
     
     else {
     # use placeholders to protect against sql injection
-    $sql = "INSERT INTO companies(name, company_id) VALUES (?, ?)";
+    $sql = "INSERT INTO companies(name) VALUES (?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $name, $company_id);
+    $stmt->bind_param("s", $name);
     $result = $stmt->execute();
 
     # echos how it went

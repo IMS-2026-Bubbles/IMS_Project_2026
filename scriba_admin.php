@@ -151,7 +151,7 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 <link rel="stylesheet" href="assets/style.css">
         
 
-    >
+    
 
 
 
@@ -177,11 +177,11 @@ if (isset($_SESSION['manage_company_toastClass'])) {
 <body>
     <main class = "admin_page">
 
-    <h1 class = "page_title" Admin Page</h1>
+    <h1 class = "page_title" >Admin Page </h1>
 
     <!-- Makes sure that the message is actually displayed -->
     <?php if (!empty($manage_company_message)): ?>
-        <div style="background-color: <?php echo $manage_company_toastClass; ?>; >
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; margin: 10px 0;" >
             <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
