@@ -852,6 +852,7 @@ body {
     text-align: center;
     font-size: 60px;
     font-weight: bold;
+    margin-top: 80px; 
     margin-bottom: 40px;
 }
 
@@ -921,7 +922,6 @@ body {
     width: 100%; /*fyller container till bredd*/ 
     padding: 12px 15px;
     font-size: 16px; /*size of the text u writing*/ 
-    max-width: 500px;
 
 }
 
@@ -936,7 +936,7 @@ body {
 
 /* changed my mind and using flexbox for this page aswell, the other version was hardcoded and bad to use on another size screen */
 .login_page {
-    display: flex;
+    display: flex; align-items: flex-start; 
 
 }
 
@@ -974,24 +974,14 @@ body {
 
 /* https://www.youtube.com/watch?v=wsTv9y931o8 i can also use flexbox as in this video but well see..  */
 /*going to make this better */
-.loginpage_title {
 
-    color:  #263c55;
-    text-align: center;
-    font-size: 50px;
-    margin-top: 50px;
-
-
-}
 
 /* adjusting placement of the logo and also chnages the design to flexible*/ 
 /* need to fix this later  */
 
 .loginpage_logo {
     
-    width: 90%; display: block;  /*makes the text be over the logo*/
-    margin: auto;
-    max-width: 400px;
+    width: 90%; display: block;  /*makes the text be over the logo*/ max-width: 550px;  margin: 0 auto; /*centering the logo*/
    
 }
 
@@ -1002,8 +992,8 @@ body {
 /* right side */ 
 /* im referring to two classes in index.php so i don't have to make so many classes thats why login form is so simple now */
 
-.login_form{ display:flex; width:90%; flex-direction: column;gap:10px; 
-    margin-top: 150px;
+.login_form{ display:flex; flex-direction: column;gap:10px; 
+    margin-top: 0;
 
 }
 

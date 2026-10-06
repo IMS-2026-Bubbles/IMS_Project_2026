@@ -113,11 +113,11 @@ if (isset($_SESSION['toastClass'])) {
     
   <main class = "login_page " > <!-- Specify the main content of the document:-->
   <section class = "left_side_loginpage">
-  <h1 class = "page_title" > Welcome to Scriba, your personal Electronic Lab Notebook.</h1>
+  <h1 class = "page_title" > Welcome to Scriba</h1>
 
 
     <img
-                src="Scriba_logo2.png"
+                src="assets/logonobackground.png"
                 alt="Scriba logo"
                 class="loginpage_logo"
             >
@@ -128,6 +128,7 @@ if (isset($_SESSION['toastClass'])) {
  <!-- Login + make new account-->
 
     <section class = "right_side_loginpage">
+          <h1 class = "page_title" > Sign up or log in </h1>
 
        <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
        <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
@@ -140,10 +141,10 @@ if (isset($_SESSION['toastClass'])) {
  <!-- for element belongs to both classes and gets css style from both -->
     <form class="scriba_card login_form" action = "actions/login.php" method="POST">
         <!-- think email address could be required https://www.w3schools.com/jsref/prop_email_required.asp on both -->
-    <label>Email address:</label> <input class = "" type="email" name="email" required>
+    <label>Email address:</label> <input class = "scriba_input" type="email" name="email" required>
 
    
-    <label>Password:</label> <input class = "" type="password" name="password" required>
+    <label>Password:</label> <input class = "scriba_input" type="password" name="password" required>
     <input type="submit" class="login_button" name="login" value="Log in"> 
 
     <!-- get directed to register user page if the person wants to make an account  -->
