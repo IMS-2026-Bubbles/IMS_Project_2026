@@ -22,8 +22,10 @@ Each HTML page must include a reference to the external style sheet file inside 
 */ 
 
 
-
-
+/* i would love to have all universal stuff here in one section like the things mentioned above */
+/* 1. root , and we have this first which is good. 
+2. reusable components for our website, buttons, cards, inputs, error messages, navbar 
+3. page specific CSS forms  */
 
 
 
@@ -38,7 +40,7 @@ Each HTML page must include a reference to the external style sheet file inside 
    ========================================================= */
 
 :root {
-    --scriba-blue: #0c8eae;
+    --scriba-blue: #c5dbe0;
     --scriba-light-blue: #98eefa;
     --scriba-dark: #263c55;
     --scriba-soft-blue: #cbd8f2;
@@ -76,6 +78,7 @@ body {
 /*
    These styles are for the Scriba navigation bar.
 */
+/* I'm going to fix the navbar so it looks universal for all pages cause we have two navbars here and also Tildas that i'm using / cornelia  */
 
 .scriba-navbar {
     width: 100%;
@@ -192,6 +195,11 @@ body {
 
     color: white;
 }
+
+
+
+/* Plan to make some global css forms we can use together */
+
 
 
 /* =========================================================
@@ -803,16 +811,10 @@ body {
 
 
 
-/*root again so i can easy access colours..*/
-:root {
-    --scriba-blue: #7794b6;
-    --scriba-light-blue: #d4f6fd;
-    --scriba-dark: #263c55;
-    --scriba-soft-blue: #cbd8f2;
-    --scriba-card-blue: #c4d3ee;
-    --scriba-white: #ffffff;
-    --scriba-border: #263c55;
-}
+
+
+
+
 
 
 
@@ -825,16 +827,35 @@ body {
 /*inspiration from w3 schools css button */ 
 /* want to make buttons universal for all in  scriba */
 
+/*examples for universal stuff we can use*/
+
+
+.scriba_card {
+    background: linear-gradient(100deg, var(--scriba-soft-blue), var(--scriba-white));
+    border: 2px solid var(--scriba-dark);
+    border-radius: 25px;
+    padding: 30px;
+    width:90%;
+}
+
+
+
+
+
+
+
 /* this guy has also helped me udnerstand css a lot more than earlier, he has a youtube series where he makes a website from scratch with vs code and all languages we use  */
 /* https://www.youtube.com/watch?v=4OMdzHnys9o */
 
 .page_title {
     color: var(--scriba-dark);
     text-align: center;
-    font-size: 40px;
+    font-size: 60px;
     font-weight: bold;
     margin-bottom: 40px;
 }
+
+
 
 /* stylish button inspiration https://www.css-buttons.com/buttons/34/gradient-color-button */
 
@@ -877,6 +898,13 @@ body {
     box-shadow: 0 0 5px #faa390, 0 0 20px #db0808, 0 0 50px #9a471d, 0 0 100px #c94808;
 }
 
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+
 
 
 .text {
@@ -893,17 +921,9 @@ body {
     width: 100%; /*fyller container till bredd*/ 
     padding: 12px 15px;
     font-size: 16px; /*size of the text u writing*/ 
+    max-width: 500px;
 
 }
-
-
-h1 {
-  color: black;
-  text-decoration-color: #263c55;
-  text-align: center;
-  margin-top: 100px;
-}
-
 
 
 /*Login form design in order up to down and left to right */
@@ -914,9 +934,20 @@ h1 {
 /* Style the side navigation with inspiration from w3 schools*/
 /* Divides the page into two parts so this is just where the logo and ewlcome text*/
 
+/* changed my mind and using flexbox for this page aswell, the other version was hardcoded and bad to use on another size screen */
+.login_page {
+    display: flex;
+
+}
+
+.left_side_loginpage,
+.right_side_loginpage {
+    flex: 1;
+}
 
 
-.left_side_loginpage {
+
+/* .left_side_loginpage_draft {
   height: 100%;
   width: 900px;
   position: fixed;
@@ -924,7 +955,21 @@ h1 {
   top: 0;
   left: 0;
   overflow-x: hidden;
-}
+} */
+
+/* right side */ 
+/* .right_side_loginpage_draft {
+  height: 100%;
+  width: 850px;
+  position: fixed;
+  z-index: 1; 
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+} */
+
+
+
 
 
 /* https://www.youtube.com/watch?v=wsTv9y931o8 i can also use flexbox as in this video but well see..  */
@@ -939,30 +984,33 @@ h1 {
 
 }
 
-/* adjusting placement of the logo*/ 
+/* adjusting placement of the logo and also chnages the design to flexible*/ 
+/* need to fix this later  */
+
 .loginpage_logo {
     
-    width: 600px;
-    height: auto;
-    margin-top: 40px;
-    margin-left: 150px;
+    width: 90%; display: block;  /*makes the text be over the logo*/
+    margin: auto;
+    max-width: 400px;
+   
 }
+
+
+
 
 
 /* right side */ 
-.right_side_loginpage {
-  height: 100%;
-  width: 850px;
-  position: fixed;
-  z-index: 1; /* dont know*/ 
-  top: 0;
-  right: 0;
-  overflow-x: hidden;
+/* im referring to two classes in index.php so i don't have to make so many classes thats why login form is so simple now */
+
+.login_form{ display:flex; width:90%; flex-direction: column;gap:10px; 
+    margin-top: 150px;
+
 }
 
 
-.login_form {
-  color: var(--scriba-dark);
+/* old  */
+.login_form_old {
+  color: var(--scriba-dark); /* colour of text */
   
   text-align: center;
   width: 600px;
@@ -974,7 +1022,7 @@ h1 {
   gap: 10px;
 
     border: 2px solid var(--scriba-dark);
-    border-radius: 30.px;
+    border-radius: 30px; /*had a dot here before so the form wasnt rounded */
     background:linear-gradient(
             100deg,
             var(--scriba-soft-blue), var(--scriba-white));
@@ -1092,7 +1140,9 @@ width: 90%;
 .table {
     --bs-table-hover-bg: var(--scriba-light-blue); /* hover gets light blue colour*/ 
     border-radius: 15px;
-    overflow: hidden; } /* this makes the corners round, deleted the oevrflow*/ 
+    max-width: 600px;
+    overflow: hidden;
+ } /* this makes the corners round, deleted the oevrflow*/ 
 
 
         /* For tables */
@@ -1117,13 +1167,13 @@ width: 90%;
 /* center eveyrthing on the page all html elemnts on the page  */
 .company_admin_page {
     width: 90%; /* elemnt can be 90% of the screen */ 
-    max-width: 1500px; /*max width cant get bigger than 1500 px */ 
+    max-width: 1200px; /*max width cant get bigger than 1500 px */ 
     /* auto gives 50 px up and down but auto in the sides, like a short command but also centering the box horisontally */
     margin: 50px auto; 
 }
 
 /* display flex enables the elemnts, in this case the fors to be beside each other usually its udner each other  */
-.company_admin_forms {display: flex; gap: 30px; margin-bottom: 50px;}
+.company_admin_forms {display: flex; gap: 30px; margin-bottom: 50px;max-width: 500px;}
 
 .admin_form {
     /* flex 1 enables the forms to be beside each other  */
@@ -1155,7 +1205,7 @@ width: 90%;
 .profile_container {
     display: flex; /* https://www.youtube.com/watch?v=wsTv9y931o8 same flexbox tutorial*/
 
-   gap: 30px;                 /* columns have some air inbetween*/
+    gap: 30px;                 /* columns have some air inbetween*/
     align-items: flex-start;   /* flex start Items are positioned at the beginning of the container  */
     width: 90%;
     max-width: 1300px;
