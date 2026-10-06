@@ -6,8 +6,12 @@
 // Action:
     // Display company admin information, including lab groups and members
     // Create new labs inside company
+    // Invite members to company
+    // Assign members to lab groups
+    // Assign project without owner to another person
 // Redirect to:
     // navigation bar options
+    // actions/join_company_lab.php (invite member, assign to lab, assign new project owner)
     // actions/create_lab.php (after clicking "Register" button to create a new lab group)
 
 
@@ -22,19 +26,16 @@ require_once "database/db.php";
 
     $profile_ID = $_SESSION["profile_id"];
     $admin_company_ID = $_SESSION["company_id"];
+    
 
-
-    # remove later!!
-    echo "current company id for the admin: ";
-    var_dump($admin_company_ID);
-
+    # preparing to show error messages for creating lab
+    # only shows if they are actually filled (done in actions/create_lab.php)
     if (isset($_SESSION['create_lab_message'])) {
         $message = $_SESSION['create_lab_message'];
         unset($_SESSION['create_lab_message']);
     } else {
         $message = "";
     }
-
     if (isset($_SESSION['create_lab_toastClass'])) {
         $toastClass = $_SESSION['create_lab_toastClass'];
         unset($_SESSION['create_lab_toastClass']);
@@ -42,6 +43,24 @@ require_once "database/db.php";
         $toastClass = "";
     }    
 
+    # # preparing to show error messages for creating lab
+    # only shows if they are actually filled (done in actions/join_company_lab.php)
+    if (isset($_SESSION['create_invite_message'])) {
+        $message = $_SESSION['create_invite_message'];
+        unset($_SESSION['create_invite_message']);
+    } else {
+        $message = "";
+    }  
+
+    if (isset($_SESSION['create_invite_toastClass'])) {
+        $toastClass = $_SESSION['create_invite_toastClass'];
+        unset($_SESSION['create_invite_toastClass']);
+    } else {
+        $toastClass = "";
+    } 
+
+
+    
 
     
 
@@ -52,11 +71,12 @@ require_once "database/db.php";
             JOIN companies ON company_members.company_id = companies.company_id
             LEFT JOIN lab_members ON profiles.profile_id = lab_members.profile_id
             LEFT JOIN labs ON lab_members.lab_id = labs.lab_id
-            WHERE company_members.company_ID = '$admin_company_ID' AND profiles.is_deleted = 0"; # this is hardcoded
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0";
 
-
-
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $admin_company_ID);  
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $rows_to_display = "";
 
@@ -65,10 +85,9 @@ require_once "database/db.php";
 
             $rows_to_display .= "<tr>" .
                 "<td>" . htmlspecialchars($row["first_name"]) . " " . htmlspecialchars($row["last_name"]) ."</td>" .
-                "<td>" . htmlspecialchars($row["name"] ?? '') . "</td>" .
-                "<td>" . htmlspecialchars($row["role"] ?? '') . "</td>" .
+                "<td>" . htmlspecialchars($row["name"] ??'') . "</td>" .
+                "<td>" . htmlspecialchars($row["role"] ??'') . "</td>" .
                 "<td>";
-
 
             # if you don't belong to a lab group - there is no name of the company from query above
                 if(empty($row["name"]) && ($row["role"] == "member")){
@@ -78,7 +97,7 @@ require_once "database/db.php";
                                     WHERE company_id = ?
                                     ORDER BY name ASC";
                     $stmt_lab = $conn->prepare($sql_show_lab);
-                    $stmt_lab->bind_param("s", $admin_company_ID);
+                    $stmt_lab->bind_param("i", $admin_company_ID);
                     
                     $stmt_lab->execute();
                     $result_lab = $stmt_lab->get_result();
@@ -100,13 +119,10 @@ require_once "database/db.php";
                     "<button type='submit'>Add</button>" .
 
                     "</form>";}
-
-
         }
-    } else {
-        echo "No members of this company.";
-    }
+    } 
 
+    
     // ------------
 
 
@@ -114,22 +130,85 @@ require_once "database/db.php";
     # DISPLAY TABLE WITH lab groups
     $sql_lab = "SELECT name, lab_id
             FROM labs
-            WHERE company_id = '$admin_company_ID'";
-    
-    $result_lab = $conn->query($sql_lab);
+            WHERE company_id = ?
+            ORDER BY name ASC";
+
+    $stmt = $conn->prepare($sql_lab);
+    $stmt->bind_param("i", $admin_company_ID);  
+    $stmt->execute();
+    $result_lab = $stmt->get_result();
 
     $rows_to_display_lab = "";
     if ($result_lab->num_rows > 0) {
         while($row = $result_lab->fetch_assoc()) {
-            $rows_to_display_lab .= "<tr> <td>" . $row["name"] . "</td></tr>";
+            $rows_to_display_lab .= "<tr> <td>" . htmlspecialchars($row["name"]) . "</td></tr>";
         }
-    } else {
-        $rows_to_display_lab = "No added companies";
     }
 
+    // ------------ TABLE SHOWING ORPHANED PROJECTS ------------
+    # shows projects in admins comp that is owned by a profile that has been deleted
+    $sql_orphan_proj = "SELECT projects.name, projects.project_id, project_members.profile_id, profiles.first_name, profiles.last_name, profiles.is_deleted, company_members.company_id
+                        FROM projects
+                        LEFT JOIN project_members on projects.project_id = project_members.project_id
+                        LEFT JOIN profiles on project_members.profile_id = profiles.profile_id
+                        LEFT JOIN company_members on profiles.profile_id =company_members.profile_id
+                        WHERE project_members.role = 'owner' AND profiles.is_deleted = 1 AND company_id = ?";
+    
+    $stmt = $conn->prepare($sql_orphan_proj);
+    $stmt->bind_param("i", $admin_company_ID);  
+    $stmt->execute();
+    $result_proj = $stmt->get_result();
+
+    
+    
+     # get all people in company
+    $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name
+            FROM profiles
+            JOIN company_members ON profiles.profile_id = company_members.profile_id
+            JOIN companies ON company_members.company_id = companies.company_id
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $admin_company_ID);  
+    $stmt->execute();
+    $result_people = $stmt->get_result();
+
+    $people_in_comp = "";
+    while($r = $result_people->fetch_assoc()){ # using the query used to display people in company
+        $people_in_comp .= "<option value='" . htmlspecialchars($r["profile_id"]) . "'>" .
+        htmlspecialchars($r["first_name"]) ." ". htmlspecialchars($r["last_name"])."</option>";
+        }
+
+
+
+    # prepare what to show in table
+    $rows_to_display_proj = "";
+    if ($result_proj->num_rows > 0) {
+        while($row = $result_proj->fetch_assoc()) {
+            $rows_to_display_proj .= "<tr> <td>" . htmlspecialchars($row["name"]) . "</td>";
+            $rows_to_display_proj .= "<td>" .
+                    "<form action='actions/join_company_lab.php' method= 'POST' style='display:inline;'>" .
+                    "<input type='hidden' name='orphan_proj' value='" . htmlspecialchars($row["project_id"]) . "'>" .
+                    "<input type='hidden' name='old_owner' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
+
+                    
+                    "<select name='new_owner'>" .
+                    "<option value='' disabled selected >Choose new project owner</option>".
+                    $people_in_comp .
+                    "</select> " .
+
+                    "<button type='submit'>Add</button>" .
+                    "</form>". 
+                    "</td></tr>";
+
+                 
+        }
+        
+    } 
+    
     
    
-    ?>
+?>
 
 
 <!DOCTYPE html>
@@ -149,6 +228,10 @@ require_once "database/db.php";
     >
     <link rel="stylesheet" href="assets/style.css">
 
+    <!-- i want nav bar here -->
+    <?php 
+    include "includes/navbar.php";
+    ?>
 
 </head>
 
@@ -192,10 +275,16 @@ require_once "database/db.php";
 <main class="company_admin_page">
      <h1 class="page_title">Company admin page</h1>
 
+<!-- For displaying error message -->
+    <?php if ($message !== ""): ?>
+    <div class="toast-message" style="background-color: <?php echo htmlspecialchars($toastClass); ?>; color: white; padding: 10px; margin: 10px 0;">
+        <?php echo htmlspecialchars($message); ?>
+    </div>
+<?php endif; ?>
 
 <!-- i want nav bar here -->
     <?php 
-    include "includes/navbar.php";
+    //include "includes/navbar.php";
     ?>
 
 
@@ -272,11 +361,12 @@ require_once "database/db.php";
             </tr>
         <thead> 
         <tbody>
-            <?php echo $rows_to_display_lab; ?>
+            <?php echo $rows_to_display_proj; ?>
             
         </tbody>
         
         </table>
+        
     </div>
 
    

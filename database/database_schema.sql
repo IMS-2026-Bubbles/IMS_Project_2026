@@ -7,8 +7,7 @@
   -- only keys include the table name in the column name if it is ambiguous
 
 -- Data types:
-  -- PK get auto increment int, except for company and lab which are 
-    -- varchar(10) including a prefix (e.g. "c" (company) or "l" (lab)) to avoid collisions
+  -- PK get auto increment int
   -- VARCHAR without a length constraint is 255 (names, emails, passwords, tags)
   -- Timestamps are used for created and updated columns, with default value of CURRENT_TIMESTAMP
   -- Boolean columns are used for done columns, with default value of FALSE
@@ -48,15 +47,15 @@ CREATE DATABASE scriba_db;
 USE scriba_db;
 
 CREATE TABLE `companies` (
-  `company_id` VARCHAR(10) UNIQUE,
+  `company_id` INT AUTO_INCREMENT,
   `name` VARCHAR(255),
   PRIMARY KEY (`company_id`)
 );
 
 
 CREATE TABLE `labs` (
-  `lab_id` VARCHAR(10) UNIQUE,
-  `company_id` VARCHAR(10) NOT NULL,
+  `lab_id` INT AUTO_INCREMENT,
+  `company_id` INT,
   `name` VARCHAR(255),
   PRIMARY KEY (`lab_id`),
   FOREIGN KEY (`company_id`)
@@ -69,7 +68,7 @@ CREATE TABLE `labs` (
 CREATE TABLE `projects` (
   `project_id` INT AUTO_INCREMENT,
   `name` VARCHAR(255),
-  `lab_id` VARCHAR(10),
+  `lab_id` INT,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   -- Last update to the project row, see project_activity.last_updated_at
   -- for the most recent update to the project or any of its experiments
@@ -177,10 +176,11 @@ CREATE TABLE `experiment_tags` (
 
 
 CREATE TABLE `company_members` (
-  `company_id` VARCHAR(10),
+  `company_id` INT,
   `profile_id` INT,
   `role` ENUM('admin', 'member', 'pending') NOT NULL,
   PRIMARY KEY (`company_id`, `profile_id`),
+  -- UNIQUE (`profile_id`), # tilda want to introduce this
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)
       ON UPDATE CASCADE
@@ -208,7 +208,7 @@ CREATE TABLE `experiment_members` (
 
 
 CREATE TABLE `lab_members` (
-  `lab_id` VARCHAR(10),
+  `lab_id` INT,
   `profile_id` INT,
   `role` ENUM('admin', 'member') NOT NULL,
   PRIMARY KEY (`lab_id`, `profile_id`),

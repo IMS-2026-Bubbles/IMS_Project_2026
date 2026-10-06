@@ -117,17 +117,26 @@ $stmt->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
+ <!-- The head tag has information we give the browser and that we dont see at the website -->
+
 <head>
 
+ <!-- Theese are called empty elements and they dont need a closing tag, they dont have a closing tag-->
+
+ <!-- -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- <title>Document</title> -->
 
+
+     <!-- Link HTML elements that needs attributes, this is a stylesheet type and a path to the file we link to, the css.style-->
     <link rel="stylesheet" href="assets/style.css">
     <!-- i want nav bar here -->
-    <?php include "includes/navbar.php";?>
+     <!-- moved navbar to body : )  -->
+    
 
     <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
@@ -185,105 +194,92 @@ $stmt->close();
 </head>
 
 
+<!-- Puts visuable elemnts inside the body tag to crete content in this body -->
+ <!-- When creating a website, everything is really inside boxes.. boxes inside of boxes etc -->
+  <!-- Our body tag is also a box-->
 
 <body>
 <!-- readfile() - reads a file and writes it to the output buffer -->
 
+<header>  <?php include "includes/navbar.php";?>  </header> 
 
-<div class="profile_container">
-<div class="profile_left">
-    <div class="welcome">
+
+<main class="profile_container"> 
+
+<!-- left side of the page  -->
+ <!-- using section to make it easier to read the page and the code instead of using div everywhere -->
+<section class="profile_left">
+    <div class="profile_card">
     <!-- I added so that the display name is showed up here instead / Tilda -->
-<h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
-<p>You have possibilities to overwiev your profile, add experiments and wiev your points. Log it or it didnt happen! </p>
+    <h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
+    <p>You have possibilities to overview your profile, add experiments and view your points. Log it or it didn't happen! </p>
+
 </div>
-    </div>
+</section>
 
 
-<div class="profile_right">
-<div class="user">
-<h2>Company & Department</h2>
+<!-- right side of page  -->
+<section class="profile_right">
+    <div class="profile_card">
+        <!-- amp means & in HTML -->
+    <h2>Company &amp; Department</h2>
+
+    
+
 <p>
-
         Lab:
         <?php 
         // if you don't belong to a company, have the possibility to join one
-        if (empty($lab["name"])){ ?>
-             <br>No lab group<br>
-        
-        <?php 
-        }
-        // if user has a lab it just shows
-        else {
-             echo htmlspecialchars($lab["name"]);
-         }  
+        // tried ternary operator https://www.geeksforgeeks.org/php/php-ternary-operator/
+        // just makes code simpler 
+        echo empty($lab["name"]) ? "Belongs to no lab group" : htmlspecialchars($lab["name"]); ?>
+        <!-- where ? = is this is true, do this! And : = otherwise, do that  -->  
+       
+ </p>      
     
 
-?>
-        <br>
-
-        Company:
+<p>   Company:
         <?php 
-        if (empty($company["name"])){ ?>
-            <br>No company <br>
-        <?php 
-        }
-
-        # if invited
-        elseif ($company["role"]=="pending"){ ?>
-            <br>You have been invited to join <?php echo htmlspecialchars($company["name"])?> <br>
-            
-            <form action="actions/join_company_lab.php" method= "POST"> 
-            <!-- Accept button -->
-            <button type="submit" 
-                    name="submit_type" value="accept">
-                Accept
-            </button>
-
-            <!-- Decline Button 2 -->
-            <button type="submit"  
-                    name="submit_type" value="decline">
-                Decline
-            </button>
-            
-            </form>
-
-
-
-        
-  
-        <?php 
-        }
-
-        //if user has a company it just shows
-        else {
-             echo htmlspecialchars($company["name"]);
-         }
-
-
-        ?>
-        <br>
+        if (empty($company["name"])){ ?> No company <?php }
         
 
-    </p>
-    </p>
+    # if invited
+    elseif ($company["role"]=="pending"){ ?>
+        You have been invited to join <?php echo htmlspecialchars($company["name"]); ?> 
+        <form action="actions/join_company_lab.php" method="POST"> 
+        <!-- Accept button -->
+        <button type="submit" name="submit_type" value="accept">Accept</button>
+
+        <!-- Decline Button -->
+        <button type="submit" name="submit_type" value="decline">Decline</button>
+        </form> <?php }
+
+
+ //if user has a company it just shows
+else {echo htmlspecialchars($company["name"]); } ?>
+       
+        
+
+</p>
+ <!-- closing company  -->
 </div> 
 
-<div class="user">
+
+
+<div class="profile_card">
 <h2>Email</h2>
-<p>Your Email adress:
-<?php echo htmlspecialchars($user["email"]); ?>
+<p>Your Email adress: <?php echo htmlspecialchars($user["email"]); ?>
     </p>
   
 </div>
 
 
-<div class="user">
+
+<div class = "profile_card" >
 <h2>Points</h2>
 <p>
         You have
-        <?php echo htmlspecialchars($points["scriba_points"]); ?>
-        points
+        <?php echo htmlspecialchars($points["scriba_points"]); ?> points
     </p>
 </div>
 
@@ -292,34 +288,32 @@ $stmt->close();
 <div class="user">
 <h2>Display name</h2>
 <p>Your display name is:
-<?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?>
 </p>
 </div> -->
 
 
-<div class="user">
-<h2>Delete account</h2>
-<p>You can choose to delete your account here </p>
+<!-- suns project card  -->
+<div class="profile_card">
+    <h2>Delete account</h2>
+    <p>You can choose to delete your account here </p>
 <!--  this is a form, thought abou making a button but it is better to send a form to PHP that answers with f (isset($_POST["delete_account"])) { --> 
    <form method="POST" action="actions/delete_profile.php" onsubmit="return confirm('Are you sure you want to delete your account?');">
     <button type="submit" class = "btn-81"  name="delete_account">Delete account</button>
 </form>
+
+
 <?php 
     if (!empty($delete_account_message)) {
         echo "<br>";
-        echo htmlspecialchars($delete_account_message);
-        echo "<br>";
-    }
-?>
-        </div>
-
+        echo htmlspecialchars($delete_account_message); 
+        echo "<br>"; } ?>
 </div>
 
+</section>
+</main>
+</body>
 
 
-
-  
-</div>
 
 
 
@@ -327,16 +321,9 @@ $stmt->close();
 
 <!-- I SUGGEST THAT WE REMOVE THIS PART AS THE PERSONAL INFORMATION IS DISPLAYED ABOVE -->
 <!-- not a button now but in the future a button + some kind of new page --> 
-<!--<div class="user">
-<h2>Information Scriba has about me</h2>
-<p>Click here to see what information scriba has about you </p>
- <p>Email: <?php echo htmlspecialchars($user["email"]); ?></p>
-    <p>First name: <?php echo htmlspecialchars($user["first_name"]); ?></p>
-    <p>Last name: <?php echo htmlspecialchars($user["last_name"]); ?></p>
-    <p>Saved changes: <?php echo htmlspecialchars($user["saved_changes"]); ?></p>
-    <p>Last login: <?php echo htmlspecialchars($user["last_login_at"]); ?></p>
-    <p>Streak: <?php echo htmlspecialchars($user["streak"]); ?></p>
-</div>--> 
+<!--<div class="user"> 
+<h2>Information Scriba has about me</h2> -->
+<!-- <p>Click here to see what information scriba has about you </p> -->
 
 
 <!-- JavaScript Operators are used to assign values, compare values, perform arithmetic operations, and much more, did never use..  -->
@@ -347,7 +334,7 @@ $stmt->close();
 
 
     
-</body>
+
 </html>
 
 

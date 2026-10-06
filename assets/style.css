@@ -49,6 +49,8 @@ Each HTML page must include a reference to the external style sheet file inside 
 
 
 /* Page */
+/* this youtube video helped me understand flexbox /cornelia*/
+/* https://www.youtube.com/watch?v=wsTv9y931o8 */
 
 body {
     min-height: 100vh;
@@ -823,6 +825,9 @@ body {
 /*inspiration from w3 schools css button */ 
 /* want to make buttons universal for all in  scriba */
 
+/* this guy has also helped me udnerstand css a lot more than earlier, he has a youtube series where he makes a website from scratch with vs code and all languages we use  */
+/* https://www.youtube.com/watch?v=4OMdzHnys9o */
+
 .page_title {
     color: var(--scriba-dark);
     text-align: center;
@@ -843,7 +848,7 @@ body {
   display: inline-block;
   font-size: 16px;
   cursor: pointer;
-} */
+} 
 
 .btn-81 {
     padding: 10px 20px;
@@ -921,6 +926,8 @@ h1 {
   overflow-x: hidden;
 }
 
+
+/* https://www.youtube.com/watch?v=wsTv9y931o8 i can also use flexbox as in this video but well see..  */
 /*going to make this better */
 .loginpage_title {
 
@@ -962,8 +969,8 @@ h1 {
   padding: 50px;
   margin-top: 200px;
   margin-left: 100px;
-  display: flex; /*makes the email + password be under each other*/ 
-  flex-direction: column;
+  display: flex; /*flexible layout*/ 
+  flex-direction: column; /*makes the email + password be under each other*/ 
   gap: 10px;
 
     border: 2px solid var(--scriba-dark);
@@ -982,12 +989,12 @@ h1 {
 .register_user {
     text-align: center;
     margin-top: 30px;
-    font-size: 18px;
-
-    
-
+    font-size: 18px; 
     text-align: center;
 }
+
+
+/* https://www.youtube.com/watch?v=wsTv9y931o8 describes block element and it's useful to take up the entire width of the screen so next element is forced to nex line  */
 
 .login_button {
     
@@ -1091,7 +1098,7 @@ width: 90%;
         /* For tables */
        
 
-        }
+    
         
         /* If div class = container, the tables will be next to each other */
         
@@ -1132,6 +1139,7 @@ width: 90%;
 
 
 /* hover pesudo class https://www.w3schools.com/cssref/sel_hover.php */
+/* hides the corners with hidden */
 
 .admin_table{
     --bs-table-striped-bg: var(--scriba-soft-blue);
@@ -1145,13 +1153,39 @@ width: 90%;
 /* https://coder-coder.com/display-divs-side-by-side/ */
 
 .profile_container {
-    display: flex;
-    gap: 30px; width: 90%; max-width: 1200px; margin: 50px auto;}
+    display: flex; /* https://www.youtube.com/watch?v=wsTv9y931o8 same flexbox tutorial*/
+
+   gap: 30px;                 /* columns have some air inbetween*/
+    align-items: flex-start;   /* flex start Items are positioned at the beginning of the container  */
+    width: 90%;
+    max-width: 1300px;
+    margin: 40px auto;
+}
 
     /* from the visonboard were we want to part up the page 50-50  */
 .profile_left,
 .profile_right {
-    flex: 1; /* parted and get same amount of the page*/ 
+    flex: 1; /* makes the two sides share the available space equally*/ 
 
 }
 
+.profile_right {
+    display: flex;
+    flex-direction: column;    /* "The column value displays the flex items vertically (from top to bottom)" W3 schools */
+    gap: 20px;                 /* space between boxes */
+}
+
+/* inspiration from the cards used in the experiment and project library  */
+.profile_card {
+    background-color: var(--scriba-white);
+    border: 2px solid var(--scriba-dark);
+    border-radius: 25px; /*rounded corners*/ 
+    padding: 20px 25px;       
+    color: var(--scriba-dark);
+}
+
+
+.profile_card h2 {
+    margin-top: 0;
+    font-size: 30px;
+}

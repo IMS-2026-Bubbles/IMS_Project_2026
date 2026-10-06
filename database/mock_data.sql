@@ -2,6 +2,9 @@
 -- Run AFTER database_schema.sql (same database: scriba_db).
 
 -- Notes:
+  -- All primary keys are INT AUTO_INCREMENT (including companies and labs).
+  -- IDs are inserted explicitly here so the rows can reference each other;
+  -- AUTO_INCREMENT continues after the highest inserted ID for new rows.
   -- Passwords are PLACEHOLDER bcrypt-format strings and cannot be used to
   -- log in. To make demo accounts usable, generate real hashes and paste
   -- them into the profiles INSERT below, e.g.:
@@ -9,7 +12,7 @@
   -- The dataset intentionally covers documented edge cases:
     -- profile 5 is GDPR-anonymized (is_deleted, kept memberships, still
     --    owns project 3 -> admin ownership-transfer case)
-    -- lab l2 has no projects (empty lab)
+    -- lab 2 has no projects (empty lab)
     -- profile 8 has read-only access everywhere
     -- login_log contains failed logins and a rate-limit burst
   -- Timestamps fall inside the 90-day retention window around 2026-09-24.
@@ -23,13 +26,13 @@ USE scriba_db;
 -- ---------------------------------------------------------------------------
 
 INSERT INTO `companies` (`company_id`, `name`) VALUES
-    ('c1', 'Asteria Biotech'),
-    ('c2', 'Helix Environmental Labs');
+    (1, 'Asteria Biotech'),
+    (2, 'Helix Environmental Labs');
 
 INSERT INTO `labs` (`lab_id`, `company_id`, `name`) VALUES
-    ('l1', 'c1', 'Molecular Biology Lab'),
-    ('l2', 'c1', 'Analytical Chemistry Lab'),   -- no projects: empty lab
-    ('l3', 'c2', 'Water Quality Lab');
+    (1, 1, 'Molecular Biology Lab'),
+    (2, 1, 'Analytical Chemistry Lab'),   -- no projects: empty lab
+    (3, 2, 'Water Quality Lab');
 
 -- ---------------------------------------------------------------------------
 -- Profiles (users)
@@ -72,24 +75,24 @@ VALUES
 -- ---------------------------------------------------------------------------
 
 INSERT INTO `company_members` (`company_id`, `profile_id`, `role`) VALUES
-    ('c1', 1, 'member'),
-    ('c1', 2, 'admin'),
-    ('c1', 3, 'member'),
-    ('c1', 4, 'member'),
-    ('c1', 5, 'member'),   -- kept after anonymization
-    ('c1', 6, 'member'),
-    ('c2', 7, 'member'),
-    ('c2', 8, 'member');
--- c2 admin intentionally missing: assign one when testing admin flows.
+    (1, 1, 'member'),
+    (1, 2, 'admin'),
+    (1, 3, 'member'),
+    (1, 4, 'member'),
+    (1, 5, 'member'),   -- kept after anonymization
+    (1, 6, 'member'),
+    (2, 7, 'member'),
+    (2, 8, 'member');
+-- Company 2 admin intentionally missing: assign one when testing admin flows.
 
 INSERT INTO `lab_members` (`lab_id`, `profile_id`, `role`) VALUES
-    ('l1', 3, 'member'),
-    ('l1', 4, 'admin'),
-    ('l1', 5, 'member'),   -- kept after anonymization
-    ('l1', 6, 'member'),
-    ('l3', 7, 'admin'),
-    ('l3', 8, 'member');
--- l2 has no members or projects yet.
+    (1, 3, 'member'),
+    (1, 4, 'admin'),
+    (1, 5, 'member'),   -- kept after anonymization
+    (1, 6, 'member'),
+    (3, 7, 'admin'),
+    (3, 8, 'member');
+-- Lab 2 has no members or projects yet.
 
 -- project_members and experiment_members are inserted further below,
 -- after the projects/experiments they reference exist.
@@ -101,11 +104,11 @@ INSERT INTO `lab_members` (`lab_id`, `profile_id`, `role`) VALUES
 INSERT INTO `projects`
     (`project_id`, `name`, `lab_id`, `created_at`, `updated_at`, `is_done`)
 VALUES
-    (1, 'Enzyme Kinetics Study',          'l1', '2026-08-10 09:15:00', '2026-09-15 17:40:00', FALSE),
-    (2, 'Protein Purification Protocol',  'l1', '2026-07-01 10:00:00', '2026-09-20 12:30:00', TRUE),
-    (3, 'Assay Validation',               'l1', '2026-09-01 08:45:00', '2026-09-22 15:10:00', FALSE),
-    (4, 'Groundwater Contaminant Screen', 'l3', '2026-08-20 07:30:00', '2026-09-18 16:20:00', FALSE),
-    (5, 'Microplastics Survey',           'l3', '2026-09-05 09:00:00', '2026-09-23 11:05:00', FALSE);
+    (1, 'Enzyme Kinetics Study',          1, '2026-08-10 09:15:00', '2026-09-15 17:40:00', FALSE),
+    (2, 'Protein Purification Protocol',  1, '2026-07-01 10:00:00', '2026-09-20 12:30:00', TRUE),
+    (3, 'Assay Validation',               1, '2026-09-01 08:45:00', '2026-09-22 15:10:00', FALSE),
+    (4, 'Groundwater Contaminant Screen', 3, '2026-08-20 07:30:00', '2026-09-18 16:20:00', FALSE),
+    (5, 'Microplastics Survey',           3, '2026-09-05 09:00:00', '2026-09-23 11:05:00', FALSE);
 
 INSERT INTO `project_tags` (`project_id`, `tag`) VALUES
     (1, 'kinetics'),
@@ -212,13 +215,14 @@ INSERT INTO `experiment_members` (`experiment_id`, `profile_id`, `role`) VALUES
 
 -- ---------------------------------------------------------------------------
 -- Activity log (only authenticated actions; profile_id NOT NULL)
+-- entity_id is VARCHAR(20) and holds the numeric ID of the entity as text.
 -- ---------------------------------------------------------------------------
 
 INSERT INTO `activity_log`
     (`profile_id`, `acted_at`, `entity_type`, `entity_id`, `activity_type`, `detail`)
 VALUES
-    (1, '2026-07-01 09:00:00', 'company', 'c1', 'add_lab',      'Added lab Molecular Biology Lab'),
-    (1, '2026-07-01 09:30:00', 'company', 'c2', 'create',       'Registered company Helix Environmental Labs'),
+    (1, '2026-07-01 09:00:00', 'company', '1',  'add_lab',      'Added lab Molecular Biology Lab'),
+    (1, '2026-07-01 09:30:00', 'company', '2',  'create',       'Registered company Helix Environmental Labs'),
     (3, '2026-08-10 09:15:00', 'project', '1',  'create',       'Created project Enzyme Kinetics Study'),
     (3, '2026-08-11 10:20:00', 'experiment', '1', 'create',     'Created experiment Amylase activity across pH gradients'),
     (3, '2026-08-25 09:00:00', 'experiment', '2', 'create',      'Created experiment Substrate concentration series'),
