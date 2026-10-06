@@ -245,7 +245,7 @@ require_once "database/db.php";
 
 
 <main class="company_admin_page">
-     <h1 class="page_title">Company admin page</h1>
+     
 
 
 <!-- i want nav bar here -->
@@ -253,6 +253,7 @@ require_once "database/db.php";
     include "includes/navbar.php";
     ?>
 
+<h1 class="page_title">Company admin page</h1>
 
     <!-- adding a lab group -->
       <!-- Theese were under each other before, but i would like them to be ebside each other  -->
