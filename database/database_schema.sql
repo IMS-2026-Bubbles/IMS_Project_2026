@@ -230,13 +230,13 @@ CREATE TABLE `lab_members` (
 -- Retention: Keep last 90 days, delete older automatically
 CREATE TABLE `activity_log` (
   `activity_id` INT AUTO_INCREMENT, -- PK id
-  `profile_id` INT, -- who did the action
+  `profile_id` INT, -- nullable, who did the action
   `acted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the action happened
   `entity_type` ENUM( -- what was the action performed on (project/experiment/profile/company/lab)
       'project', 'experiment', 
       'profile', 'company', 'lab'
   ) NOT NULL,
-  `entity_id` INT, -- id of the project/experiment/profile/company acted upon,
+  `entity_id` INT, -- nullable, id of the project/experiment/profile/company acted upon,
   `activity_type` ENUM( -- what action was performed
       'create', 'update', 'delete', -- project/experiment actions
       'change_role', 'change_permission', -- profile role/access permission actions
@@ -277,7 +277,7 @@ CREATE INDEX `idx_activity_log_profile`
 CREATE TABLE `login_log` (
   `login_id` INT AUTO_INCREMENT, -- PK id
   `profile_id` INT, -- nullable, if login failed, profile_id is null
-  `email` VARCHAR(255), -- email used for login attempt
+  `email` VARCHAR(255), -- nullable, email used for login attempt
   `login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the login attempt happened
   `ip_address` VARCHAR(45) NOT NULL, -- IP address of login attempt (IPv4 or IPv6)
   `success` BOOLEAN NOT NULL, -- whether the login attempt was successful

@@ -46,8 +46,8 @@ function log_activity(
 
 function log_login(
     $conn, 
-    int $profile_id, 
-    string $email, 
+    int|null $profile_id, 
+    string|null $email, 
     string $ip_address, 
     bool $success, 
     string $detail) {
