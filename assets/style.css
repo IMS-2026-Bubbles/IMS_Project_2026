@@ -37,17 +37,6 @@ Each HTML page must include a reference to the external style sheet file inside 
    1. GLOBAL
    ========================================================= */
 
-:root {
-    --scriba-blue: #0c8eae;
-    --scriba-light-blue: #98eefa;
-    --scriba-dark: #263c55;
-    --scriba-soft-blue: #cbd8f2;
-    --scriba-card-blue: #c4d3ee;
-    --scriba-white: #ffffff;
-    --scriba-border: #263c55;
-}
-
-
 /* Page */
 /* this youtube video helped me understand flexbox /cornelia*/
 /* https://www.youtube.com/watch?v=wsTv9y931o8 */
@@ -882,7 +871,7 @@ body {
 .text {
     color: black;
     text-align: center;
-    size: 36px;}
+    font-size: 36px;}
 
 
 .scriba_input{
@@ -974,7 +963,7 @@ h1 {
   gap: 10px;
 
     border: 2px solid var(--scriba-dark);
-    border-radius: 30.px;
+    border-radius: 30px;
     background:linear-gradient(
             100deg,
             var(--scriba-soft-blue), var(--scriba-white));
@@ -990,7 +979,6 @@ h1 {
     text-align: center;
     margin-top: 30px;
     font-size: 18px; 
-    text-align: center;
 }
 
 
