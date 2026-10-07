@@ -48,10 +48,13 @@ if (!in_array($experiment_section, $valid_sections)) {
 // Connect to database
 require_once "../database/db.php";
 
+// Encryption
+require_once "../includes/encryption.php";
+
 
 // Check if the user has permission to edit progress for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
+
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
     // Log the access denied event
@@ -76,15 +79,18 @@ if ($user_access < 2) {
 // Check if $done_flag differs from database value, and if so, update the database
     // Fetch current progress flag from the database
 include "../includes/fetch_experiment_progress.php"; // Fetches the progress status for the specified experiment ID
+
     // Compare $done_flag with the current value in the database
     $done_flag = (int)$done_flag; // Cast to int for comparison
     $experiment_progress = array_map('intval', $experiment_progress); // Ensure all values are integers
+
 if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
     // NOTE: $experiment_id is bound as "i" here but as "s" in the fetchers.
     // It can be bound as "i" everywhere since the column is INT — normalize when convenient.
     $sql_update_progress = "UPDATE experiments SET " . $experiment_section . "_is_done = ? WHERE experiment_id = ?";
     $stmt_update_progress = $conn->prepare($sql_update_progress);
     $stmt_update_progress->bind_param("ii", $done_flag, $experiment_id);
+
     if ($stmt_update_progress->execute()) {
         // Log the progress update
         log_activity(
@@ -111,15 +117,17 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
 }
 
 // Update the text content for the specified section in the database
+    // Encrypt the text content before saving to the database
+$encrypted_text = encrypt_text($text, $encryption_key);
+
     // Create query to update the text content for the specified section
-// TODO(schema-migration): old table/column names. Becomes
-// UPDATE experiments SET <section>_text = ? WHERE experiment_id = ?
 $sql_update_text = "UPDATE experiments SET " . $experiment_section . "_text = ? WHERE experiment_id = ?";
     // Prepare query
 $stmt_update_text = $conn->prepare($sql_update_text);
     // Bind parameters
-$stmt_update_text->bind_param("si", $text, $experiment_id);
+$stmt_update_text->bind_param("si", $encrypted_text, $experiment_id);
     // Execute query
+
 if ($stmt_update_text->execute()) {
         // Log the text update
         log_activity(
