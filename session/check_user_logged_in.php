@@ -9,6 +9,7 @@
 // Check if the user is logged in
 if (!isset($_SESSION['profile_id'])) {
     // Log the access denied event
+        // This gets triggered by bots, so may want to turn off if botting becomes a problem and massively clutters the logs.
     require_once "../database/db.php"; // Include the database connection
     require_once "../includes/log_activity.php"; // Include the log_activity function
     log_activity(
