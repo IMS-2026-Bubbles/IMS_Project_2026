@@ -161,7 +161,7 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
             $conn,
             $_SESSION['profile_id'], // admin's profile ID who performed the action
             'company', // entity type
-            0, // entity ID (company ID) NOT NULL but needs equivalent
+            NULL, // entity ID (company ID) not applicable since company creation failed
             'add_company', // activity type
             "Failed to create company with name $name: Company already exists" // detail
         );
@@ -196,7 +196,7 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
             $conn,
             $_SESSION['profile_id'], // admin's profile ID who performed the action
             'company', // entity type
-            0, // entity ID (company ID) NOT NULL but needs equivalent
+            NULL, // entity ID (company ID) not applicable since company creation failed
             'add_company', // activity type
             "Failed to create company with name $name: " . $stmt->error // detail
         );

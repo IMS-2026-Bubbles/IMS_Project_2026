@@ -6,9 +6,9 @@
 
 function log_activity(
     $conn, 
-    int $profile_id, 
+    int|null $profile_id, 
     string $entity_type, 
-    string $entity_id, 
+    int|null $entity_id, 
     string $activity_type, 
     string $detail) {
         // Check input parameters for validity
@@ -22,7 +22,8 @@ function log_activity(
             'change_role', 'change_permission',
             'add_member', 'remove_member',
             'add_lab', 'remove_lab', 
-            'add_company', 'remove_company']
+            'add_company', 'remove_company',
+            'access_denied']
         if (!in_array($activity_type, $valid_activity_types)) {
             throw new InvalidArgumentException("Invalid activity type: $activity_type");
         }
@@ -33,7 +34,7 @@ function log_activity(
             "INSERT INTO activity_log (profile_id, entity_type, entity_id, activity_type, detail) 
                 VALUES (?, ?, ?, ?, ?)";
         $stmt_log_activity = $conn->prepare($sql_log_activity);
-        $stmt_log_activity->bind_param("isss", $profile_id, $entity_type, $entity_id, $activity_type, $detail);
+        $stmt_log_activity->bind_param("isiss", $profile_id, $entity_type, $entity_id, $activity_type, $detail);
         if (!$stmt_log_activity->execute()) {
             throw new RuntimeException("Failed to log activity: " . $stmt_log_activity->error);
         }

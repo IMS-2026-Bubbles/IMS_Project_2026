@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
                 $conn,
                 $_SESSION['profile_id'], // profile ID who performed the action
                 'experiment', // entity type
-                0, // entity ID (experiment ID) NOT NULL but needs equivalent
+                NULL, // entity ID (experiment ID) not available since creation failed
                 'create', // activity type
                 "Failed to create experiment with name $experimentName in project $project_id: " . $stmt->error // detail
             );

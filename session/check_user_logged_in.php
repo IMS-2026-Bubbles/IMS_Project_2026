@@ -13,9 +13,9 @@ if (!isset($_SESSION['profile_id'])) {
     require_once "../includes/log_activity.php"; // Include the log_activity function
     log_activity(
         $conn,
-        $_SESSION['profile_id'] ?? 0, // Use 0 if profile_id is not set
+        $_SESSION['profile_id'] ?? NULL, // Use NULL if profile_id is not set
         'profile',
-        0, // No specific entity ID for this action
+        NULL, // No specific entity ID for this action
         'access_denied',
         'User attempted to access a page without being logged in'
     );

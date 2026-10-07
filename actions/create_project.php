@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
                 $conn,
                 $_SESSION['profile_id'],
                 'project',
-                0, // No project ID yet
+                NULL, // No project ID yet
                 'access_denied',
                 'User attempted to create a project in a lab they do not have access to'
             );
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
                 $conn,
                 $_SESSION['profile_id'],
                 'project',
-                0, // No project ID yet
+                NULL, // No project ID yet
                 'create',
                 'Error creating project: ' . $stmt->error
             );

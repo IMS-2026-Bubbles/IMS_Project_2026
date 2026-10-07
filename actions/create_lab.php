@@ -60,7 +60,7 @@ $admin_company_ID = $_SESSION["company_id"];
             $conn,
             $_SESSION['profile_id'], // admin's profile ID who performed the action
             'lab', // entity type
-            0, // entity ID (lab ID) NOT NULL but needs equivalent
+            NULL, // entity ID (lab ID) not applicable since lab creation failed
             'add_lab', // activity type
             "Failed to create lab group with name $proposed_lab_name: Lab group already exists in company $admin_company_ID" // detail
         );
