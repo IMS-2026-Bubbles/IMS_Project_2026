@@ -20,6 +20,8 @@ require_once "../session/init.php"; // Start the session and initialize session 
 // No check for user logged in here, login action
 require_once '../database/db.php';
 
+require_once '../includes/log_activity.php'; // Include the log_activity function
+
 $message = "";
 $toastClass = "";
 $logincredentials = False;
@@ -64,12 +66,14 @@ if(isset($_POST["login"]))
             $toastClass = "#dc3545"; // Danger color
 
             // Log a failed login attempt (login locked)
-            $sql_login_failed = 
-                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                    VALUES (NULL, ?, ?, 0, 'Login locked due to too many recent failed attempts')";
-            $stmt_login_failed = $conn->prepare($sql_login_failed);
-            $stmt_login_failed->bind_param("ss", $email, $ip_address);
-            $stmt_login_failed->execute();
+            log_login(
+                $conn,
+                NULL, // No profile_id since login is locked
+                $email,
+                $ip_address,
+                0, // success = 0
+                'Login locked due to too many recent failed attempts'
+            );
 
             // Redirect back to the login page with an error message
             $_SESSION['login_error'] = $message;
@@ -84,12 +88,14 @@ if(isset($_POST["login"]))
             $toastClass = "#dc3545"; // Danger color
 
             // Log a failed login attempt (email not found)
-            $sql_login_failed = 
-                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                    VALUES (NULL, ?, ?, 0, 'Email not found')";
-            $stmt_login_failed = $conn->prepare($sql_login_failed);
-            $stmt_login_failed->bind_param("ss", $email, $ip_address);
-            $stmt_login_failed->execute();
+            log_login(
+                $conn, 
+                NULL, // profile_id is NULL since login failed
+                $email, 
+                $ip_address, 
+                0, // success = 0 for failure
+                'Login failed: Email not found'
+            );
         } 
 
         else {
@@ -115,12 +121,14 @@ if(isset($_POST["login"]))
                     $toastClass = "#dc3545"; // Danger color
 
                     // Log a failed login attempt (incorrect password)
-                    $sql_login_failed = 
-                        "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                            VALUES (?, ?, ?, 0, 'Incorrect password')";
-                    $stmt_login_failed = $conn->prepare($sql_login_failed);
-                    $stmt_login_failed->bind_param("iss", $profile['profile_id'], $email, $ip_address);
-                    $stmt_login_failed->execute();
+                    log_login(
+                        $conn, 
+                        $profile['profile_id'], 
+                        $email, 
+                        $ip_address, 
+                        0, // success = 0 for failure
+                        'Login failed: Incorrect password'
+                    );
                 }
             
                 $stmt->close();
@@ -135,13 +143,15 @@ if(isset($_POST["login"]))
             // User that doesn't belong to a company => user_profile.php
         if ($logincredentials) {
             // Log successful login attempt
-            $sql_login_success = 
-                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                    VALUES (?, ?, ?, 1, 'Successful login')";
-            $stmt_login_success = $conn->prepare($sql_login_success);
-            $stmt_login_success->bind_param("iss", $profile['profile_id'], $email, $ip_address);
-            $stmt_login_success->execute();
-            $stmt_login_success->close();
+            log_login(
+                $conn, 
+                $profile['profile_id'], 
+                $email, 
+                $ip_address, 
+                1, // success = 1 for success
+                'Successful login'
+            );
+
             // Update last login timestamp in profiles table
             $sql_update_last_login = 
                 "UPDATE profiles 
@@ -149,7 +159,30 @@ if(isset($_POST["login"]))
                     WHERE profile_id = ?";
             $stmt_update_last_login = $conn->prepare($sql_update_last_login);
             $stmt_update_last_login->bind_param("i", $profile['profile_id']);
-            $stmt_update_last_login->execute();
+            $result_update_last_login = $stmt_update_last_login->execute();
+
+            if ($result_update_last_login) {
+                // Log the successful update of last login timestamp
+                log_activity(
+                    $conn, 
+                    $profile['profile_id'], 
+                    'profile', 
+                    $profile['profile_id'], 
+                    'update', 
+                    'Updated last login timestamp'
+                );
+            } else {
+                // Log the failed update of last login timestamp
+                log_activity(
+                    $conn, 
+                    $profile['profile_id'], 
+                    'profile', 
+                    $profile['profile_id'], 
+                    'update', 
+                    'Failed to update last login timestamp: ' . $result_update_last_login->error
+                );
+            }
+
             $stmt_update_last_login->close();
 
             // Since login = success, add profile_id to session so we can access it on other pages.
@@ -186,6 +219,17 @@ if(isset($_POST["login"]))
             // If login credentials are invalid, redirect back to the login page with an error message
             $_SESSION['login_error'] = $message;
             $_SESSION['toastClass'] = $toastClass;
+
+            // Log a failed login attempt (invalid credentials)
+            log_login(
+                $conn, 
+                $profile['profile_id'] ?? NULL, // profile_id is NULL if email not found
+                $email, 
+                $ip_address, 
+                0, // success = 0 for failure
+                'Login failed: Invalid credentials'
+            );
+
             header("Location: ../index.php");
             exit();
         }

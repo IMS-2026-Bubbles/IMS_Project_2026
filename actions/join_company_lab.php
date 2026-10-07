@@ -240,17 +240,36 @@ if(isset($_POST['submit_type'])) {
         $stmt = $conn->prepare($sql_accept);
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
-        $stmt->close();
 
-        // Log the activity of accepting the invitation to join the company
-        log_activity(
-            $conn,
-            $profile_id, // user's profile ID who accepted the invitation
-            'company', // entity type
-            $admin_company_ID, // entity ID (company ID)
-            'add_member', // activity type
-            "User with profile ID $profile_id accepted invitation to join company $admin_company_ID" // detail
-        );
+        if ($stmt->error) {
+            // Log the failed attempt to accept the invitation due to database error
+            log_activity(
+                $conn,
+                $profile_id, // user's profile ID who attempted to accept the invitation
+                'company', // entity type
+                $admin_company_ID, // entity ID (company ID)
+                'add_member', // activity type
+                "Failed to accept invitation to join company $admin_company_ID: " . $stmt->error // detail
+            );
+
+            $_SESSION['invitation_response_message'] = "Error accepting invitation: " . $stmt->error;
+            header("Location: ../user_profile.php");
+            exit();
+        } else {
+            // Log the successful acceptance of the invitation
+            log_activity(
+                $conn,
+                $profile_id, // user's profile ID who accepted the invitation
+                'company', // entity type
+                $admin_company_ID, // entity ID (company ID)
+                'add_member', // activity type
+                "User with profile ID $profile_id accepted invitation to join company $admin_company_ID" // detail
+            );
+
+            $_SESSION['invitation_response_message'] = "Successfully accepted invitation to join company.";
+        }
+
+        $stmt->close();
 
         header("Location: ../user_profile.php");    
         exit;
@@ -263,17 +282,36 @@ if(isset($_POST['submit_type'])) {
         $stmt = $conn->prepare($sql_decline);
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
-        $stmt->close();
 
-        // Log the activity of declining the invitation to join the company
-        log_activity(
-        $conn,
-        $profile_id, // user's profile ID who declined the invitation
-        'company', // entity type
-        $admin_company_ID, // entity ID (company ID)
-        'add_member', // activity type
-        "User with profile ID $profile_id declined invitation to join company $admin_company_ID" // detail
-        );
+        if ($stmt->error) {
+            // Log the failed attempt to decline the invitation due to database error
+            log_activity(
+                $conn,
+                $profile_id, // user's profile ID who attempted to decline the invitation
+                'company', // entity type
+                $admin_company_ID, // entity ID (company ID)
+                'remove_member', // activity type
+                "Failed to decline invitation to join company $admin_company_ID: " . $stmt->error // detail
+            );
+
+            $_SESSION['invitation_response_message'] = "Error declining invitation: " . $stmt->error;
+            header("Location: ../user_profile.php");
+            exit();
+        } else {
+            // Log the successful decline of the invitation
+            log_activity(
+                $conn,
+                $profile_id, // user's profile ID who declined the invitation
+                'company', // entity type
+                $admin_company_ID, // entity ID (company ID)
+                'remove_member', // activity type
+                "User with profile ID $profile_id declined invitation to join company $admin_company_ID" // detail
+            );
+
+            $_SESSION['invitation_response_message'] = "Successfully declined invitation to join company.";
+        }
+
+        $stmt->close();
 
         header("Location: ../user_profile.php");    
         exit;
