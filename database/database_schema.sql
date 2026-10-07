@@ -236,7 +236,7 @@ CREATE TABLE `activity_log` (
       'project', 'experiment', 
       'profile', 'company', 'lab'
   ) NOT NULL,
-  `entity_id` VARCHAR(20) NOT NULL, -- id of the project/experiment/profile/company acted upon
+  `entity_id` VARCHAR(20) NOT NULL, -- id of the project/experiment/profile/company acted upon, CHANGE TO INT?
   `activity_type` ENUM( -- what action was performed
       'create', 'update', 'delete', -- project/experiment actions
       'change_role', 'change_permission', -- profile role/access permission actions

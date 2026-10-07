@@ -180,12 +180,4 @@ $_SESSION['messages_save_experiment_tags'] = $messages;
 // Redirect back to experiment.php with the same experiment_id
 header("Location: ../experiment.php?experiment_id=" . urlencode($experiment_id));
 exit();
-// // Links in case redirect fails
-//     // Link back to experiment.php with the same experiment_id
-// if (isset($_POST['experiment_id'])) {
-//     echo "<a href='../experiment.php?experiment_id=" . urlencode($_POST['experiment_id']) . "'>Back to experiment</a><br><br>";
-// } else {
-//     echo "Error: No experiment ID available.<br>";
-//     echo "<a href='../project_library.php'>Back to project library</a><br><br>";
-// }
 ?>

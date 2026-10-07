@@ -21,6 +21,8 @@ require_once '../session/init.php';
 require_once '../session/check_user_logged_in.php';
 // Connect to database
 require_once '../database/db.php';
+// log activity
+require_once '../includes/log_activity.php';
 
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
@@ -36,13 +38,36 @@ if(isset($_POST['add_to_lab']))
     {
     # fetch data from POST request (the dropdown table)
     $labcode_to_join = $_POST['add_to_lab'];
-    $profile_id = $_POST['profile_id'];
+    $profile_id = $_POST['profile_id']; // did you mean to overwrite the $profile_id from session? 
 
     # join the lab group 
     $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $labcode_to_join, $profile_id);
     $result = $stmt->execute();
+    if ($result) {
+        // Log the activity of adding a user to a lab group
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'lab', // entity type
+            $labcode_to_join, // entity ID (lab ID)
+            'add_member', // activity type
+            "Added user with profile ID $profile_id to lab group $labcode_to_join" // detail
+        );
+        $_SESSION['add_to_lab_message'] = "Successfully added user to lab group.";
+    } else {
+        // Log the failed attempt to add a user to a lab group
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'lab', // entity type
+            $labcode_to_join, // entity ID (lab ID)
+            'add_member_failed', // activity type
+            "Failed to add user with profile ID $profile_id to lab group $labcode_to_join: " . $conn->error // detail
+        );
+        $_SESSION['add_to_lab_message'] = "Error adding user to lab group: " . $conn->error;
+    }
     $stmt->close();
     header("Location: ../company_admin.php");
     exit;
@@ -52,7 +77,7 @@ if(isset($_POST['add_to_lab']))
 # INVITE A MEMBER TO COMPANY
 if(isset($_POST['invite_person'])){
     $email_to_invite = $_POST['invite_person'];
-    # get profile id from the entered email and check so that it us not in another company
+    # get profile id from the entered email and check so that it is not in another company
     $get_profile_id = "SELECT profiles.profile_id, company_members.company_id 
                     FROM profiles
                     LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
@@ -72,6 +97,17 @@ if(isset($_POST['invite_person'])){
         # add to message
         $_SESSION['create_invite_message'] = $message;
         $_SESSION['create_invite_toastClass'] = $toastClass;
+
+        // Log the failed invitation attempt
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            $admin_company_ID, // entity ID (company ID)
+            'add_member', // activity type
+            "Failed to invite $email_to_invite to company $admin_company_ID: Email not valid or already in another company" // detail
+        );
+
         header("Location: ../company_admin.php");
         exit;}
     
@@ -93,6 +129,17 @@ if(isset($_POST['invite_person'])){
     # add to message
     $_SESSION['create_invite_message'] = $message;
     $_SESSION['create_invite_toastClass'] = $toastClass;
+
+    // Log the successful invitation
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'], // admin's profile ID who performed the action
+        'company', // entity type
+        $admin_company_ID, // entity ID (company ID)
+        'add_member', // activity type
+        "Successfully invited $email_to_invite to company $admin_company_ID" // detail
+    );
+
     header("Location: ../company_admin.php");    
     exit;
     }
@@ -115,6 +162,17 @@ if(isset($_POST['orphan_proj']))
     $stmt->bind_param("iii", $profile_id, $project_id, $old_profile_id);
     $result = $stmt->execute();
     $stmt->close();
+
+    // Log the activity of assigning a project to someone
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'], // admin's profile ID who performed the action
+        'project', // entity type
+        $project_id, // entity ID (project ID)
+        'update', // activity type
+        "Transfered ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id" // detail
+    );
+
     header("Location: ../company_admin.php");
     exit;
     }
@@ -128,7 +186,7 @@ if(isset($_POST['orphan_proj']))
 
 # REPLY TO AN INVITATION
 # THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
-if(isset($_POST['submit_type'])){
+if(isset($_POST['submit_type'])) {
     # if user accept, change it's company belonging to member
     if ($_POST['submit_type'] == "accept"){
         $sql_accept = "UPDATE company_members 
@@ -138,6 +196,17 @@ if(isset($_POST['submit_type'])){
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
         $stmt->close();
+
+        // Log the activity of accepting the invitation to join the company
+        log_activity(
+            $conn,
+            $profile_id, // user's profile ID who accepted the invitation
+            'company', // entity type
+            $admin_company_ID, // entity ID (company ID)
+            'add_member', // activity type
+            "User with profile ID $profile_id accepted invitation to join company $admin_company_ID" // detail
+        );
+
         header("Location: ../user_profile.php");    
         exit;
     }
@@ -150,10 +219,19 @@ if(isset($_POST['submit_type'])){
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
         $stmt->close();
+
+        // Log the activity of declining the invitation to join the company
+        log_activity(
+        $conn,
+        $profile_id, // user's profile ID who declined the invitation
+        'company', // entity type
+        $admin_company_ID, // entity ID (company ID)
+        'add_member', // activity type
+        "User with profile ID $profile_id declined invitation to join company $admin_company_ID" // detail
+        );
+
         header("Location: ../user_profile.php");    
         exit;
-
-
     }
     
 
