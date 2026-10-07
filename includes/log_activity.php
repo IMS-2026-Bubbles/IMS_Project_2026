@@ -23,7 +23,7 @@ function log_activity(
             'add_member', 'remove_member',
             'add_lab', 'remove_lab', 
             'add_company', 'remove_company',
-            'access_denied']
+            'access_denied'];
         if (!in_array($activity_type, $valid_activity_types)) {
             throw new InvalidArgumentException("Invalid activity type: $activity_type");
         }

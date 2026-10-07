@@ -6,12 +6,12 @@
 // Action: 
     // Checking if the token in the URL is valid,
     // Checking if user is already verified,
-    // Varifying user
+    // Verifying user
 // Redirect to: 
     // ../Index.php (Invalid token, no message given)
     // ../Index.php (Already verified user, message given)
     // ../Index.php (User is now verified, message given)
-    // ../Index.php (Something wen wrong!, Message given)
+    // ../Index.php (Something went wrong!, Message given)
 
 
 
@@ -26,6 +26,9 @@ require_once "../session/init.php"; // Start the session and initialize session 
 // No check for user logged in here, verification page
 require '../database/db.php';
 
+// require logging functions
+require_once '../includes/log_activity.php'; // Log login attempts
+
 $message = "";
 $toastClass = "";
 
@@ -39,20 +42,28 @@ if ($token == "NULL" || strlen($token) < 32 || strlen($token) > 32) {
     header("Location: ../index.php");
     exit();
 }
+
 //retrieving if the user is verified from the database
-$sql = "SELECT is_verified FROM profiles WHERE verify_token = ?";
+$sql = "SELECT is_verified, profile_id FROM profiles WHERE verify_token = ?";
 $checkVerifiedStmt = $conn->prepare($sql);
 $checkVerifiedStmt->bind_param("s", $token);
 $checkVerifiedStmt->execute();
 $checkVerifiedStmt->store_result();
 
-if ($checkVerifiedStmt == "0") {
+if ($checkVerifiedStmt == "0") { // zero rows == token not found => invalid token OR NULL because user already verified
+    // Don't we need to check the value of is_verified too?
     //if user is already verified, return to index page with an message
 
     $message = "Verified user";
     $toastClass = "#007bff"; // Primary color
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
+
+    // Log the verification attempt
+    // log_login(
+    //     $conn,
+        
+    // )
 
     header("Location: ../index.php");
     exit();

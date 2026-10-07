@@ -22,6 +22,10 @@ require_once '../session/init.php'; // Start the session and initialize session 
 //require_once '../session/check_user_logged_in.php'; // Check if the user is logged in
 require_once '../database/db.php';
 
+// require logging functions
+require_once '../includes/log_activity.php'; // Log login attempts
+// require ip address functions
+require_once '../includes/fetch_ip_address.php'; // provides $ip_address and $ip_address_proxy
 
 if(isset($_POST['register']))
 {
@@ -30,10 +34,8 @@ if(isset($_POST['register']))
     $last_name = htmlspecialchars($_POST['last_name']);
     $email = htmlspecialchars($_POST['email']);
     $password = $_POST['password1']; 
-    $agreed_to_tos = (int)$_POST['agreed_to_tos'] ?? 0; // checkbox for Terms of Service and GDPR agreement
+    $agreed_to_tos = (int)($_POST['agreed_to_tos'] ?? 0); // checkbox for Terms of Service and GDPR agreement
 
-    
-    require_once '../includes/get_ip_address.php'; // provides $ip_address and $ip_address_proxy
 
     // Rate limit registration attempts to prevent abuse
     // If 5 failed registration attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
@@ -88,6 +90,7 @@ if(isset($_POST['register']))
         );
 
         header("Location: ../register_user.php");
+        exit();
     } 
 
     else {
@@ -121,6 +124,7 @@ if(isset($_POST['register']))
                 );
 
                 header("Location: ../register_user.php");
+                exit();
             }
             
             //Defining a function send mail to the user via Scriba-Gmail
@@ -144,7 +148,7 @@ if(isset($_POST['register']))
                 $mail->Body = $message;
 
                 // SEND
-                if( !$mail->send() ){
+                if( !$mail->send() ) {
                     // error message if email failed to send
                     $message = "Error: " . $mail->ErrorInfo;
                     $_SESSION['register_user_message'] = $message;
@@ -154,7 +158,7 @@ if(isset($_POST['register']))
                     exit;
                 }
 
-                else{
+                else {
                     // return true if message is send
                     return true;
                 }
@@ -211,7 +215,7 @@ if(isset($_POST['register']))
         $_SESSION['register_user_toastClass'] = $toastClass;
         header("Location: ../index.php");
         // session_destroy(); // don't destroy session to allow the message to be displayed on the index.php page
-        // exit();
+        exit();
     }
     include '../database/close_db.php';
 }

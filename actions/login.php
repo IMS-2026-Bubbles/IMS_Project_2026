@@ -42,7 +42,7 @@ if(isset($_POST["login"])){
     error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
     // IP-address
-    require_once '../includes/get_ip_address.php'; // provides $ip_address and $ip_address_proxy 
+    require_once '../includes/fetch_ip_address.php'; // provides $ip_address and $ip_address_proxy 
 
     // Rate limiting and lockout to prevent brute-force attacks
     // If 5 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes

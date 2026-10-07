@@ -96,6 +96,7 @@ CREATE TABLE `profiles` (
     -- to 0 where reasonable — the profile_points view also excludes deleted
     -- profiles, so points can never resurface after deletion.
   `is_verified` BOOLEAN NOT NULL DEFAULT FALSE, -- this is about email
+  `verify_token` VARCHAR(64), -- token for email verification, a little bigger than currently needed to allow for future changes in hashing algorithm
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
   `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
   -- see delete restrictions/cascades above.
