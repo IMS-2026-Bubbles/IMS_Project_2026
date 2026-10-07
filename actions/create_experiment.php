@@ -21,6 +21,7 @@ require_once "../session/check_user_logged_in.php";
 // Connect to database
 require_once "../database/db.php";
 
+require_once '../includes/log_activity.php'; // provides log_activity() function
 
 // Get current user
 $profile_id = (int) $_SESSION["profile_id"];
@@ -51,6 +52,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
         );
 
         $stmt->execute();
+
+        // Log experiment creation
+        if ($stmt->affected_rows > 0) {
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // profile ID who performed the action
+                'experiment', // entity type
+                $conn->insert_id, // entity ID (experiment ID) of the newly created experiment
+                'create', // activity type
+                "Successfully created experiment $conn->insert_id with name $experimentName in project $project_id" // detail
+            );
+        } else {
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // profile ID who performed the action
+                'experiment', // entity type
+                0, // entity ID (experiment ID) NOT NULL but needs equivalent
+                'create', // activity type
+                "Failed to create experiment with name $experimentName in project $project_id: " . $stmt->error // detail
+            );
+        }
 
         $stmt->close();
 

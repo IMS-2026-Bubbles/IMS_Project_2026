@@ -42,4 +42,26 @@ function log_activity(
         return true; // Return true on successful logging
     }
 
+
+function log_login(
+    $conn, 
+    int $profile_id, 
+    string $email, 
+    string $ip_address, 
+    bool $success, 
+    string $detail) {
+        // SQL statement to insert the login log entry
+        $sql_log_login = 
+            "INSERT INTO login_log (profile_id, email, ip_address, success, detail) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt_log_login = $conn->prepare($sql_log_login);
+        $stmt_log_login->bind_param("issis", $profile_id, $email, $ip_address, $success, $detail);
+        if (!$stmt_log_login->execute()) {
+            throw new RuntimeException("Failed to log login activity: " . $stmt_log_login->error);
+        }
+        $stmt_log_login->close();
+
+        return true; // Return true on successful logging
+    }
+
 ?>

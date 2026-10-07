@@ -29,7 +29,30 @@ if(isset($_POST['register']))
     
     require_once '../includes/get_ip_address.php'; // provides $ip_address and $ip_address_proxy
 
-    
+    // Rate limit registration attempts to prevent abuse
+    // If 5 failed registration attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
+    $sql_failed_attempts = 
+        "SELECT COUNT(*) as failed_attempts 
+        FROM login_log 
+        WHERE ip_address = ? 
+            AND success = 0 
+            AND login_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)";
+    $stmt_failed_attempts = $conn->prepare($sql_failed_attempts);
+    $stmt_failed_attempts->bind_param("s", $ip_address);
+    $stmt_failed_attempts->execute();
+    $result_failed_attempts = $stmt_failed_attempts->get_result();
+    $failed_attempts = $result_failed_attempts->fetch_assoc()['failed_attempts'];
+
+    if ($failed_attempts >= 5) {
+        $message = "Too many failed registration attempts. Please try again later.";
+        $_SESSION['register_user_message'] = $message;
+
+        $toastClass = "#dc3545"; // Danger color
+        $_SESSION['register_user_toastClass'] = $toastClass;
+
+        header("Location: ../register_user.php");
+        exit();
+    }
 
     // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
     // Check if email already exists
@@ -47,14 +70,16 @@ if(isset($_POST['register']))
 
         $toastClass = "#007bff"; // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
-        // Log "login" for failed registration due to existing email
-        $sql_register_failed = 
-            "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                VALUES (NULL, ?, ?, 0, 'Registration failed: Email already exists')";
-        $stmt_register_failed = $conn->prepare($sql_register_failed);
-        $stmt_register_failed->bind_param("ss", $email, $ip_address);
-        $stmt_register_failed->execute();
-        $stmt_register_failed->close();
+
+        // Log failed registration due to existing email
+        log_login(
+            $conn, 
+            NULL, // profile_id is NULL since registration failed
+            $email, 
+            $ip_address, 
+            0, // success = 0 for failure
+            'Registration failed: Email already exists'
+        );
 
         header("Location: ../register_user.php");
     } 
@@ -78,34 +103,39 @@ if(isset($_POST['register']))
                 $_SESSION['register_user_toastClass'] = $toastClass;
 
                 // Log "login" for failed registration due to database error
-                $sql_register_failed = 
-                    "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                        VALUES (NULL, ?, ?, 0, 'Registration failed: Database error')";
-                $stmt_register_failed = $conn->prepare($sql_register_failed);
-                $stmt_register_failed->bind_param("ss", $email, $ip_address);
-                $stmt_register_failed->execute();
-                $stmt_register_failed->close();
+                log_login(
+                    $conn, 
+                    NULL, // profile_id is NULL since registration failed
+                    $email, 
+                    $ip_address, 
+                    0, // success = 0 for failure
+                    'Registration failed: Database error'
+                );
 
                 header("Location: ../register_user.php");
             }
 
             // If registration is successful, log the successful registration
                 // Get the profile_id of the newly registered user
-            $sql_get_profile_id = "SELECT profile_id FROM profiles WHERE email = ?";
-            $stmt_get_profile_id = $conn->prepare($sql_get_profile_id);
-            $stmt_get_profile_id->bind_param("s", $email);
-            $stmt_get_profile_id->execute();
-            $result = $stmt_get_profile_id->get_result();
-            $profile = $result->fetch_assoc();
-            $profile_id = $profile['profile_id'];
+                // Replace the next query with $conn->insert_id to get the last inserted ID = new profile ID
+            // $sql_get_profile_id = "SELECT profile_id FROM profiles WHERE email = ?";
+            // $stmt_get_profile_id = $conn->prepare($sql_get_profile_id);
+            // $stmt_get_profile_id->bind_param("s", $email);
+            // $stmt_get_profile_id->execute();
+            // $result = $stmt_get_profile_id->get_result();
+            // $profile = $result->fetch_assoc();
+            // $profile_id = $profile['profile_id'];
+            $profile_id = $conn->insert_id; // last inserted ID = new profile ID
+
                 // Log "login" for successful registration
-            $sql_register_success = 
-                "INSERT INTO login_log (profile_id, email, ip_address, success, detail)
-                    VALUES (?, ?, ?, 1, 'Registration successful')";
-            $stmt_register_success = $conn->prepare($sql_register_success);
-            $stmt_register_success->bind_param("iss", $profile_id, $email, $ip_address);
-            $stmt_register_success->execute();
-            $stmt_register_success->close();
+            log_login(
+                $conn, 
+                $profile_id, 
+                $email, 
+                $ip_address, 
+                1, // success = 1 for success
+                'Registration successful'
+            );
 
             $stmt->close();
         }
