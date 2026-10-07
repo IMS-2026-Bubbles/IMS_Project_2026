@@ -48,14 +48,26 @@ if (!in_array($experiment_section, $valid_sections)) {
 // Connect to database
 require_once "../database/db.php";
 
+
 // Check if the user has permission to edit progress for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to edit experiment section without permission'
+    );
+
     $messages[] = "You do not have permission to edit this experiment section.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
+    
     // Redirect back to experiment section with the same experiment_id
     header("Location: ../experiment_section.php?experiment_id=" . urlencode($experiment_id) . "&section=" . urlencode($experiment_section));
     exit();

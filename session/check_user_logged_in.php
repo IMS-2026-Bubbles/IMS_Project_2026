@@ -8,6 +8,18 @@
 
 // Check if the user is logged in
 if (!isset($_SESSION['profile_id'])) {
+    // Log the access denied event
+    require_once "../database/db.php"; // Include the database connection
+    require_once "../includes/log_activity.php"; // Include the log_activity function
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'] ?? 0, // Use 0 if profile_id is not set
+        'access_denied',
+        0, // No specific entity ID for this action
+        'access_denied',
+        'User attempted to access a page without being logged in'
+    );
+
     echo "You must be logged in to view this page.";
     exit();
 }

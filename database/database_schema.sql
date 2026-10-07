@@ -242,7 +242,8 @@ CREATE TABLE `activity_log` (
       'change_role', 'change_permission', -- profile role/access permission actions
       'add_member', 'remove_member', -- membership actions
       'add_lab', 'remove_lab', -- lab/company actions
-      'add_company', 'remove_company' -- company actions
+      'add_company', 'remove_company', -- company actions
+      'access_denied' -- access denied actions
   ) NOT NULL,
   `detail` VARCHAR(255), -- additional details about the action, 
     -- e.g. which field was updated, which member was added/removed, etc.

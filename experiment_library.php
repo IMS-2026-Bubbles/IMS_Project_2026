@@ -25,6 +25,7 @@ require_once "session/check_user_logged_in.php";
 // Connect to database
 require_once "database/db.php";
 
+require_once "includes/log_activity.php"; // Include the log_activity function
 
 // Get current user
 $profile_id = (int) $_SESSION["profile_id"];
@@ -69,6 +70,16 @@ if ($project_id > 0) {
     $checkResult = $checkStmt->get_result();
 
     if ($checkResult->num_rows == 0) {
+        // Log the access denied attempt
+        log_activity(
+            $conn,
+            $profile_id,
+            'project',
+            $project_id,
+            'access_denied',
+            'User attempted to access project without permission'
+        );
+
         die("You do not have permission to access this project.");
     }
 

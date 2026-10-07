@@ -38,6 +38,16 @@ include "../includes/check_user_permission.php"; // Include the user permission 
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to edit experiment tags without permission'
+    );
+    
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;

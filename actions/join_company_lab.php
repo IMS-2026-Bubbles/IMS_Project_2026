@@ -120,28 +120,53 @@ if(isset($_POST['invite_person'])){
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $admin_company_ID, $invited_profile_id);
     $result = $stmt->execute();
+
+    if ($stmt->error) {
+        // Log the failed invitation attempt due to database error
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            $admin_company_ID, // entity ID (company ID)
+            'add_member', // activity type
+            "Failed to invite $email_to_invite to company $admin_company_ID: Database error - " . $stmt->error // detail
+        );
+
+        $message = "Error inviting user: " . $stmt->error;
+        $toastClass = "#ff0019"; // Danger color
+
+        # add to message
+        $_SESSION['create_invite_message'] = $message;
+        $_SESSION['create_invite_toastClass'] = $toastClass;
+
+        header("Location: ../company_admin.php");
+        exit();
+    } else {
+        // Log the successful invitation
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            $admin_company_ID, // entity ID (company ID)
+            'add_member', // activity type
+            "Successfully invited $email_to_invite to company $admin_company_ID" // detail
+        );
+
+        # Message saying it was successfull to invite
+        $message = "You have successfully invited " . $email_to_invite . ".";
+        $toastClass = "#1ea324";
+
+    }
+
     $stmt->close();
 
-    # Message saying it was successfull to invite
-    $message = "You have successfully invited " . $email_to_invite . ".";
-    $toastClass = "#1ea324";
-
+    // Set the session variables for the success message
     # add to message
     $_SESSION['create_invite_message'] = $message;
     $_SESSION['create_invite_toastClass'] = $toastClass;
 
-    // Log the successful invitation
-    log_activity(
-        $conn,
-        $_SESSION['profile_id'], // admin's profile ID who performed the action
-        'company', // entity type
-        $admin_company_ID, // entity ID (company ID)
-        'add_member', // activity type
-        "Successfully invited $email_to_invite to company $admin_company_ID" // detail
-    );
-
     header("Location: ../company_admin.php");    
-    exit;
+    exit();
     }
 
 
@@ -161,17 +186,37 @@ if(isset($_POST['orphan_proj']))
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iii", $profile_id, $project_id, $old_profile_id);
     $result = $stmt->execute();
-    $stmt->close();
 
-    // Log the activity of assigning a project to someone
-    log_activity(
-        $conn,
-        $_SESSION['profile_id'], // admin's profile ID who performed the action
-        'project', // entity type
-        $project_id, // entity ID (project ID)
-        'update', // activity type
-        "Transfered ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id" // detail
-    );
+    if ($stmt->error) {
+        // Log the failed attempt to assign a project due to database error
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'project', // entity type
+            $project_id, // entity ID (project ID)
+            'update', // activity type
+            "Failed to transfer ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id: Database error - " . $stmt->error // detail
+        );
+
+        $message = "Error transferring project ownership: " . $stmt->error;
+        $_SESSION['assign_project_message'] = $message;
+        header("Location: ../company_admin.php");
+        exit();
+    } else {
+        // Log the successful assignment of the project
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'project', // entity type
+            $project_id, // entity ID (project ID)
+            'update', // activity type
+            "Successfully transferred ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id" // detail
+        );
+
+        $_SESSION['assign_project_message'] = "Successfully transferred ownership of project.";
+    }
+
+    $stmt->close();
 
     header("Location: ../company_admin.php");
     exit;
