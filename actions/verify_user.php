@@ -39,15 +39,12 @@ if ($token == "NULL" || strlen($token) < 32 || strlen($token) > 32) {
     header("Location: ../index.php");
     exit();
 }
-
+//retrieving if the user is verified from the database
 $sql = "SELECT is_verified FROM profiles WHERE verify_token = ?";
-
 $checkVerifiedStmt = $conn->prepare($sql);
 $checkVerifiedStmt->bind_param("s", $token);
 $checkVerifiedStmt->execute();
 $checkVerifiedStmt->store_result();
-//error_log("Checking verifies $checkVerifiedStmt, num_rows = " . $checkVerifiedStmt->num_rows);
-
 
 if ($checkVerifiedStmt == "0") {
     //if user is already verified, return to index page with an message
@@ -63,7 +60,7 @@ if ($checkVerifiedStmt == "0") {
 $checkVerifiedStmt->close();
 
 
-//otherwise the user will now get varified
+//otherwise the user will now get verified
 $sql = "UPDATE profiles SET is_verified=1 WHERE verify_token = ?";
 $verifyStmt = $conn->prepare($sql);
 $verifyStmt->bind_param("s", $token);
@@ -84,18 +81,15 @@ if ($verifyStmt) {
     }
 
 else {
-    $verifyStmt->close();
-    //check for a valid token
+    //something went wrong!
     $message = "Something went wrong!";
     $toastClass = "#dc3545"; // Danger color
-
     header("Location: ../index.php");
-
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
     exit();
 
 }
-
+$verifyStmt->close();
 ?>
 
