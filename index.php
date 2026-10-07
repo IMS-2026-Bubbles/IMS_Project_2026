@@ -29,6 +29,18 @@ if (isset($_SESSION['login_error'])) {
     $message = "";
 }
 
+//RETRIEVE ERRORS/GOOD MESSAGES FROM ACTIONS/VERIFY_USER
+if (isset($_SESSION['verify_user'])) {
+    $message = $_SESSION['verify_user'];
+    
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['verify_user']);
+} else {
+    $message = "";
+}
+
+
+
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
 
