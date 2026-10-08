@@ -37,6 +37,7 @@ if (isset($_POST['delete_account'])) {
             WHERE profile_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('i', $profile_id);
+    $stmt->execute();
 
     if ($stmt->execute()) {
         $_SESSION['delete_account_message'] = 'Record deleted successfully';
