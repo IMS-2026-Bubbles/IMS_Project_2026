@@ -1017,7 +1017,12 @@ body {
             100deg,
             var(--scriba-soft-blue), var(--scriba-white));
 
-  
+
+
+ .no-content-error
+{
+    border: 1px solid red;
+} 
 
 
 
