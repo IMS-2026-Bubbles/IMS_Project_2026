@@ -6,9 +6,6 @@
 // Returns an associative array with keys 'Project_ID', 'Project_Name',
 // 'Experiment_ID', and 'Experiment_Name' in $project_experiment_name
 
-// TODO(schema-migration): old table/column names. Tables Proj_Experiment/Project
-// become experiments/projects; columns experiment_id/Exp_Name/Proj_ID/Proj_Name become
-// experiment_id/name/project_id/name. The $project_experiment_name keys change with them.
 // Create query
 $sql_project_experiment_name =
     'SELECT 
@@ -24,7 +21,7 @@ $sql_project_experiment_name =
 // Prepare query
 $stmt_project_experiment_name = $conn->prepare($sql_project_experiment_name);
 // Bind parameters
-$stmt_project_experiment_name->bind_param('s', $experiment_id);
+$stmt_project_experiment_name->bind_param('i', $experiment_id);
 // Execute query
 if ($stmt_project_experiment_name->execute()) {
     // Get the result set from the executed query
