@@ -45,16 +45,14 @@ if (isset($_POST["project_id"])) {
 // Check that the project belongs to the user's company
 if ($project_id > 0) {
 
-    $checkSql = "
-        SELECT projects.project_id
+    $checkSql = "SELECT projects.project_id
         FROM projects
         JOIN labs
             ON projects.lab_id = labs.lab_id
         JOIN company_members
             ON labs.company_id = company_members.company_id
         WHERE projects.project_id = ?
-          AND company_members.profile_id = ?
-    ";
+          AND company_members.profile_id = ?";
 
     $checkStmt = $conn->prepare($checkSql);
 
@@ -126,8 +124,7 @@ $projectExperiments = [];
 
 if ($project_id > 0) {
 
-    $sql = "
-        SELECT
+    $sql = "SELECT
             experiments.experiment_id,
             experiments.name
         FROM experiments

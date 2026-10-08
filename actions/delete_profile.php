@@ -21,10 +21,9 @@ require_once '../database/db.php';
 $profile_id = $_SESSION['profile_id'];
 
 
-//delete user account with SQL DELETE statement
-//i know i should use the is_deleted from profiles but rn its what it is 
-// UPDATE profiles SET is_delted = TRUE smth like this 
+// DELETE ACCOUNT
 if (isset($_POST["delete_account"])) {
+    # change all columns for specific user
     $sql = "UPDATE profiles
             SET email = CONCAT(profile_id, '@deleted.invalid'), # .invalid is reserved so noone has this as email
                 first_name = NULL,
@@ -36,19 +35,11 @@ if (isset($_POST["delete_account"])) {
                 is_scriba_admin = FALSE,
                 is_deleted = TRUE
             WHERE profile_id = ?";
-
     $stmt = $conn->prepare($sql); 
     $stmt->bind_param("i", $profile_id);
 
-    if ($stmt->execute()) {
-        $_SESSION['delete_account_message'] = "Record deleted successfully";
-    } else {
-        $_SESSION['delete_account_message'] = "Error deleting user profile: " . $conn->error;
-    }
-
     # once you have deleted your account you should be logged out
     header("Location: ../actions/logout.php");
-    #header("Location: ../user_profile.php");
     exit;
 }
 

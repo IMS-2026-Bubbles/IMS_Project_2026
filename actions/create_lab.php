@@ -23,20 +23,7 @@ $admin_company_ID = $_SESSION["company_id"];
     if(isset($_POST['register_lab_group']))
     {
 
-    ## MIGHT REMOVE THIS AND MAKE INT AUTOINC
-    # write a function that creates unique ID
-    // function createUniqueLabID($conn) {
-    //     $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
-    //     $code = "L"; # all company ids start with C
-    //     # for loop that generates a random number and pick the char with that position
-    //     for ($i = 0; $i < 9; $i++) {
-    //         $random_number = random_int(0, strlen($characters) - 1);
-    //         $code .= $characters[$random_number];}
-    //     return $code;}
-
-    // $lab_id = createUniqueLabID($conn);
-
-    # add a check here as well so that the same lab isn't added twice
+    # check so that the same lab isn't added twice
     $proposed_lab_name = $_POST['name']; # get proposed name from the text form
     # get all lab names in the company
     $sql_check_lab = "SELECT labs.name, companies.name
@@ -49,10 +36,10 @@ $admin_company_ID = $_SESSION["company_id"];
     $checkLabStmt->execute();
     $checkLabStmt->store_result();    
 
-    // check if the number of rows are more than 0 => lab group already exists in this company
+    # check if the number of rows are more than 0 => lab group already exists in this company
     if ($checkLabStmt->num_rows > 0) {
-        $message = "Lab group already exists"; # message is displayed
-        $toastClass = "#ff0019"; // Primary color
+        $message = "Lab group already exists"; # adding text to message
+        $toastClass = "#ff0019"; 
     } 
     
     # if the lab group doesn't exist in company - create it
@@ -63,12 +50,11 @@ $admin_company_ID = $_SESSION["company_id"];
     $stmt->bind_param("si", $proposed_lab_name, $admin_company_ID);
     $result = $stmt->execute();
 
-    # updates message variable accordingly
-    if ($result) {
-        $message = "Lab group successfully created";
-        $toastClass = "#1ea324"; // Primary color
-    } 
-
+        # updates message variable accordingly
+        if ($result) {
+            $message = "Lab group successfully created";
+            $toastClass = "#1ea324"; 
+        } 
     }
 
     # saves in session, they are displayed from company_admin
@@ -79,5 +65,6 @@ $admin_company_ID = $_SESSION["company_id"];
     exit();
 
     }
+    
 
 ?>

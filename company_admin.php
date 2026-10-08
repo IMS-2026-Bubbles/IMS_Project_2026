@@ -60,9 +60,6 @@ require_once "database/db.php";
     } 
 
 
-    
-
-    
 
     // ------------ TABLE SHOWING PEOPLE AND LAB GROUPS ------------
     $sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name, labs.name, company_members.role
@@ -121,8 +118,6 @@ require_once "database/db.php";
                     "</form>";}
         }
     } 
-
-    
     // ------------
 
 
@@ -178,7 +173,6 @@ require_once "database/db.php";
         $people_in_comp .= "<option value='" . htmlspecialchars($r["profile_id"]) . "'>" .
         htmlspecialchars($r["first_name"]) ." ". htmlspecialchars($r["last_name"])."</option>";
         }
-
 
 
     # prepare what to show in table

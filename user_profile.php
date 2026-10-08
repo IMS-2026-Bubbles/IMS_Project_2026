@@ -23,33 +23,6 @@ require_once 'database/db.php';
 
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
-//echo "This is the user profile page for profile ID: " . htmlspecialchars($profile_id) . "<br>";
-
-// Join lab action message
-if (isset($_SESSION['error_join_lab'])) {
-    $error_join_lab = $_SESSION['error_join_lab'];
-    unset($_SESSION['error_join_lab']);
-} else {
-    $error_join_lab = "";
-}
-
-// Join company action message
-if (isset($_SESSION['error_join_company'])) {
-    $error_join_company = $_SESSION['error_join_company'];
-    unset($_SESSION['error_join_company']);
-} else {
-    $error_join_company = "";
-}
-
-// Delete account action message
-if (isset($_SESSION['delete_account_message'])) {
-    $delete_account_message = $_SESSION['delete_account_message'];
-    unset($_SESSION['delete_account_message']);
-} else {
-    $delete_account_message = "";
-}
-
-
 
 
 # get all info about a user, this will be displayed later on
@@ -68,8 +41,6 @@ $user = $result->fetch_assoc();
 $stmt->close();
 
 
-
-
 //selecting points for the user 
 $stmt = $conn->prepare(
     "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
@@ -79,8 +50,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
 $stmt->close();
-
-
 
 
 //selecting company
@@ -140,7 +109,7 @@ $stmt->close();
 
     <!-- <body style="background-image: url('assets/website_background.jpg');"> -->
 
-    <title>User Page</title>
+    <title>User Profile</title>
 
 
 
