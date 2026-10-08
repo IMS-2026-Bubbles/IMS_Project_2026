@@ -45,7 +45,11 @@ if(isset($_POST['add_to_lab']))
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $labcode_to_join, $profile_id);
     $result = $stmt->execute();
-    if ($result) {
+
+    if ($result === TRUE) {
+        // Excute successful
+        $_SESSION['add_to_lab_message'] = "Successfully added user to lab group.";
+
         // Log the activity of adding a user to a lab group
         log_activity(
             $conn,
@@ -55,8 +59,10 @@ if(isset($_POST['add_to_lab']))
             'add_member', // activity type
             "Added user with profile ID $profile_id to lab group $labcode_to_join" // detail
         );
-        $_SESSION['add_to_lab_message'] = "Successfully added user to lab group.";
     } else {
+        // Execution failed
+        $_SESSION['add_to_lab_message'] = "Error adding user to lab group: " . $conn->error;
+
         // Log the failed attempt to add a user to a lab group
         log_activity(
             $conn,
@@ -66,9 +72,9 @@ if(isset($_POST['add_to_lab']))
             'add_member_failed', // activity type
             "Failed to add user with profile ID $profile_id to lab group $labcode_to_join: " . $conn->error // detail
         );
-        $_SESSION['add_to_lab_message'] = "Error adding user to lab group: " . $conn->error;
     }
     $stmt->close();
+    
     header("Location: ../company_admin.php");
     exit;
     }

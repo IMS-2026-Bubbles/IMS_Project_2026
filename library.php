@@ -1,5 +1,5 @@
 <?php
-// Project Library (change to library.php?)
+// Library (project list) page
 
 // Arrive from: 
     // actions/login.php (after logging in)
@@ -27,7 +27,7 @@ require_once "database/db.php";
 
 
 // Get current user
-$profile_id = (int) $_SESSION["profile_id"];
+// $profile_id = (int) $_SESSION["profile_id"]; // now lives in session/check_user_logged_in.php
 
 
 // TODO: Refactor search into an include?
@@ -39,168 +39,70 @@ if (isset($_GET["search"])) {
 }
 
 
-// // Add project
-// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
+// Create list of labs the user has access to (for the add project form) (currently 'owner' role only)
+// $labs = [];
 
-//     $projectName = trim($_POST["project_name"]);
-//     $labId = trim($_POST["lab_id"]);
+    // Get labs the user is a member of
+// $sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
+//         FROM profiles
+//         LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
+//         LEFT JOIN labs on lab_members.lab_id = labs.lab_id
+//         WHERE profiles.profile_id = ?";
+$sql_labs = "SELECT labs.lab_id, labs.name
+        FROM labs
+        JOIN lab_members ON labs.lab_id = lab_members.lab_id
+        WHERE lab_members.profile_id = ?";
+$stmt_labs = $conn->prepare($sql_labs);
+$stmt_labs->bind_param("i", $profile_id);
+$stmt_labs->execute();
 
-//     if ($projectName != "" && $labId != "") {
-
-//         // Check that the selected lab belongs to one of the user's companies
-//         $checkSql = "
-//             SELECT labs.lab_id
-//             FROM labs
-//             JOIN company_members
-//                 ON labs.company_id = company_members.company_id
-//             WHERE labs.lab_id = ?
-//               AND company_members.profile_id = ?
-//         ";
-
-//         $checkStmt = $conn->prepare($checkSql);
-
-//         $checkStmt->bind_param(
-//             "si",
-//             $labId,
-//             $profile_id
-//         );
-
-//         $checkStmt->execute();
-
-//         $checkResult = $checkStmt->get_result();
-
-//         if ($checkResult->num_rows == 0) {
-//             die("You do not have permission to use this lab.");
-//         }
-
-//         $checkStmt->close();
-
-
-//         // Add new project
-//         $sql = "
-//             INSERT INTO projects
-//             (name, lab_id)
-//             VALUES (?, ?)
-//         ";
-
-//         $stmt = $conn->prepare($sql);
-
-//         $stmt->bind_param(
-//             "ss",
-//             $projectName,
-//             $labId
-//         );
-
-//         $stmt->execute();
-
-//         $newProjectId = $stmt->insert_id;
-
-//         $stmt->close();
-
-
-//         // Add current user as project owner
-//         $sql = "
-//             INSERT INTO project_members
-//             (project_id, profile_id, role)
-//             VALUES (?, ?, 'owner')
-//         ";
-
-//         $stmt = $conn->prepare($sql);
-
-//         $stmt->bind_param(
-//             "ii",
-//             $newProjectId,
-//             $profile_id
-//         );
-
-//         $stmt->execute();
-
-//         $stmt->close();
-
-
-//         // Refresh the project library
-//         header("Location: library.php");
-//         exit();
-//     }
+$labs = $stmt_labs->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
+// while ($row = $result_labs->fetch_assoc()) {
+//     $labs[] = $row;
 // }
-
-
-// Get labs from the user's companies
-$labs = [];
-
-$sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
-        FROM profiles
-        LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
-        LEFT JOIN labs on lab_members.lab_id = labs.lab_id
-        WHERE profiles.profile_id = ?";
-
-
-$stmt = $conn->prepare($sql);
-
-$stmt->bind_param(
-    "i",
-    $profile_id
-);
-
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $labs[] = $row;
-}
-
-$stmt->close();
+$stmt_labs->close();
 
 
 // Get projects from the user's companies
-$projects = [];
+// $projects = [];
 
-
-
-$sql = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
+    // Get projects where the user is an owner
+$sql_projects = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
         FROM projects
         JOIN project_members ON project_members.project_id = projects.project_id
-        WHERE project_members.role = 'owner' AND project_members.profile_id = ?";
+        WHERE project_members.role = 'owner' 
+            AND project_members.profile_id = ?";
 
 if ($search != "") {
-    $sql .= " AND projects.name LIKE ?";
-}
+    // Add a search filter (optional)
+    $sql_projects .= " AND projects.name LIKE ?";
 
-$sql .= " ORDER BY projects.name";
+    // Add an ORDER BY clause to sort the results by project name
+    $sql_projects .= " ORDER BY projects.name";
 
-
-$stmt = $conn->prepare($sql);
-
-
-if ($search != "") {
-
+    // Prepare and bind params
+    $stmt_projects = $conn->prepare($sql_projects);
+        // If search is not empty, bind the search parameter with wildcards for partial matching
     $searchValue = "%" . $search . "%";
-
-    $stmt->bind_param(
-        "is",
-        $profile_id,
-        $searchValue
-    );
-
+    $stmt_projects->bind_param("is", $profile_id, $searchValue);
 } else {
+    // No search filter
 
-    $stmt->bind_param(
-        "i",
-        $profile_id
-    );
+    // Add an ORDER BY clause to sort the results by project name
+    $sql_projects .= " ORDER BY projects.name";
+
+    // Prepare and bind params
+    $stmt_projects = $conn->prepare($sql_projects);
+        // If search is empty, bind only the profile_id parameter
+    $stmt_projects->bind_param("i", $profile_id);
 }
+$stmt_projects->execute();
 
-
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $projects[] = $row;
-}
-
-$stmt->close();
+$projects = $stmt_projects->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
+// while ($row = $result->fetch_assoc()) {
+//     $projects[] = $row;
+// }
+$stmt_projects->close();
 
 ?>
 
