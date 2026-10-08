@@ -17,33 +17,43 @@ require_once '../database/db.php';
 
 require_once '../includes/log_activity.php'; // provides log_activity() function
 
+
     # HANDLE POST METHOD TO CHANGE ADMIN STATUS
     # post methods should be at top in order to reload page directly
     if(isset($_POST['make_admin'])) {
+        // profile_id of the user to be promoted to admin
         $profile_id = $_POST['profile_id'];
+
+        // Fetch the company_id of the user to be promoted to admin
+        require '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+
+        // Update the role of the user in the company_members table to 'admin'
         $sql_admin = "UPDATE company_members SET role = 'admin' WHERE  profile_id = ?";
         $stmt = $conn->prepare($sql_admin);
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
+
         if ($result) {
             $_SESSION['manage_company_message'] = "User promoted to admin successfully.";
+
             // Log the activity of promoting a user to admin
             log_activity(
                 $conn,
                 $_SESSION['profile_id'], // admin's profile ID who performed the action
                 'company', // entity type
-                $_SESSION["company_id"], // entity ID (company ID)
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID) Should be ID for affected company, not user doing the action
                 'change_role', // activity type
                 "Promoted user with profile ID $profile_id to admin" // detail
             );
         } else {
             $_SESSION['manage_company_message'] = "Error promoting user to admin: " . $stmt->error;
+
             // Log the failed attempt to promote a user to admin
             log_activity(
                 $conn,
                 $_SESSION['profile_id'], // admin's profile ID who performed the action
                 'company', // entity type
-                $_SESSION["company_id"], // entity ID (company ID)
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID)
                 'change_role', // activity type
                 "Failed to promote user with profile ID $profile_id to admin: " . $stmt->error // detail
             );
@@ -51,30 +61,39 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
     }
 
     if(isset($_POST['admin_removal'])) {
+        // profile_id of the user to be demoted from admin
         $profile_id = $_POST['profile_id'];
+
+        // Fetch the company_id of the user to be promoted to admin
+        require '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+
+        // Update the role of the user in the company_members table to 'member'
         $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
         $stmt = $conn->prepare($sql_admin);
         $stmt->bind_param("i", $profile_id);
         $result = $stmt->execute();
+
         if ($result) {
             $_SESSION['manage_company_message'] = "Admin rights removed successfully.";
+
             // Log the activity of removing admin rights from a user
             log_activity(
                 $conn,
                 $_SESSION['profile_id'], // admin's profile ID who performed the action
                 'company', // entity type
-                $_SESSION["company_id"], // entity ID (company ID)
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID) 
                 'change_role', // activity type
                 "Removed admin rights from user with profile ID $profile_id" // detail
             );
         } else {
             $_SESSION['manage_company_message'] = "Error removing admin rights: " . $stmt->error;
+
             // Log the failed attempt to remove admin rights from a user
             log_activity(
                 $conn,
                 $_SESSION['profile_id'], // admin's profile ID who performed the action
                 'company', // entity type
-                $_SESSION["company_id"], // entity ID (company ID)
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID)
                 'change_role', // activity type
                 "Failed to remove admin rights from user with profile ID $profile_id: " . $stmt->error // detail
             );
@@ -84,8 +103,13 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
     # for admin to add a person to company: 
     if(isset($_POST['add_to_company'])){
         echo "wohooo";
+
+        // profile_id of the user to be added to the company
         $profile_id = $_POST['profile_id'];
+        // company_id of the company to which the user is being added
         $company_id = $_POST['add_to_company'];
+
+        // Add the user to the company_members table with role 'member'
         $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $company_id, $profile_id);
@@ -93,6 +117,7 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
 
         if ($result) {
             $_SESSION['manage_company_message'] = "User added to company successfully.";
+
             // Log the activity of adding a user to a company
             log_activity(
                 $conn,
@@ -104,6 +129,7 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
             );
         } else {
             $_SESSION['manage_company_message'] = "Error adding user to company: " . $stmt->error;
+            
             // Log the failed attempt to add a user to a company
             log_activity(
                 $conn,
