@@ -96,6 +96,10 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
         $stmt_update_progress = $conn->prepare($sql_update_progress);
         $stmt_update_progress->bind_param('ii', $done_flag, $experiment_id);
         $transaction_ok = $stmt_update_progress->execute();  // transaction flag updated
+        if (!$transaction_ok) {
+            // On failure, capture error for logging
+            $error_update_progress = $stmt_update_progress->error;
+        }
         $stmt_update_progress->close();
     }
 }
@@ -118,6 +122,10 @@ if (hash('sha256', $text) === $text_fingerprint) {
         $stmt_update_text = $conn->prepare($sql_update_text);
         $stmt_update_text->bind_param('si', $encrypted_text, $experiment_id);
         $transaction_ok = $stmt_update_text->execute();  // transaction flag updated
+        if (!$transaction_ok) {
+            // On failure, capture error for logging
+            $error_update_text = $stmt_update_text->error;
+        }
         $stmt_update_text->close();
     }
 
@@ -127,6 +135,10 @@ if (hash('sha256', $text) === $text_fingerprint) {
         $stmt_increment_saved_changes = $conn->prepare($sql_increment_saved_changes);
         $stmt_increment_saved_changes->bind_param('i', $profile_id);
         $transaction_ok = $stmt_increment_saved_changes->execute();  // transaction flag updated
+        if (!$transaction_ok) {
+            // On failure, capture error for logging
+            $error_increment_saved_changes = $stmt_increment_saved_changes->error;
+        }
         $stmt_increment_saved_changes->close();
     }
 }
@@ -175,39 +187,30 @@ if ($transaction_ok) {
     $conn->rollback();
     $messages[] = 'Error updating experiment section ' . $experiment_section . '. Transaction rolled back.<br>';
 
-    // Log the error for progress flag update if it was changed
-    if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
-        log_activity(
-            $conn,
-            $_SESSION['profile_id'],
-            'experiment',
-            $experiment_id,
-            'update',
-            'Error updating progress flag for section ' . $experiment_section . ': ' . $stmt_update_progress->error
-        );
+    // Determine which operation failed and log the appropriate error message
+    if (isset($error_update_progress)) {
+        // Detail description of the error for progress flag update if it was changed
+        $details = 'Error updating progress flag for section ' . $experiment_section . ': ' . $error_update_progress;
+    } elseif (isset($error_update_text)) {
+        // Detail description of the error for text update if it was changed
+        $details = 'Error updating text content for section ' . $experiment_section . ': ' . $error_update_text;
+    } elseif (isset($error_increment_saved_changes)) {
+        // Detail description of the error for saved_changes increment
+        $details = 'Error incrementing saved_changes counter for experiment ' . $experiment_id . ' text update in section ' . $experiment_section . ': ' . $error_increment_saved_changes;
+    } else {
+        // Generic error message if no specific error was captured
+        $details = 'Unknown error occurred during transaction.';
     }
 
-    // Log the error for text update if it was changed
-    if (hash('sha256', $text) !== $text_fingerprint) {
-        log_activity(
-            $conn,
-            $_SESSION['profile_id'],
-            'experiment',
-            $experiment_id,
-            'update',
-            'Error updating text content for section ' . $experiment_section . ': ' . $stmt_update_text->error
-        );
-
-        // Log the error for saved_changes increment
-        log_activity(
-            $conn,
-            $_SESSION['profile_id'],
-            'profile',
-            $profile_id,
-            'update',
-            'Error incrementing saved_changes counter for experiment ' . $experiment_id . ' text update in section ' . $experiment_section . ': ' . $stmt_increment_saved_changes->error
-        );
-    }
+    // Log the error with the appropriate details
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'update',
+        $details
+    );
 }
 
 // Store messages in session to display
