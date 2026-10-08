@@ -14,6 +14,8 @@ require_once "../session/check_user_logged_in.php"; // Check if the user is logg
 // connect to database
 require_once "../database/db.php";
 
+require_once '../includes/log_activity.php'; // provides log_activity() function
+
 # get the current companies company_id
 $admin_company_ID = $_SESSION["company_id"];
 
@@ -38,8 +40,17 @@ $admin_company_ID = $_SESSION["company_id"];
 
     # check if the number of rows are more than 0 => lab group already exists in this company
     if ($checkLabStmt->num_rows > 0) {
-        $message = "Lab group already exists"; # adding text to message
-        $toastClass = "#ff0019"; 
+        $message = "Lab group already exists"; # message is displayed
+        $toastClass = "#ff0019"; // Primary color
+        // Log failed to register new lab group due to existing name
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'lab', // entity type
+            NULL, // entity ID (lab ID) not applicable since lab creation failed
+            'add_lab', // activity type
+            "Failed to create lab group with name $proposed_lab_name: Lab group already exists in company $admin_company_ID" // detail
+        );
     } 
     
     # if the lab group doesn't exist in company - create it
@@ -50,11 +61,21 @@ $admin_company_ID = $_SESSION["company_id"];
     $stmt->bind_param("si", $proposed_lab_name, $admin_company_ID);
     $result = $stmt->execute();
 
-        # updates message variable accordingly
-        if ($result) {
-            $message = "Lab group successfully created";
-            $toastClass = "#1ea324"; 
-        } 
+    # updates message variable accordingly
+    if ($result) {
+        $message = "Lab group successfully created";
+        $toastClass = "#1ea324"; // Primary color
+        // Log successful lab group creation
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'lab', // entity type
+            $conn->insert_id, // entity ID (lab ID) of the newly created lab group
+            'add_lab', // activity type
+            "Successfully created lab group with name $proposed_lab_name" // detail
+        );
+    } 
+
     }
 
     # saves in session, they are displayed from company_admin

@@ -22,6 +22,10 @@ require_once '../session/init.php'; // Start the session and initialize session 
 //require_once '../session/check_user_logged_in.php'; // Check if the user is logged in
 require_once '../database/db.php';
 
+// require logging functions
+require_once '../includes/log_activity.php'; // Log login attempts
+// require ip address functions
+require_once '../includes/fetch_ip_address.php'; // provides $ip_address and $ip_address_proxy
 
 if(isset($_POST['register']))
 {
@@ -30,9 +34,33 @@ if(isset($_POST['register']))
     $last_name = htmlspecialchars($_POST['last_name']);
     $email = htmlspecialchars($_POST['email']);
     $password = $_POST['password1']; 
-    $agreed_to_tos = (int)$_POST['agreed_to_tos'] ?? 0; // checkbox for Terms of Service and GDPR agreement
+    $agreed_to_tos = (int)($_POST['agreed_to_tos'] ?? 0); // checkbox for Terms of Service and GDPR agreement
 
-    
+
+    // Rate limit registration attempts to prevent abuse
+    // If 5 failed registration attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
+    $sql_failed_attempts = 
+        "SELECT COUNT(*) as failed_attempts 
+        FROM login_log 
+        WHERE ip_address = ? 
+            AND success = 0 
+            AND login_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)";
+    $stmt_failed_attempts = $conn->prepare($sql_failed_attempts);
+    $stmt_failed_attempts->bind_param("s", $ip_address);
+    $stmt_failed_attempts->execute();
+    $result_failed_attempts = $stmt_failed_attempts->get_result();
+    $failed_attempts = $result_failed_attempts->fetch_assoc()['failed_attempts'];
+
+    if ($failed_attempts >= 5) {
+        $message = "Too many failed registration attempts. Please try again later.";
+        $_SESSION['register_user_message'] = $message;
+
+        $toastClass = "#dc3545"; // Danger color
+        $_SESSION['register_user_toastClass'] = $toastClass;
+
+        header("Location: ../register_user.php");
+        exit();
+    }
 
     // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
     // Check if email already exists
@@ -51,16 +79,22 @@ if(isset($_POST['register']))
         $toastClass = "#007bff"; // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
 
+        // Log failed registration due to existing email
+        log_login(
+            $conn, 
+            NULL, // profile_id is NULL since registration failed
+            $email, 
+            $ip_address, 
+            0, // success = 0 for failure
+            'Registration failed: Email already exists'
+        );
+
         header("Location: ../register_user.php");
+        exit();
     } 
 
     else {
             # use placeholders to protect against sql injection
-            // TODO: decide values for the remaining new columns at registration time
-            // (saved_changes, streak — rely on schema defaults or set explicitly).
-            // TODO: write a login_log row / set last_login_at after registration,
-            // per the ARCHITECTURE.md TODO items.
-
             //generate a 32-character token to verify the user
             $token=bin2hex(random_bytes(16));
 
@@ -76,11 +110,21 @@ if(isset($_POST['register']))
             if ($result==False) {
                 $message = "Error: " . $stmt->error;
                 $_SESSION['register_user_message'] = $message;
-
                 $toastClass = "#dc3545"; // Danger color
                 $_SESSION['register_user_toastClass'] = $toastClass;
 
+                // Log "login" for failed registration due to database error
+                log_login(
+                    $conn, 
+                    NULL, // profile_id is NULL since registration failed
+                    $email, 
+                    $ip_address, 
+                    0, // success = 0 for failure
+                    'Registration failed: Database error'
+                );
+
                 header("Location: ../register_user.php");
+                exit();
             }
             
             //Defining a function send mail to the user via Scriba-Gmail
@@ -104,7 +148,7 @@ if(isset($_POST['register']))
                 $mail->Body = $message;
 
                 // SEND
-                if( !$mail->send() ){
+                if( !$mail->send() ) {
                     // error message if email failed to send
                     $message = "Error: " . $mail->ErrorInfo;
                     $_SESSION['register_user_message'] = $message;
@@ -114,7 +158,7 @@ if(isset($_POST['register']))
                     exit;
                 }
 
-                else{
+                else {
                     // return true if message is send
                     return true;
                 }
@@ -137,6 +181,28 @@ if(isset($_POST['register']))
             
             send_mail_by_PHPMailer($to, $from, $subject, $message);
 
+            // If registration is successful, log the successful registration
+                // Get the profile_id of the newly registered user
+                // Replace the next query with $conn->insert_id to get the last inserted ID = new profile ID
+            // $sql_get_profile_id = "SELECT profile_id FROM profiles WHERE email = ?";
+            // $stmt_get_profile_id = $conn->prepare($sql_get_profile_id);
+            // $stmt_get_profile_id->bind_param("s", $email);
+            // $stmt_get_profile_id->execute();
+            // $result = $stmt_get_profile_id->get_result();
+            // $profile = $result->fetch_assoc();
+            // $profile_id = $profile['profile_id'];
+            $profile_id = $conn->insert_id; // last inserted ID = new profile ID
+
+                // Log "login" for successful registration
+            log_login(
+                $conn, 
+                $profile_id, 
+                $email, 
+                $ip_address, 
+                1, // success = 1 for success
+                'Registration successful'
+            );
+
             $stmt->close();
         }
 
@@ -148,7 +214,7 @@ if(isset($_POST['register']))
         $_SESSION['register_user_message'] = $message;
         $_SESSION['register_user_toastClass'] = $toastClass;
         header("Location: ../index.php");
-        session_destroy();
+        // session_destroy(); // don't destroy session to allow the message to be displayed on the index.php page
         exit();
     }
     include '../database/close_db.php';

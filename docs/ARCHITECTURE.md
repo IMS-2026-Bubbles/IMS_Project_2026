@@ -19,8 +19,8 @@ patterns the code follows.
 /                           Page scripts (one PHP file per page)
 ├── index.php               Login / start page
 ├── register_user.php       Registration page
-├── project_library.php     Project listing page
-├── experiment_library.php  Experiment listing page
+├── library.php     Project listing page
+├── project.php  Experiment listing page
 ├── experiment.php          Experiment overview page
 ├── experiment_section.php  Experiment section page (plan/log/result via ?section=)
 ├── leaderboard.php         Leaderboard page
@@ -229,8 +229,8 @@ changes names *inside* the files.
 | *(root)* `website_background.jpg` | `assets/website_background.jpg` | move into `assets/` |
 | `ARCHITECTURE.md`, `NEWS.md`, `20260924_ERD_Scriba.png` | `docs/` | done 2026-09-24; `README.md` stays at the root |
 
-Root page scripts (`index.php`, `project_library.php`, `experiment.php`,
-`experiment_section.php`, `experiment_library.php`, `leaderboard.php`,
+Root page scripts (`index.php`, `library.php`, `experiment.php`,
+`experiment_section.php`, `project.php`, `leaderboard.php`,
 `user_profile.php`, `company_admin.php`, `scriba_admin.php`) already follow
 the conventions and stay put.
 
@@ -262,14 +262,14 @@ plain find-and-replace and must be handled explicitly:
   This works on Windows (case-insensitive filesystem) but breaks on Linux,
   so the reference search must be **case-insensitive**, and the rename pass
   is the right moment to normalize every path to the canonical spelling.
-- **`/../` root-relative links**: `navbar.php` uses `href="/../project_library.php"`
+- **`/../` root-relative links**: `navbar.php` uses `href="/../library.php"`
   (etc.) and `logout.php` redirects to `/../index.php`. These are fragile
   even today; fix them to proper relative paths as part of the same pass.
 - **Commented-out links**: `exp_edit_tags.php` contains commented-out
   `href`/redirect code referencing old paths — update or delete it so a
   future un-commenting can't resurrect dead paths.
-- **Posts-to-self forms** (`action=""` in `index.php`, `project_library.php`,
-  `experiment_library.php`, `register_user_page.php`, `scriba_admin.php`,
+- **Posts-to-self forms** (`action=""` in `index.php`, `library.php`,
+  `project.php`, `register_user_page.php`, `scriba_admin.php`,
   `company_admin.php`) are unaffected by renames, but note that
   `index.php` and `register_user_page.php` carry a "change action so you
   end up somewhere!" comment — their POST handling should be routed to an
@@ -406,8 +406,8 @@ in the code during the pass, so the changes stay reviewable and greppable.
   `profiles` columns (`agreed_to_toc`, and defaults for `saved_changes` /
   `streak` — decide the values at registration time), and should set
   `last_login_at` or write a `login_log` row per the TODO items.
-- **TODO — mock-data pages**: `leaderboard.php`, `project_library.php`,
-  `experiment_library.php` use hardcoded arrays with keys `id`/`name`;
+- **TODO — mock-data pages**: `leaderboard.php`, `library.php`,
+  `project.php` use hardcoded arrays with keys `id`/`name`;
   they need no rename but will adopt the schema vocabulary when converted
   to real queries (the `profile_points` and `project_updates` views are
   designed for them).

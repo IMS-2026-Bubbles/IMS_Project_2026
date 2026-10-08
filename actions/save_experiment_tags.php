@@ -10,6 +10,10 @@
 require_once "../session/init.php"; // Make the session available
 require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
 
+
+// Log activity helper function
+require_once "../includes/log_activity.php"; // Include the log_activity function
+
     // Create message array
 $messages = array();
 
@@ -20,7 +24,7 @@ if ($experiment_id === null) {
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;
     // Redirect back to project library page
-    header("Location: ../project_library.php");
+    header("Location: ../library.php");
     exit();
 }
 $add_experiment_tags = $_POST['add_tags'] ?? "";
@@ -31,9 +35,20 @@ require_once "../database/db.php";
 
 // Check if the user has permission to edit tags for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
+
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
+
 if ($user_access < 2) {
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to edit experiment tags without permission'
+    );
+    
     $messages[] = "You do not have permission to edit tags for this experiment.<br>";
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;
@@ -67,8 +82,6 @@ if ($remove_experiment_tags !== '') {
     }
 
     // Remove tags from the database
-// TODO(schema-migration): old table/column names. Becomes
-// DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?
         // Create query to delete tag
     $sql_delete_tag = "DELETE FROM experiment_tags WHERE experiment_id = ? AND tag = ?";
         // Prepare query
@@ -79,8 +92,26 @@ if ($remove_experiment_tags !== '') {
         $stmt_delete_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_delete_tag->execute()) {
+            // Log the tag removal
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'User removed tag: ' . $tag
+            );
             $messages[] = "Tag " . $tag . " removed successfully.<br>";
         } else {
+            // Log the error
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'Error removing tag ' . $tag . ': ' . $stmt_delete_tag->error
+            );
             $messages[] = "Error removing tag " . $tag . " : " . $stmt_delete_tag->error . "<br>";
         }
     }
@@ -125,8 +156,26 @@ if ($add_experiment_tags !== '') {
         $stmt_insert_tag->bind_param("ss", $experiment_id, $tag);
         // Execute query
         if ($stmt_insert_tag->execute()) {
+            // Log the tag addition
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'User added tag: ' . $tag
+            );
             $messages[] = "Tag " . $tag . " added successfully.<br>";
         } else {
+            // Log the error
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'],
+                'experiment',
+                $experiment_id,
+                'update',
+                'Error adding tag ' . $tag . ': ' . $stmt_insert_tag->error
+            );
             $messages[] = "Error adding tag " . $tag . " : " . $stmt_insert_tag->error . "<br>";
         }
     }
@@ -142,12 +191,4 @@ $_SESSION['messages_save_experiment_tags'] = $messages;
 // Redirect back to experiment.php with the same experiment_id
 header("Location: ../experiment.php?experiment_id=" . urlencode($experiment_id));
 exit();
-// // Links in case redirect fails
-//     // Link back to experiment.php with the same experiment_id
-// if (isset($_POST['experiment_id'])) {
-//     echo "<a href='../experiment.php?experiment_id=" . urlencode($_POST['experiment_id']) . "'>Back to experiment</a><br><br>";
-// } else {
-//     echo "Error: No experiment ID available.<br>";
-//     echo "<a href='../project_library.php'>Back to project library</a><br><br>";
-// }
 ?>
