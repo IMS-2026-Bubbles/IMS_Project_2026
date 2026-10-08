@@ -82,7 +82,7 @@ if (isset($_POST['invite_person'])) {
     $get_profile_id = 'SELECT profiles.profile_id, company_members.company_id 
                     FROM profiles
                     LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
-                    WHERE company_members.company_id IS NULL AND email = ?;';
+                    WHERE company_members.company_id IS NULL AND email = ? AND profiles.is_verified = 1';
     $stmt = $conn->prepare($get_profile_id);
     $stmt->bind_param('s', $email_to_invite);
     $result = $stmt->execute();

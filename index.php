@@ -18,6 +18,9 @@ require_once 'session/init.php';  // Start the session and initialize session va
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
+
+
+
 // Retrieve login error messages from the session if they exist
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];

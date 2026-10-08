@@ -38,7 +38,7 @@ $sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name, com
         FROM profiles
         LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
         LEFT JOIN companies ON company_members.company_id = companies.company_id
-        WHERE profiles.is_deleted = 0 AND profiles.is_scriba_admin = 0
+        WHERE profiles.is_deleted = 0 AND profiles.is_scriba_admin = 0 AND profiles.is_verified = 1
         ORDER BY companies.name ASC';
 
 // store in variable result
