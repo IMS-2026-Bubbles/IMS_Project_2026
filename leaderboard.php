@@ -2,54 +2,46 @@
 // Leaderboard page
 
 // Arrive from:
-    // navigation bar (leaderboard button)
-    // leaderboard.php (switching between global, company, and lab leaderboards)
+// navigation bar (leaderboard button)
+// leaderboard.php (switching between global, company, and lab leaderboards)
 // Action:
-    // Display the leaderboard based on the selected scope (global, company, or lab)
+// Display the leaderboard based on the selected scope (global, company, or lab)
 // Redirect to:
-    // leaderboard.php (after selecting a different scope)
-    // navigation bar options
+// leaderboard.php (after selecting a different scope)
+// navigation bar options
 
-
-
-require_once "session/init.php";
-require_once "session/check_user_logged_in.php";
-require_once "database/db.php";
-
+require_once 'session/init.php';
+require_once 'session/check_user_logged_in.php';
+require_once 'database/db.php';
 
 // Get current logged-in user
-$profile_id = (int) $_SESSION["profile_id"];
-
+$profile_id = (int) $_SESSION['profile_id'];
 
 // Get selected leaderboard type
-$scope = "global";
+$scope = 'global';
 
-if (isset($_GET["scope"])) {
-    $scope = $_GET["scope"];
+if (isset($_GET['scope'])) {
+    $scope = $_GET['scope'];
 }
-
 
 // Only allow valid leaderboard types
 if (
-    $scope !== "global" &&
-    $scope !== "company" &&
-    $scope !== "lab"
+    $scope !== 'global' &&
+    $scope !== 'company' &&
+    $scope !== 'lab'
 ) {
-    $scope = "global";
+    $scope = 'global';
 }
-
 
 // Store leaderboard users
 $users = [];
-
 
 // --------------------------------------------------
 // GLOBAL LEADERBOARD
 // --------------------------------------------------
 
-if ($scope === "global") {
-
-    $sql = "
+if ($scope === 'global') {
+    $sql = '
         SELECT
             profiles.profile_id,
             profiles.first_name,
@@ -62,7 +54,7 @@ if ($scope === "global") {
             profile_points.scriba_points DESC,
             profiles.first_name ASC,
             profiles.last_name ASC
-    ";
+    ';
 
     $stmt = $conn->prepare($sql);
 
@@ -71,27 +63,21 @@ if ($scope === "global") {
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
-
         $users[] = [
-            "name" =>
-                $row["first_name"],
-
-            "points" =>
-                (int) $row["scriba_points"]
+            'name' =>
+                $row['first_name'],
+            'points' =>
+                (int) $row['scriba_points']
         ];
     }
 
     $stmt->close();
 }
-
-
 // --------------------------------------------------
 // COMPANY LEADERBOARD
 // --------------------------------------------------
-
-elseif ($scope === "company") {
-
-    $sql = "
+elseif ($scope === 'company') {
+    $sql = '
         SELECT DISTINCT
             profiles.profile_id,
             profiles.first_name,
@@ -114,12 +100,12 @@ elseif ($scope === "company") {
             profile_points.scriba_points DESC,
             profiles.first_name ASC,
             profiles.last_name ASC
-    ";
+    ';
 
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "i",
+        'i',
         $profile_id
     );
 
@@ -128,27 +114,21 @@ elseif ($scope === "company") {
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
-
         $users[] = [
-            "name" =>
-                $row["first_name"],
-
-            "points" =>
-                (int) $row["scriba_points"]
+            'name' =>
+                $row['first_name'],
+            'points' =>
+                (int) $row['scriba_points']
         ];
     }
 
     $stmt->close();
 }
-
-
 // --------------------------------------------------
 // LAB GROUP LEADERBOARD
 // --------------------------------------------------
-
-elseif ($scope === "lab") {
-
-    $sql = "
+elseif ($scope === 'lab') {
+    $sql = '
         SELECT DISTINCT
             profiles.profile_id,
             profiles.first_name,
@@ -171,12 +151,12 @@ elseif ($scope === "lab") {
             profile_points.scriba_points DESC,
             profiles.first_name ASC,
             profiles.last_name ASC
-    ";
+    ';
 
     $stmt = $conn->prepare($sql);
 
     $stmt->bind_param(
-        "i",
+        'i',
         $profile_id
     );
 
@@ -185,13 +165,11 @@ elseif ($scope === "lab") {
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
-
         $users[] = [
-            "name" =>
-                $row["first_name"] ,
-
-            "points" =>
-                (int) $row["scriba_points"]
+            'name' =>
+                $row['first_name'],
+            'points' =>
+                (int) $row['scriba_points']
         ];
     }
 
@@ -438,7 +416,7 @@ elseif ($scope === "lab") {
 
     <!-- Navigation -->
 
-    <?php include "includes/navbar.php"; ?>
+    <?php include 'includes/navbar.php'; ?>
 
 
     <!-- Leaderboard -->
@@ -536,7 +514,7 @@ elseif ($scope === "lab") {
 
                                 <?php
                                 echo htmlspecialchars(
-                                    $user["name"]
+                                    $user['name']
                                 );
                                 ?>
 
@@ -546,7 +524,7 @@ elseif ($scope === "lab") {
                             <td class="points">
 
                                 <?php
-                                echo $user["points"];
+                                echo $user['points'];
                                 ?>
 
                             </td>

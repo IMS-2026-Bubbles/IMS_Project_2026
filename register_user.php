@@ -2,45 +2,36 @@
 // Register user page
 
 // Arrive from:
-    // index.php (register new user form)
+// index.php (register new user form)
 // Action:
-    // Register a new user in the database
+// Register a new user in the database
 // Redirect to:
-    // index.php (return to login button)
-    // actions/create_profile.php (register new user form submission)
-
+// index.php (return to login button)
+// actions/create_profile.php (register new user form submission)
 
 ini_set('display_errors', true);
 ini_set('log_errors', true);
 error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-require_once "session/init.php"; // Start the session and initialize session variables
+require_once 'session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here, registration page
 require_once 'database/db.php';
 
-
 if (isset($_SESSION['register_user_message'])) {
-        $message = $_SESSION['register_user_message'];
-        unset($_SESSION['register_user_message']);
-}
-
-else {
-    $message = "";
+    $message = $_SESSION['register_user_message'];
+    unset($_SESSION['register_user_message']);
+} else {
+    $message = '';
 }
 
 if (isset($_SESSION['register_user_toastClass'])) {
     $toastClass = $_SESSION['register_user_toastClass'];
     unset($_SESSION['register_user_toastClass']);
+} else {
+    $toastClass = '';
 }
 
-else {
-    $toastClass = "";
-}
-
-
-
-    
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +63,7 @@ else {
     <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
     <?php if ($message): ?>
     </div>
-    <?php endif;?>
+    <?php endif; ?>
 
 
     <!-- put all elemnts in one box..  -->

@@ -1,45 +1,42 @@
 <?php
 // index/Front page/login page
 
-// Arrive from: 
-    // outside Scriba (first page you see when you go to the site)
-    // actions/login.php (invalid login credentials)
-    // actions/create_profile.php (after registering a new user)
+// Arrive from:
+// outside Scriba (first page you see when you go to the site)
+// actions/login.php (invalid login credentials)
+// actions/create_profile.php (after registering a new user)
 // Action: Display login form and any error messages from previous login attempts
-// Redirect to: 
-    // actions/login.php (on form submission)
-    // register_user.php (if user clicks "Register new user" button)
+// Redirect to:
+// actions/login.php (on form submission)
+// register_user.php (if user clicks "Register new user" button)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
-
-require_once "session/init.php"; // Start the session and initialize session variables
+require_once 'session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
 // Retrieve login error messages from the session if they exist
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];
-    
+
     // Clear the messages from the session after retrieving them
     unset($_SESSION['login_error']);
 } else {
-    $message = "";
+    $message = '';
 }
 
-//RETRIEVE ERRORS/GOOD MESSAGES FROM ACTIONS/VERIFY_USER
+// RETRIEVE ERRORS/GOOD MESSAGES FROM ACTIONS/VERIFY_USER
 if (isset($_SESSION['verify_user'])) {
     $message = $_SESSION['verify_user'];
-    
+
     // Clear the messages from the session after retrieving them
     unset($_SESSION['verify_user']);
 } else {
-    $message = "";
+    $message = '';
 }
-
-
 
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
@@ -47,9 +44,9 @@ if (isset($_SESSION['toastClass'])) {
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 } else {
-    $toastClass = "";
+    $toastClass = '';
 }
- 
+
 ?>
 
 
@@ -146,7 +143,7 @@ if (isset($_SESSION['toastClass'])) {
        <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
         <?php if ($message): ?>
             <p><?php echo htmlspecialchars($message); ?></p>
-        <?php endif;?>
+        <?php endif; ?>
 
 
 <!-- Create login class-->

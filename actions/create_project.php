@@ -2,47 +2,43 @@
 // Create a new project action
 
 // Arrive from:
-    // library.php (create new project form)
+// library.php (create new project form)
 // Action:
-    // Create a new project in the database
+// Create a new project in the database
 // Redirect to:
-    // library.php (after creating a new project)
-
-
+// library.php (after creating a new project)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 // Start session
-require_once "../session/init.php";
-require_once "../session/check_user_logged_in.php";
+require_once '../session/init.php';
+require_once '../session/check_user_logged_in.php';
 // Connect to database
-require_once "../database/db.php";
+require_once '../database/db.php';
 
-require_once '../includes/log_activity.php'; // Include the log_activity function
+require_once '../includes/log_activity.php';  // Include the log_activity function
 
 // Add project
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {
+    $projectName = trim($_POST['project_name']);
+    $labId = trim($_POST['lab_id']);
 
-    $projectName = trim($_POST["project_name"]);
-    $labId = trim($_POST["lab_id"]);
-
-    if ($projectName != "" && $labId != "") {
-
+    if ($projectName != '' && $labId != '') {
         // Check that the selected lab belongs to one of the user's companies
-        $checkSql = 
-            "SELECT labs.lab_id
+        $checkSql =
+            'SELECT labs.lab_id
             FROM labs
             JOIN company_members
                 ON labs.company_id = company_members.company_id
             WHERE labs.lab_id = ?
-              AND company_members.profile_id = ?";
+              AND company_members.profile_id = ?';
 
         $checkStmt = $conn->prepare($checkSql);
 
         $checkStmt->bind_param(
-            "si",
+            'si',
             $labId,
             $profile_id
         );
@@ -57,26 +53,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
                 $conn,
                 $_SESSION['profile_id'],
                 'project',
-                NULL, // No project ID yet
+                NULL,  // No project ID yet
                 'access_denied',
                 'User attempted to create a project in a lab they do not have access to'
             );
 
-            die("You do not have permission to use this lab.");
+            die('You do not have permission to use this lab.');
         }
 
         $checkStmt->close();
 
-
         // Add new project
-        $sql = 
+        $sql =
             "INSERT INTO projects (name, lab_id) -- Missing the 'description' column
                 VALUES (?, ?)";
 
         $stmt = $conn->prepare($sql);
 
         $stmt->bind_param(
-            "ss",
+            'ss',
             $projectName,
             $labId
         );
@@ -88,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
                 $conn,
                 $_SESSION['profile_id'],
                 'project',
-                NULL, // No project ID yet
+                NULL,  // No project ID yet
                 'create',
                 'Error creating project: ' . $stmt->error
             );
@@ -108,9 +103,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
 
         $stmt->close();
 
-
         // Add current user as project owner
-        $sql = 
+        $sql =
             "INSERT INTO project_members
             (project_id, profile_id, role)
             VALUES (?, ?, 'owner')
@@ -119,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
         $stmt = $conn->prepare($sql);
 
         $stmt->bind_param(
-            "ii",
+            'ii',
             $newProjectId,
             $profile_id
         );
@@ -150,10 +144,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
         $stmt->close();
 
         // Redirect back to project library
-        header("Location: ../library.php");
+        header('Location: ../library.php');
         exit();
     }
 }
-
 
 ?>
