@@ -6,15 +6,12 @@
 // Returns the project ID in $project_id, which can be used to link back to the parent project page.
 
 //  Retieve project ID
-// TODO(schema-migration): old table/column names and internally inconsistent
-// (Project_ID selected, Experiment_ID in WHERE, Proj_ID/experiment_id in the table).
-// Becomes: SELECT project_id FROM experiments WHERE experiment_id = ?
 // Create query
 $sql_experiment_parent = 'SELECT project_id FROM experiments WHERE experiment_id = ?';
 // Prepare query
 $stmt_experiment_parent = $conn->prepare($sql_experiment_parent);
 // Bind the experiment ID parameter
-$stmt_experiment_parent->bind_param('s', $experiment_id);
+$stmt_experiment_parent->bind_param('i', $experiment_id);
 // Execute query
 if ($stmt_experiment_parent->execute()) {
     // Get the result set from the executed query

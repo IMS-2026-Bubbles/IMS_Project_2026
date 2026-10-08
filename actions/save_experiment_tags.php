@@ -142,8 +142,6 @@ if ($add_experiment_tags !== '') {
     }
 
     // Insert new tags into the database
-    // TODO(schema-migration): old table/column names. Becomes
-    // INSERT INTO experiment_tags (experiment_id, tag) VALUES (?, ?)
     // Create query to insert tag
     $sql_insert_tag = 'INSERT INTO experiment_tags (experiment_id, tag) VALUES (?, ?)';
     // Prepare query
