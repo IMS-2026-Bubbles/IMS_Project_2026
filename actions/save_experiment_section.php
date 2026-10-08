@@ -32,9 +32,9 @@ if ($experiment_id === null) {
 $experiment_section = $_POST['section'] ?? null;
 $text = $_POST['text'] ?? null;
 $done_flag = $_POST['done_flag'] ?? 0;  // Default to 0 (not done) if not set
+$done_flag = (int) $done_flag;  // Cast to int for comparison
+
 // Whitelist the section name ('plan', 'log', 'result')
-// TODO(schema-migration): section values become lowercase ('plan', 'log', 'result'),
-// matching the new column names plan_text/plan_is_done/plan_updated_at, etc.
 $valid_sections = ['plan', 'log', 'result'];
 if (!in_array($experiment_section, $valid_sections)) {
     $messages[] = 'Invalid section name: ' . htmlspecialchars($experiment_section) . '<br>';
@@ -80,12 +80,9 @@ if ($user_access < 2) {
 include '../includes/fetch_experiment_progress.php';  // Fetches the progress status for the specified experiment ID
 
 // Compare $done_flag with the current value in the database
-$done_flag = (int) $done_flag;  // Cast to int for comparison
 $experiment_progress = array_map('intval', $experiment_progress);  // Ensure all values are integers
 
 if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
-    // NOTE: $experiment_id is bound as "i" here but as "s" in the fetchers.
-    // It can be bound as "i" everywhere since the column is INT — normalize when convenient.
     $sql_update_progress = 'UPDATE experiments SET ' . $experiment_section . '_is_done = ? WHERE experiment_id = ?';
     $stmt_update_progress = $conn->prepare($sql_update_progress);
     $stmt_update_progress->bind_param('ii', $done_flag, $experiment_id);

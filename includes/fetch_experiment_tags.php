@@ -5,16 +5,13 @@
 // It expects the variable $experiment_id to be set before inclusion, which is used to query the database for tags associated with that experiment.
 // Returns an array of tags in $experiment_tags, which can be used to display the tags on the page.
 
-// Retrieve current tags
-// TODO(schema-migration): old table/column names. Becomes:
-// SELECT tag FROM experiment_tags WHERE experiment_id = ? — the array_column key
-// below ('Exp_Tag') becomes 'tag'.
+// Retrieve current tags for the specified experiment ID
 // Create query
 $sql_experiment_tags = 'SELECT tag FROM experiment_tags WHERE experiment_id = ?';
 // Prepare query
 $stmt_experiment_tags = $conn->prepare($sql_experiment_tags);
 // Bind the experiment ID parameter
-$stmt_experiment_tags->bind_param('s', $experiment_id);
+$stmt_experiment_tags->bind_param('i', $experiment_id);
 // Execute query
 if ($stmt_experiment_tags->execute()) {
     // Get the result set from the executed query

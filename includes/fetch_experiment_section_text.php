@@ -12,7 +12,7 @@ $sql_experiment_section_text = 'SELECT ' . $experiment_section . '_text FROM exp
 // Prepare query
 $stmt_experiment_section_text = $conn->prepare($sql_experiment_section_text);
 // Bind the experiment ID parameter
-$stmt_experiment_section_text->bind_param('s', $experiment_id);
+$stmt_experiment_section_text->bind_param('i', $experiment_id);
 
 // Execute query
 if ($stmt_experiment_section_text->execute()) {
