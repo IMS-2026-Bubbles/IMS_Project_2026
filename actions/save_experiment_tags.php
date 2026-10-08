@@ -35,8 +35,9 @@ require_once "../database/db.php";
 
 // Check if the user has permission to edit tags for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
+
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
+
 if ($user_access < 2) {
     // Log the access denied event
     log_activity(
