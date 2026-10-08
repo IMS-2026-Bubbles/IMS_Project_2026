@@ -37,6 +37,7 @@ if (isset($_POST["delete_account"])) {
             WHERE profile_id = ?";
     $stmt = $conn->prepare($sql); 
     $stmt->bind_param("i", $profile_id);
+    $stmt->execute();
 
     # once you have deleted your account you should be logged out
     header("Location: ../actions/logout.php");
