@@ -2,7 +2,7 @@
 // Experiment page
 
 // Arrive from:
-    // experiment_library.php (click on experiment link)
+    // project.php (click on experiment link)
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
 // Action:
@@ -12,13 +12,13 @@
     // navbar options
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
-    // experiment_library.php (click on "Back to parent project" link)
+    // project.php (click on "Back to parent project" link)
 
 
 // Session initialization
-include "session/init.php"; // Make the session available
+require_once "session/init.php"; // Make the session available
 // Check if the user is logged in
-include "session/check_user_logged_in.php";
+require_once "session/check_user_logged_in.php";
 
 // Variables
     // $experiment_id from URL (URL is always a GET request)
@@ -28,13 +28,24 @@ $experiment_id = $_GET['experiment_id'] ?? NULL;
 require_once "database/db.php";
 
 // Check if the user has permission to view this experiment
-include "includes/check_user_permission.php"; // Include the user permission check function
+require_once "includes/check_user_permission.php"; // Include the user permission check function
 // $exp_ID becomes $experiment_id; the $project_experiment_name / $experiment_progress /
 // $experiment_updated_at keys used below follow the new column names
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
+
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to access experiment without permission'
+    );
+
     exit();
 }
 
@@ -53,7 +64,7 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
 
 <!-- Navbar -->
 <?php
-include "includes/navbar.php";
+include_once "includes/navbar.php";
 ?>
 
 <?php
@@ -71,7 +82,7 @@ echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name
 include "includes/fetch_experiment_project_id.php"; // This script fetches the project ID for the specified experiment ID
 // The experiment library page doubles as the parent project page (lists the
 // project's experiments), filtered by the project_id parameter.
-echo "<a href='experiment_library.php?project_id=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
+echo "<a href='project.php?project_id=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
 ?>
 
 

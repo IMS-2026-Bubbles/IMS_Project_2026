@@ -1,16 +1,16 @@
 <?php
-// Project Library (change to library.php?)
+// Library (project list) page
 
 // Arrive from: 
     // actions/login.php (after logging in)
     // navigation bar (project library button)
-    // project_library.php (after adding a new project)
+    // library.php (after adding a new project)
 // Action:
     // Display all projects user has view access to
     // Add new project
 // Redirect to:
     // navigation bar options
-    // experiment_library.php (after clicking on a project)
+    // project.php (after clicking on a project)
 
 
 # what is this??? - tilda
@@ -27,7 +27,7 @@ require_once "database/db.php";
 
 
 // Get current user
-$profile_id = (int) $_SESSION["profile_id"];
+// $profile_id = (int) $_SESSION["profile_id"]; // now lives in session/check_user_logged_in.php
 
 
 // TODO: Refactor search into an include?
@@ -39,83 +39,62 @@ if (isset($_GET["search"])) {
 }
 
 
+// Create list of labs the user has access to (for the add project form) (currently 'owner' role only)
+// $labs = [];
 
-// Get labs from the user's companies
-$labs = [];
+    // Get labs the user is a member of
+// $sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
+//         FROM profiles
+//         LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
+//         LEFT JOIN labs on lab_members.lab_id = labs.lab_id
+//         WHERE profiles.profile_id = ?";
+$sql_labs = "SELECT labs.lab_id, labs.name
+        FROM labs
+        JOIN lab_members ON labs.lab_id = lab_members.lab_id
+        WHERE lab_members.profile_id = ?";
+$stmt_labs = $conn->prepare($sql_labs);
+$stmt_labs->bind_param("i", $profile_id);
+$stmt_labs->execute();
 
-$sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
-        FROM profiles
-        LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
-        LEFT JOIN labs on lab_members.lab_id = labs.lab_id
-        WHERE profiles.profile_id = ?";
-
-
-$stmt = $conn->prepare($sql);
-
-$stmt->bind_param(
-    "i",
-    $profile_id
-);
-
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $labs[] = $row;
-}
-
-$stmt->close();
+$labs = $stmt_labs->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
+$stmt_labs->close();
 
 
 // Get projects from the user's companies
-$projects = [];
-
-
-
-$sql = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
+    // Get projects where the user is an owner
+$sql_projects = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
         FROM projects
         JOIN project_members ON project_members.project_id = projects.project_id
-        WHERE project_members.role = 'owner' AND project_members.profile_id = ?";
+        WHERE project_members.role = 'owner' 
+            AND project_members.profile_id = ?";
 
 if ($search != "") {
-    $sql .= " AND projects.name LIKE ?";
-}
+    // Add a search filter (optional)
+    $sql_projects .= " AND projects.name LIKE ?";
 
-$sql .= " ORDER BY projects.name";
+    // Add an ORDER BY clause to sort the results by project name
+    $sql_projects .= " ORDER BY projects.name";
 
-
-$stmt = $conn->prepare($sql);
-
-
-if ($search != "") {
-
+    // Prepare and bind params
+    $stmt_projects = $conn->prepare($sql_projects);
+        // If search is not empty, bind the search parameter with wildcards for partial matching
     $searchValue = "%" . $search . "%";
-
-    $stmt->bind_param(
-        "is",
-        $profile_id,
-        $searchValue
-    );
-
+    $stmt_projects->bind_param("is", $profile_id, $searchValue);
 } else {
+    // No search filter
 
-    $stmt->bind_param(
-        "i",
-        $profile_id
-    );
+    // Add an ORDER BY clause to sort the results by project name
+    $sql_projects .= " ORDER BY projects.name";
+
+    // Prepare and bind params
+    $stmt_projects = $conn->prepare($sql_projects);
+        // If search is empty, bind only the profile_id parameter
+    $stmt_projects->bind_param("i", $profile_id);
 }
+$stmt_projects->execute();
 
-
-$stmt->execute();
-
-$result = $stmt->get_result();
-
-while ($row = $result->fetch_assoc()) {
-    $projects[] = $row;
-}
-
-$stmt->close();
+$projects = $stmt_projects->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
+$stmt_projects->close();
 
 ?>
 
@@ -322,7 +301,7 @@ $stmt->close();
         <!-- Search -->
 
         <form
-            action="project_library.php"
+            action="library.php"
             method="GET"
             class="mb-4"
         >
@@ -428,7 +407,7 @@ $stmt->close();
                     <div class="col-md-6">
 
                         <a
-                            href="experiment_library.php?project_id=<?php echo $project["project_id"]; ?>"
+                            href="project.php?project_id=<?php echo $project["project_id"]; ?>"
                             class="project-card"
                         >
 

@@ -15,73 +15,147 @@ require_once "../session/init.php"; // Start the session and initialize session 
 require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
 require_once '../database/db.php';
 
+require_once '../includes/log_activity.php'; // provides log_activity() function
 
-# CHANGE ADMIN STATUS
-if(isset($_POST['make_admin'])) {
-    # get profile id for user to change role
-    $profile_id_changing_role = $_POST['profile_id'];
-    $sql_admin = "UPDATE company_members 
-                SET role = 'admin' 
-                WHERE profile_id = ?";
-    $stmt = $conn->prepare($sql_admin);
-    $stmt->bind_param("i", $profile_id_changing_role);
-    $result = $stmt->execute();
-    
-    # store the result to display
-    if ($result) {
-        $message = "User promoted to admin successfully.";
-        $toastClass = "#221ea3";
-    } 
-    else {
-        $message = "Error promoting user to admin";
-        $toastClass = "#ff0019";
+
+    # HANDLE POST METHOD TO CHANGE ADMIN STATUS
+    # post methods should be at top in order to reload page directly
+    if(isset($_POST['make_admin'])) {
+        // profile_id of the user to be promoted to admin
+        $profile_id = $_POST['profile_id'];
+
+        // Fetch the company_id of the user to be promoted to admin
+        require '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+
+        // Update the role of the user in the company_members table to 'admin'
+        $sql_admin = "UPDATE company_members SET role = 'admin' WHERE  profile_id = ?";
+        $stmt = $conn->prepare($sql_admin);
+        $stmt->bind_param("i", $profile_id);
+        $result = $stmt->execute();
+
+        if ($result) {
+            $_SESSION['manage_company_message'] = "User promoted to admin successfully.";
+
+            // Log the activity of promoting a user to admin
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID) Should be ID for affected company, not user doing the action
+                'change_role', // activity type
+                "Promoted user with profile ID $profile_id to admin" // detail
+            );
+        } else {
+            $_SESSION['manage_company_message'] = "Error promoting user to admin: " . $stmt->error;
+
+            // Log the failed attempt to promote a user to admin
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID)
+                'change_role', // activity type
+                "Failed to promote user with profile ID $profile_id to admin: " . $stmt->error // detail
+            );
+        }
     }
+
+
+    if(isset($_POST['admin_removal'])) {
+        // profile_id of the user to be demoted from admin
+        $profile_id = $_POST['profile_id'];
+
+        // Fetch the company_id of the user to be promoted to admin
+        require '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+
+        // Update the role of the user in the company_members table to 'member'
+        $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
+        $stmt = $conn->prepare($sql_admin);
+        $stmt->bind_param("i", $profile_id);
+        $result = $stmt->execute();
+
+        if ($result) {
+            $_SESSION['manage_company_message'] = "Admin rights removed successfully.";
+
+            // Log the activity of removing admin rights from a user
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID) 
+                'change_role', // activity type
+                "Removed admin rights from user with profile ID $profile_id" // detail
+            );
+        } else {
+            $_SESSION['manage_company_message'] = "Error removing admin rights: " . $stmt->error;
+
+            // Log the failed attempt to remove admin rights from a user
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $user_affiliations['companies'][0] ?? NULL, // entity ID (company ID)
+                'change_role', // activity type
+                "Failed to remove admin rights from user with profile ID $profile_id: " . $stmt->error // detail
+            );
+        }
     }
 
+    # for admin to add a person to company: 
+    if(isset($_POST['add_to_company'])){
+        echo "wohooo";
 
-if(isset($_POST['admin_removal'])) {
-    # get profile id for user to change role
-    $profile_id_changing_role = $_POST['profile_id'];
-    $sql_admin = "UPDATE company_members 
-                SET role = 'member' 
-                WHERE  profile_id = ?";
-    $stmt = $conn->prepare($sql_admin);
-    $stmt->bind_param("i", $profile_id_changing_role);
-    $result = $stmt->execute();
+        // profile_id of the user to be added to the company
+        $profile_id = $_POST['profile_id'];
+        // company_id of the company to which the user is being added
+        $company_id = $_POST['add_to_company'];
 
-    # store the result to display
-    if ($result) {
-        $message = "User set to member.";
-        $toastClass = "#221ea3";
-    } 
-    else {
-        $message = "Error setting user to member";
-        $toastClass = "#ff0019";
-    }
-}
+        // Add the user to the company_members table with role 'member'
+        $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $company_id, $profile_id);
+        $result = $stmt->execute();
 
-# store in session variable
-$_SESSION['manage_company_message'] = $message;
-$_SESSION['manage_company_toastClass'] = $toastClass;
+        if ($result) {
+            $_SESSION['manage_company_message'] = "User added to company successfully.";
+
+            // Log the activity of adding a user to a company
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $company_id, // entity ID (company ID)
+                'add_member', // activity type
+                "Added user with profile ID $profile_id to company $company_id" // detail
+            );
+        } else {
+            $_SESSION['manage_company_message'] = "Error adding user to company: " . $stmt->error;
+            
+            // Log the failed attempt to add a user to a company
+            log_activity(
+                $conn,
+                $_SESSION['profile_id'], // admin's profile ID who performed the action
+                'company', // entity type
+                $company_id, // entity ID (company ID)
+                'add_member', // activity type
+                "Failed to add user with profile ID $profile_id to company $company_id: " . $stmt->error // detail
+            );
+        }
+
+        $stmt->close();
+        }
+    // if(isset($_POST['admin_removal'])){
+    //     $profile_id = $_POST['profile_id'];
+    //     $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
+    //     $stmt = $conn->prepare($sql_admin);
+    //     $stmt->bind_param("i", $profile_id);
+    //     $result = $stmt->execute();}
 
 
-# ADD PERSON TO COMPANY
-if(isset($_POST['add_to_company'])){
-    # get profile id for user to be added to company
-    $profile_id_to_add = $_POST['profile_id'];
-    # get company ID from the dropdown menu
-    $company_id = $_POST['add_to_company'];
-    $sql = "INSERT INTO company_members (company_id, profile_id, role) VALUES (?, ?, 'member')";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $company_id, $profile_id_to_add);
-    $result = $stmt->execute();
-    $stmt->close();
-}
 
-
-# REGISTER NEW COMPANY
-if(isset($_POST['register_company']))
-{
+    # if button to register new:
+    if(isset($_POST['register_company']))
+    {
     # fetch data from POST request
     $new_comp_name = $_POST['name'];
 
@@ -98,6 +172,15 @@ if(isset($_POST['register_company']))
     if ($checkCompStmt->num_rows > 0) {
         $_SESSION['manage_company_message'] = "Company already exists";
         $_SESSION['manage_company_toastClass'] = "#ff0019"; // Primary color
+        // Log failed to register new company due to existing name
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            NULL, // entity ID (company ID) not applicable since company creation failed
+            'add_company', // activity type
+            "Failed to create company with name $name: Company already exists" // detail
+        );
     } 
     
     else {
@@ -107,11 +190,32 @@ if(isset($_POST['register_company']))
     $stmt->bind_param("s", $name);
     $result = $stmt->execute();
 
-        # echos how it went
-        if ($result) {
-            $_SESSION['manage_company_message'] = "Company created";
-            $_SESSION['manage_company_toastClass'] = "#1ea324"; // Primary color
-        } 
+    # echos how it went
+    if ($result) {
+        $_SESSION['manage_company_message'] = "Company created";
+        $_SESSION['manage_company_toastClass'] = "#1ea324"; // Primary color
+        // Log successful company creation
+        
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            $conn->insert_id, // entity ID (company ID) of the newly created company, 
+            // this pulls the id of the last inserted row by this connection
+            'add_company', // activity type
+            "Successfully created company with name $name" // detail
+        );
+    } else {
+        echo "Error: " . $stmt->error;
+        // Log failed company creation due to database error
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'], // admin's profile ID who performed the action
+            'company', // entity type
+            NULL, // entity ID (company ID) not applicable since company creation failed
+            'add_company', // activity type
+            "Failed to create company with name $name: " . $stmt->error // detail
+        );
     }
 }
 
