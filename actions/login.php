@@ -24,102 +24,108 @@ $message = "";
 $toastClass = "";
 $logincredentials = False;
 
-if(isset($_POST["login"]))
-    {
-        # fetch data from POST request
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+if(isset($_POST["login"])){
+    # fetch data from POST request
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-        // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
-        // Check if email already exists
-        // TODO(schema-migration): Profiles table becomes profiles; email becomes email
-        $sql = "SELECT * FROM profiles WHERE email = ?";
-        $checkemailStmt = $conn->prepare($sql);
-        $checkemailStmt->bind_param("s", $email);
-        $checkemailStmt->execute();
-        $checkemailStmt->store_result();
-        error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
+    // code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/
+    // Check if email already exists
+    // TODO(schema-migration): Profiles table becomes profiles; email becomes email
+    $sql = "SELECT email FROM profiles WHERE email = ?";
+    $checkemailStmt = $conn->prepare($sql);
+    $checkemailStmt->bind_param("s", $email);
+    $checkemailStmt->execute();
+    $checkemailStmt->store_result();
+    error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
 
-        // check if the number of rows are more than 0 => email exists
-        if ($checkemailStmt->num_rows < 1) {
-            $message = "Invalid email or password.";
-            $toastClass = "#dc3545"; // Danger color
-        } 
+    // check if the number of rows are more than 0 => email exists
+    if ($checkemailStmt->num_rows < 1) {
+        $message = "Invalid email or password.";
+        $toastClass = "#dc3545"; // Danger color
+    } 
 
-        else {
-                # use placeholders to protect against sql injection
-                // TODO: write a login_log row (email, success/failure) for rate limiting
-                // and lockout, and set profiles.last_login_at on successful login,
-                // per the ARCHITECTURE.md TODO items.
+    else {
+            # use placeholders to protect against sql injection
+            // TODO: write a login_log row (email, success/failure) for rate limiting
+            // and lockout, and set profiles.last_login_at on successful login,
+            // per the ARCHITECTURE.md TODO items.
 
-                $sql = "SELECT password, profile_id FROM profiles WHERE email = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("s", $email);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $profile = $result->fetch_assoc();
+            $sql = "SELECT password, profile_id, is_verified FROM profiles WHERE email = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $profile = $result->fetch_assoc();
 
+            if ($profile['is_verified']=="1") {
                 if (password_verify($password, $profile['password'])) {
-                        //correct log in info
-                        $logincredentials = True;
-                    }
-                    
-                else {
-                    $message = "Invalid email or password.";
-                    $toastClass = "#dc3545"; // Danger color
-                    }
-            
-                $stmt->close();
+                    //user is verfied and can now log in
+                    $logincredentials = True;
+                }
                 
+                else {
+                $message = "Invalid email or password";
+                $toastClass = "#dc3545"; // Danger color
+                }
+
             }
+                
+            else {
+                $message = "User is not verified";
+                $toastClass = "#dc3545"; // Danger color
+            }
+        
+            $stmt->close();
+    }
     
 
-        // Adding a decision tree for what type of account you are logging into,
-            // and redirecting accordingly. Using $profile['profile_id'] (see above).
-            // Scriba admin => scriba_admin.php
-            // User with company_id => project_library.php
-            // User that doesn't belong to a company => user_profile.php
-        if ($logincredentials) {
-            // Since login = success, add profile_id to session so we can access it on other pages.
-            $_SESSION['profile_id'] = $profile['profile_id'];
+    // Adding a decision tree for what type of account you are logging into,
+        // and redirecting accordingly. Using $profile['profile_id'] (see above).
+        // Scriba admin => scriba_admin.php
+        // User with company_id => project_library.php
+        // User that doesn't belong to a company => user_profile.php
+    if ($logincredentials) {
+        // Since login = success, add profile_id to session so we can access it on other pages.
+        $_SESSION['profile_id'] = $profile['profile_id'];
 
-            // Fetch the user's affiliations from the database. Need if they are scriba admin
-            // and if they belong to at least one company.
-            $profile_id = $profile['profile_id'];
-            require_once '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
-            
-            // Add company_id to session if user has one.
-            $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
+        // Fetch the user's affiliations from the database. Need if they are scriba admin
+        // and if they belong to at least one company.
+        $profile_id = $profile['profile_id'];
+        require_once '../includes/fetch_profile_affiliation.php'; // expects $conn and $profile_id
+        
+        // Add company_id to session if user has one.
+        $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL; // If user has no company, set to NULL
 
-            // Scriba admin
-            $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
+        // Scriba admin
+        $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0; // One value, 1 or 0
 
-            // User with any company_id
-            // $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
+        // User with any company_id
+        // $user_company_ids = $user_affiliations['companies']; // array of company_ids, empty if none
 
-            if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
-                header ("Location:../scriba_admin.php");
-                exit();
-            }
-            elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
-                header ("Location:../project_library.php");
-                exit();
-            }
-            else { // User that doesn't belong to a company => user_profile.php
-                header ("Location:../user_profile.php");
-                exit();
-            }
-
-        } else {
-            // If login credentials are invalid, redirect back to the login page with an error message
-            $_SESSION['login_error'] = $message;
-            $_SESSION['toastClass'] = $toastClass;
-            header("Location: ../index.php");
+        if ($user_is_scriba_admin == 1) { // Scriba admin => scriba_admin.php
+            header ("Location:../scriba_admin.php");
+            exit();
+        }
+        elseif (isset($_SESSION['company_id'])) { // User with company_id => project_library.php
+            header ("Location:../project_library.php");
+            exit();
+        }
+        else { // User that doesn't belong to a company => user_profile.php
+            header ("Location:../user_profile.php");
             exit();
         }
 
-        // $checkemailStmt->close();
-        // include 'database/close_db.php';
     }
+        
+    else {
+        // If login credentials are invalid, redirect back to the login page with an error message
+        $_SESSION['login_error'] = $message;
+        $_SESSION['toastClass'] = $toastClass;
+        header("Location: ../index.php");
+        exit();
+    }
+
+}
 ?>
