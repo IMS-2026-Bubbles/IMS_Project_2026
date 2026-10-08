@@ -15,7 +15,8 @@ function log_activity(
     // Check input parameters for validity
     $valid_entity_types = ['experiment', 'project', 'lab', 'company', 'profile'];
     if (!in_array($entity_type, $valid_entity_types)) {
-        throw new InvalidArgumentException("Invalid entity type: $entity_type");
+        // throw new InvalidArgumentException("Invalid entity type: $entity_type");
+        return false;  // Return false for invalid entity type
     }
 
     $valid_activity_types = [
@@ -27,7 +28,8 @@ function log_activity(
         'access_denied'
     ];
     if (!in_array($activity_type, $valid_activity_types)) {
-        throw new InvalidArgumentException("Invalid activity type: $activity_type");
+        // throw new InvalidArgumentException("Invalid activity type: $activity_type");
+        return false;  // Return false for invalid activity type
     }
 
     // SQL statement to insert the log entry
@@ -37,7 +39,8 @@ function log_activity(
     $stmt_log_activity = $conn->prepare($sql_log_activity);
     $stmt_log_activity->bind_param('isiss', $profile_id, $entity_type, $entity_id, $activity_type, $detail);
     if (!$stmt_log_activity->execute()) {
-        throw new RuntimeException('Failed to log activity: ' . $stmt_log_activity->error);
+        // throw new RuntimeException('Failed to log activity: ' . $stmt_log_activity->error);
+        return false;  // Return false on failure
     }
     $stmt_log_activity->close();
 
@@ -59,7 +62,8 @@ function log_login(
     $stmt_log_login = $conn->prepare($sql_log_login);
     $stmt_log_login->bind_param('issis', $profile_id, $email, $ip_address, $success, $detail);
     if (!$stmt_log_login->execute()) {
-        throw new RuntimeException('Failed to log login activity: ' . $stmt_log_login->error);
+        // throw new RuntimeException('Failed to log login activity: ' . $stmt_log_login->error);
+        return false;  // Return false on failure
     }
     $stmt_log_login->close();
 
