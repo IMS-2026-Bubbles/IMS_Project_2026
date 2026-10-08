@@ -24,7 +24,7 @@ if ($experiment_id === null) {
     // Store messages in session to display on experiment.php
     $_SESSION['messages_save_experiment_tags'] = $messages;
     // Redirect back to project library page
-    header("Location: ../project_library.php");
+    header("Location: ../library.php");
     exit();
 }
 $add_experiment_tags = $_POST['add_tags'] ?? "";

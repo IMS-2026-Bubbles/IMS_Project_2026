@@ -8,7 +8,7 @@
     // set session variables, 
     // and redirect to the appropriate page based on user type
 // Redirect to: 
-    // scriba_admin.php, project_library.php, or user_profile.php (depending on user type)
+    // scriba_admin.php, library.php, or user_profile.php (depending on user type)
     // index.php (invalid login credentials)
 
 error_reporting(E_ALL);
@@ -208,7 +208,7 @@ if(isset($_POST["login"])){
             // Redirect to the appropriate page based on user type
                 // Using $_SESSION['profile_id'] and $_SESSION['company_id'] (see above).
                 // Scriba admin => scriba_admin.php
-                // User with company_id => project_library.php
+                // User with company_id => library.php
                 // User that doesn't belong to a company => user_profile.php
             if ($user_is_scriba_admin == 1) { 
                 // Scriba admin => scriba_admin.php
@@ -216,8 +216,8 @@ if(isset($_POST["login"])){
                 exit();
 
             } elseif (isset($_SESSION['company_id'])) { 
-                // User with company_id => project_library.php
-                header ("Location:../project_library.php");
+                // User with company_id => library.php
+                header ("Location:../library.php");
                 exit();
 
             } else { 

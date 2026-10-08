@@ -29,7 +29,7 @@ if ($experiment_id === null) {
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to project library page
-    header("Location: project_library.php");
+    header("Location: library.php");
     exit();
 }
 $experiment_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)

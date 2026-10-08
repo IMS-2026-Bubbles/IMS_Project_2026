@@ -2,7 +2,7 @@
 // Experiment Library Page (change to project.php?)
 
 // Arrive from:
-    // project_library.php (click on project link)
+    // library.php (click on project link)
     // actions/create_experiment.php (after creating a new experiment)
 // Action:
     // Display a list of experiments for the selected project
@@ -11,7 +11,7 @@
     // navbar options
     // experiment.php (click on experiment link)
     // actions/create_experiment.php (add experiment form submission)
-    // project_library.php (click on "Back to library" link)
+    // library.php (click on "Back to library" link)
 
 
 
@@ -116,7 +116,7 @@ if ($project_id > 0) {
 
 //         // Return to current project
 //         header(
-//             "Location: experiment_library.php?project_id=" . $project_id
+//             "Location: project.php?project_id=" . $project_id
 //         );
 
 //         exit();
@@ -401,7 +401,7 @@ if ($project_id > 0) {
         <!-- Back -->
 
         <a
-            href="project_library.php"
+            href="library.php"
             class="back-button"
         >
             ← Back to Projects
@@ -414,7 +414,7 @@ if ($project_id > 0) {
         <!-- Search -->
 
         <form
-            action="experiment_library.php"
+            action="project.php"
             method="GET"
             class="mb-4"
         >

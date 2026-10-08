@@ -2,7 +2,7 @@
 // Experiment page
 
 // Arrive from:
-    // experiment_library.php (click on experiment link)
+    // project.php (click on experiment link)
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
 // Action:
@@ -12,7 +12,7 @@
     // navbar options
     // experiment_section.php (click on plan/log/result link)
     // actions/save_experiment_tags.php (after adding/removing tags)
-    // experiment_library.php (click on "Back to parent project" link)
+    // project.php (click on "Back to parent project" link)
 
 
 // Session initialization
@@ -82,7 +82,7 @@ echo "Experiment: " . htmlspecialchars($project_experiment_name['experiment_name
 include "includes/fetch_experiment_project_id.php"; // This script fetches the project ID for the specified experiment ID
 // The experiment library page doubles as the parent project page (lists the
 // project's experiments), filtered by the project_id parameter.
-echo "<a href='experiment_library.php?project_id=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
+echo "<a href='project.php?project_id=" . urlencode($project_id) . "'>Back to parent project</a><br><br>";
 ?>
 
 

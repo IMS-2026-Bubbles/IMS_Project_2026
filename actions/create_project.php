@@ -2,11 +2,11 @@
 // Create a new project action
 
 // Arrive from:
-    // project_library.php (create new project form)
+    // library.php (create new project form)
 // Action:
     // Create a new project in the database
 // Redirect to:
-    // project_library.php (after creating a new project)
+    // library.php (after creating a new project)
 
 
 
@@ -150,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_project"])) {
         $stmt->close();
 
         // Redirect back to project library
-        header("Location: ../project_library.php");
+        header("Location: ../library.php");
         exit();
     }
 }

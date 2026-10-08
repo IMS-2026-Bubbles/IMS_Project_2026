@@ -2,11 +2,11 @@
 // Create experiment action
 
 // Arrive from:
-    // experiment_library.php (create new experiment form)
+    // project.php (create new experiment form)
 // Action:
     // Create a new experiment in the database
 // Redirect to:
-    // experiment_library.php (after creating a new experiment)
+    // project.php (after creating a new experiment)
 
 
 
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
         // Return to current project
         header(
-            "Location: ../experiment_library.php?project_id=" . urlencode($project_id)
+            "Location: ../project.php?project_id=" . urlencode($project_id)
         );
 
         exit();

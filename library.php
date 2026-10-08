@@ -4,13 +4,13 @@
 // Arrive from: 
     // actions/login.php (after logging in)
     // navigation bar (project library button)
-    // project_library.php (after adding a new project)
+    // library.php (after adding a new project)
 // Action:
     // Display all projects user has view access to
     // Add new project
 // Redirect to:
     // navigation bar options
-    // experiment_library.php (after clicking on a project)
+    // project.php (after clicking on a project)
 
 
 
@@ -119,7 +119,7 @@ if (isset($_GET["search"])) {
 
 
 //         // Refresh the project library
-//         header("Location: project_library.php");
+//         header("Location: library.php");
 //         exit();
 //     }
 // }
@@ -407,7 +407,7 @@ $stmt->close();
         <!-- Search -->
 
         <form
-            action="project_library.php"
+            action="library.php"
             method="GET"
             class="mb-4"
         >
@@ -513,7 +513,7 @@ $stmt->close();
                     <div class="col-md-6">
 
                         <a
-                            href="experiment_library.php?project_id=<?php echo $project["project_id"]; ?>"
+                            href="project.php?project_id=<?php echo $project["project_id"]; ?>"
                             class="project-card"
                         >
 
