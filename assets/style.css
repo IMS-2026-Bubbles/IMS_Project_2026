@@ -43,9 +43,9 @@ Each HTML page must include a reference to the external style sheet file inside 
 
 :root {
     --scriba-blue: #7794b6;
-    --scriba-light-blue: #d4f6fd;
+    --scriba-light-blue: #bce8f1;
     --scriba-dark: #263c55;
-    --scriba-soft-blue: #cbd8f2;
+    --scriba-soft-blue: #b9caec;
     --scriba-card-blue: #c4d3ee;
     --scriba-white: #ffffff;
     --scriba-border: #263c55;
@@ -705,8 +705,42 @@ body {
     border: 2px solid var(--scriba-dark);
     border-radius: 25px;
     padding: 30px;
-    width:90%;
+    width: 90%;
+    margin: 0 auto;  /* centers the card in the column */
+    box-sizing: border-box; /*makes the padding counted into 90%*/
+
 }
+
+.scriba_input{
+    background-color: var(--scriba-white);
+    color: var(--scriba-dark);
+    border: 2px solid var(--scriba-dark); /*text border so its a little gap between text*/ 
+    border-radius: 15px; /*mkaes it round*/
+    width: 100%; /*fyller container till bredd*/ 
+    padding: 12px 15px;
+    font-size: 16px; /*size of the text u writing*/ 
+
+}
+
+
+/* global error message style makes error visuable  */
+.error_message {
+    background-color: var(--scriba-white);
+    color: red;
+    border: 2px solid var(--scriba-dark);
+    width:10%;
+    color: red;
+    text-align: center;
+    font-weight: bold; /*thick text*/
+    width: 90%;
+    margin: 0 auto 15px;
+}
+
+
+
+
+
+
 
 
 
@@ -729,18 +763,6 @@ body {
 
 
 /* stylish button inspiration https://www.css-buttons.com/buttons/34/gradient-color-button */
-
- .button_OLD_DRaft {
-  background-color: var(--scriba-light-blue); /* makes bakcground colour on the btutton light blues*/
-   border: none; /* no border around the button  */
-  color: white; 
-  padding: 15px 32px; /* mkaes space between text and borders*/ 
-  text-align: center; /* centrera texten*/ 
-  text-decoration: none; /* if the button is a link or similar then the text will look normal */
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-} 
 
 .btn-81 {
     padding: 10px 20px;
@@ -769,11 +791,6 @@ body {
     box-shadow: 0 0 5px #faa390, 0 0 20px #db0808, 0 0 50px #9a471d, 0 0 100px #c94808;
 }
 
-.cancelbtn {
-  width: auto;
-  padding: 10px 18px;
-  background-color: #f44336;
-}
 
 
 
@@ -784,16 +801,7 @@ body {
     font-size: 36px;}
 
 
-.scriba_input{
-    background-color: var(--scriba-white);
-    color: var(--scriba-dark);
-    border: 2px solid var(--scriba-dark); /*text border so its a little gap between text*/ 
-    border-radius: 15px; /*mkaes it round*/
-    width: 100%; /*fyller container till bredd*/ 
-    padding: 12px 15px;
-    font-size: 16px; /*size of the text u writing*/ 
 
-}
 
 
 /*Login form design in order up to down and left to right */
@@ -814,30 +822,6 @@ body {
 .right_side_loginpage {
     flex: 1;
 }
-
-
-
-/* .left_side_loginpage_draft {
-  height: 100%;
-  width: 900px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-} */
-
-/* right side */ 
-/* .right_side_loginpage_draft {
-  height: 100%;
-  width: 850px;
-  position: fixed;
-  z-index: 1; 
-  top: 0;
-  right: 0;
-  overflow-x: hidden;
-} */
-
 
 
 
@@ -868,36 +852,6 @@ body {
 }
 
 
-/* old  */
-.login_form_old {
-  color: var(--scriba-dark); /* colour of text */
-  
-  text-align: center;
-  width: 600px;
-  padding: 50px;
-  margin-top: 200px;
-  margin-left: 100px;
-  display: flex; /*flexible layout*/ 
-  flex-direction: column; /*makes the email + password be under each other*/ 
-  gap: 10px;
-
-    border: 2px solid var(--scriba-dark);
-    border-radius: 30px;
-    background:linear-gradient(
-            100deg,
-            var(--scriba-soft-blue), var(--scriba-white));
-
-
-
- .no-content-error
-{
-    border: 1px solid red;
-} 
-
-
-
-
-}
 
 .register_user {
     text-align: center;
@@ -923,7 +877,6 @@ body {
 
 
  
-
 
 .register_user_button {
     display: inline-block;
@@ -956,16 +909,62 @@ body {
 
 
 
+
+
+
+
+
+
+
+
+
+
 /*regiater user page */
 
 .register_user_page {
     width: 100%;
     max-width: 600px;
-
-    /* auto makes the conatiner in the middle! (centered) */
-    margin: 60px auto; 
+    /* auto makes the conatiner in the middle (centered) */
+    margin: 10px auto; 
     display: flex; flex-direction: column; text-align: center;
 }
+
+
+ /* I don't manage to make this look nice, but this is the start :) */
+        .register_form{
+            padding: 30px ; /* adds 10px of space between the content of the container and its edges */
+            margin: 0 auto; /* centers the container in the web browser */ 
+            gap:6px; /*sapce inbetween the form children*/
+            width: 100%; /*uses 100 of the width in register_user_page form*/
+
+        } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .add_company_button{
 height: 48px;
@@ -1004,7 +1003,7 @@ width: 90%;
 .table {
     --bs-table-hover-bg: var(--scriba-light-blue); /* hover gets light blue colour*/ 
     border-radius: 15px;
-    max-width: 600px;
+    max-width: 400px;
     overflow: hidden;
  } /* this makes the corners round, deleted the oevrflow*/ 
 
@@ -1016,28 +1015,26 @@ width: 90%;
         
         /* If div class = container, the tables will be next to each other */
         
-        .container{ 
+        .admin_container{ 
             display: flex; 
             justify-content: center;  /* the tables are in the center of page */
             gap: 50px;}
 
-        /* I don't manage to make this look nice, but this is the start :) */
-        .register_form{
-            padding: 10px ; /* adds 50px of space between the content of the container and its edges */
-            margin: 0 auto; /* centers the container in the web browser */ 
-        } 
+       
 
 
 /* center eveyrthing on the page all html elemnts on the page  */
+
+    
 .company_admin_page {
     width: 90%; /* elemnt can be 90% of the screen */ 
-    max-width: 1200px; /*max width cant get bigger than 1500 px */ 
+    max-width: 1200px; /*max width cant get bigger than 1200 px */ 
     /* auto gives 50 px up and down but auto in the sides, like a short command but also centering the box horisontally */
     margin: 50px auto; 
 }
 
 /* display flex enables the elemnts, in this case the fors to be beside each other usually its udner each other  */
-.company_admin_forms {display: flex; gap: 30px; margin-bottom: 50px;max-width: 500px;}
+.company_admin_forms {display: flex; gap: 30px; margin-bottom: 50px;max-width: 100%;}
 
 .admin_form {
     /* flex 1 enables the forms to be beside each other  */
@@ -1056,7 +1053,7 @@ width: 90%;
 /* hides the corners with hidden */
 
 .admin_table{
-    --bs-table-striped-bg: var(--scriba-soft-blue);
+    --bs-table-striped-bg: var(--scriba-white);
     --bs-table-hover-bg: var(--scriba-light-blue); border-radius: 15px; overflow: hidden;
 }
 
@@ -1103,3 +1100,106 @@ width: 90%;
     margin-top: 0;
     font-size: 30px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* drafts i might use, or not, then we delete them  */
+
+
+/* old  */
+
+/* .left_side_loginpage_draft {
+  height: 100%;
+  width: 900px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+} */
+
+/* right side */ 
+/* .right_side_loginpage_draft {
+  height: 100%;
+  width: 850px;
+  position: fixed;
+  z-index: 1; 
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+} */
+
+
+.login_form_old {
+  color: var(--scriba-dark); /* colour of text */
+  
+  text-align: center;
+  width: 600px;
+  padding: 50px;
+  margin-top: 200px;
+  margin-left: 100px;
+  display: flex; /*flexible layout*/ 
+  flex-direction: column; /*makes the email + password be under each other*/ 
+  gap: 10px;
+
+    border: 2px solid var(--scriba-dark);
+    border-radius: 30px;
+    background:linear-gradient(
+            100deg,
+            var(--scriba-soft-blue), var(--scriba-white));}
+
+
+
+
+ .button_OLD_DRaft {
+  background-color: var(--scriba-light-blue); /* makes bakcground colour on the btutton light blues*/
+   border: none; /* no border around the button  */
+  color: white; 
+  padding: 15px 32px; /* mkaes space between text and borders*/ 
+  text-align: center; /* centrera texten*/ 
+  text-decoration: none; /* if the button is a link or similar then the text will look normal */
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+} 
+
+
+

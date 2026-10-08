@@ -57,21 +57,23 @@ if (isset($_SESSION['register_user_toastClass'])) {
 <body>
      <main class="register_user_page"> <!-- makes the form centered from css class  -->
      <h1 class = "page_title" > Welcome to Scriba!</h1>
-    <h2 style = "h2"> Add the following information to create an account</h2>
+  
 
 
     <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
     <?php if ($message): ?>
-    </div>
+        <p class="error_message"><?php echo htmlspecialchars($message); ?></p>
+  
     <?php endif; ?>
 
 
     <!-- put all elemnts in one box..  -->
 
     <div class = scriba_card >
+          <h2 style = "h2"> Add the following information to create an account</h2>
     
      <!-- Create the action + call function to check if Passwords match-->
-    <form class "scriba_card register_form" action ="actions/create_profile.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
+    <form class = "register_form" action ="actions/create_profile.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
@@ -122,9 +124,9 @@ if (isset($_SESSION['register_user_toastClass'])) {
             <!-- # so that you don't change page -->
 
 
-            I accept the <a class = "scriba_input" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a>
+        I accept the <a class = "" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a> 
         </label>
-        <a class = "scriba_input" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a>
+        <a class = "" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a>
 
         <script>
         function GDPR() {
@@ -133,7 +135,7 @@ if (isset($_SESSION['register_user_toastClass'])) {
         }
         </script>
 
-        <input type="submit" class="btn btn-dark rounded-pill" name="register" value="Register">
+        <input type="submit" class="login_button" name="register" value="Register">
     </form>
   
 

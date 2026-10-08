@@ -104,6 +104,7 @@ if ($result->num_rows > 0) {
                 . "<button type='submit'>Add</button>"
                 . '</form>';
         }
+        // $rows_to_display .= '</td></tr>'; here??
     }
 }
 // ------------
@@ -197,48 +198,20 @@ if ($result_proj->num_rows > 0) {
     >
     <link rel="stylesheet" href="assets/style.css">
 
-    <!-- i want nav bar here -->
-    <?php
-    include 'includes/navbar.php';
-    ?>
+
 
 </head>
 
 
-<style>
-        /* For tables */
-        table{
-            text-align: left;
-            border-collapse: collapse; /* Make underline to be connected */
-            padding: 10px;
-        }
-        
-        /* For table header and data */
-        th, td {
-            text-align: left;
-            border-bottom: 1px solid #ddd; /* Have underlines */
-            padding: 10px;
-        }
 
-        /* Hover is so that if you have your mouse on row, colour changes on that row */
-        tr:hover {background-color: #D6EEEE;}
-
-        /* If div class = container, the tables will be next to each other */
-        .container{ 
-            display: flex; 
-            justify-content: center;  /* the tables are in the center of page */
-            gap: 50px;}
-
-        /* I don't manage to make this look nice, but this is the start :) */
-        .register_form{
-            padding: 50px ; /* adds 50px of space between the content of the container and its edges */
-            margin: 0 auto; /* centers the container in the web browser */ 
-        } 
-        
-    </style>
 
 
 <body>
+
+    <!-- i want nav bar here -->
+    <?php
+    include 'includes/navbar.php';
+    ?>
 
 
 <main class="company_admin_page">
@@ -283,7 +256,7 @@ if ($result_proj->num_rows > 0) {
 </div>
 
     <!-- Table 1 -->
-    <div class = "container">
+    <div class = "admin_container">
     <div>
     <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
         <thead>
