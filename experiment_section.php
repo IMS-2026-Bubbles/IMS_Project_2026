@@ -138,8 +138,9 @@ echo '<br>';
 // Retrieve the text content for the experiment plan section
 include 'includes/fetch_experiment_section_text.php';  // Fetches the text content for the specified experiment ID and section
 
-if ($user_access >= 2) {
+if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] == 0) {
     // User has edit permission, display the form for editing the experiment plan
+    // ALSO section is not marked as done => allow editing. If section is marked as done, only allow read-only view.
     echo "<form action='actions/save_experiment_section.php' method='post'>"
         // Hidden inputs for the experiment ID and section
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
@@ -156,7 +157,7 @@ if ($user_access >= 2) {
 } else {
     // We already check for access level < 1 at the start and >=2 here,
     // so only access level = 1 remains, which is read-only access.
-    // User has read only access, display as static text
+    // User has read only access OR section is marked as done, display as static text
     echo '<h3>Experiment ' . htmlspecialchars($experiment_section) . ' (Read Only)</h3>';
     echo "<div class='experiment_section_text'>" . nl2br(htmlspecialchars($experiment_section_text)) . '</div>';
 }
