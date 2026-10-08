@@ -83,6 +83,7 @@ include '../includes/fetch_experiment_progress.php';  // Fetches the progress st
 $experiment_progress = array_map('intval', $experiment_progress);  // Ensure all values are integers
 
 if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+    // progress flag has changed, update the database
     $sql_update_progress = 'UPDATE experiments SET ' . $experiment_section . '_is_done = ? WHERE experiment_id = ?';
     $stmt_update_progress = $conn->prepare($sql_update_progress);
     $stmt_update_progress->bind_param('ii', $done_flag, $experiment_id);
@@ -113,39 +114,48 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
 }
 
 // Update the text content for the specified section in the database
-// Encrypt the text content before saving to the database
-$encrypted_text = encrypt_text($text, $encryption_key);
-
-// Create query to update the text content for the specified section
-$sql_update_text = 'UPDATE experiments SET ' . $experiment_section . '_text = ? WHERE experiment_id = ?';
-// Prepare query
-$stmt_update_text = $conn->prepare($sql_update_text);
-// Bind parameters
-$stmt_update_text->bind_param('si', $encrypted_text, $experiment_id);
-// Execute query
-
-if ($stmt_update_text->execute()) {
-    // Log the text update
-    log_activity(
-        $conn,
-        $profile_id,
-        'experiment',
-        $experiment_id,
-        'update',
-        'User updated text content for section ' . $experiment_section
-    );
-    $messages[] = 'Text content for section ' . $experiment_section . ' updated successfully.<br>';
+// Compare the hash of the new text with the hash of the existing text (from POST) to determine if an update is necessary
+$text_fingerprint = $_POST['text_fingerprint'] ?? '';
+if (hash('sha256', $text) === $text_fingerprint) {
+    // No changes detected in the text content, skip updating the database
+    $messages[] = 'No changes detected in the text content for section ' . $experiment_section . '. Skipping database update.<br>';
 } else {
-    // Log the error
-    log_activity(
-        $conn,
-        $profile_id,
-        'experiment',
-        $experiment_id,
-        'update',
-        'Error updating text content for section ' . $experiment_section . ': ' . $stmt_update_text->error
-    );
-    $messages[] = 'Error updating text content for section ' . $experiment_section . ' : ' . $stmt_update_text->error . '<br>';
+    // Changes detected, proceed to update the database
+
+    // Encrypt the text content before saving to the database
+    $encrypted_text = encrypt_text($text, $encryption_key);
+
+    // Create query to update the text content for the specified section
+    $sql_update_text = 'UPDATE experiments SET ' . $experiment_section . '_text = ? WHERE experiment_id = ?';
+    // Prepare query
+    $stmt_update_text = $conn->prepare($sql_update_text);
+    // Bind parameters
+    $stmt_update_text->bind_param('si', $encrypted_text, $experiment_id);
+
+    // Execute query
+    if ($stmt_update_text->execute()) {
+        // Log the text update
+        log_activity(
+            $conn,
+            $profile_id,
+            'experiment',
+            $experiment_id,
+            'update',
+            'User updated text content for section ' . $experiment_section
+        );
+        $messages[] = 'Text content for section ' . $experiment_section . ' updated successfully.<br>';
+    } else {
+        // Log the error
+        log_activity(
+            $conn,
+            $profile_id,
+            'experiment',
+            $experiment_id,
+            'update',
+            'Error updating text content for section ' . $experiment_section . ': ' . $stmt_update_text->error
+        );
+        $messages[] = 'Error updating text content for section ' . $experiment_section . ' : ' . $stmt_update_text->error . '<br>';
+    }
 }
 
 // Store messages in session to display

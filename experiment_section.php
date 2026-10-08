@@ -153,6 +153,8 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . '<br><br>'
         // Textbox for the experiment plan
         . "<textarea name='text' rows='10' cols='50'>" . htmlspecialchars($experiment_section_text) . '</textarea><br>'
+        // Hidden input for the text fingerprint (hash) to detect changes (htmlspecialchars is redundant but _pro forma_)
+        . "<input type='hidden' name='text_fingerprint' value='" . htmlspecialchars(hash('sha256', $experiment_section_text)) . "'><br>"
         . '</form>';
 } else {
     // We already check for access level < 1 at the start and >=2 here,
