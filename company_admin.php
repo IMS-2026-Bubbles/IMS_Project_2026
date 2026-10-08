@@ -78,7 +78,7 @@ if ($result->num_rows > 0) {
             . '<td>';
 
         // if you don't belong to a lab group - there is no name of the company from query above
-        if (empty($row['name']) && ($row['role'] == 'member')) {
+        if (empty($row['name'])) {
             $lab_options = '';
             $sql_show_lab = 'SELECT *
                                     FROM labs
@@ -128,19 +128,23 @@ if ($result_lab->num_rows > 0) {
 
 // ------------ TABLE SHOWING ORPHANED PROJECTS ------------
 // shows projects in admins comp that is owned by a profile that has been deleted
-$sql_orphan_proj = "SELECT projects.name, projects.project_id, project_members.profile_id, profiles.first_name, profiles.last_name, profiles.is_deleted, company_members.company_id
-                        FROM projects
-                        LEFT JOIN project_members on projects.project_id = project_members.project_id
-                        LEFT JOIN profiles on project_members.profile_id = profiles.profile_id
-                        LEFT JOIN company_members on profiles.profile_id =company_members.profile_id
-                        WHERE project_members.role = 'owner' AND profiles.is_deleted = 1 AND company_id = ?";
+// this query uses the FK in projects (lab_id) and can retrieve the orphaned project without using company_members or lab_members 
+// this is because then we can delete all "personal" info about a person except for the project it worked on
+$sql_orphan_proj = "SELECT labs.lab_id, labs.name, projects.project_id, projects.name, project_members.profile_id, profiles.first_name
+	FROM labs
+	JOIN projects ON labs.lab_id = projects.lab_id
+    JOIN project_members ON  projects.project_id = project_members.project_id
+    JOIN profiles ON project_members.profile_id = profiles.profile_id
+	WHERE labs.company_id = ? AND project_members.role = 'owner' AND profiles.is_deleted = 1
+	ORDER BY labs.name";
 
 $stmt = $conn->prepare($sql_orphan_proj);
 $stmt->bind_param('i', $admin_company_ID);
 $stmt->execute();
 $result_proj = $stmt->get_result();
 
-// get all people in company
+
+// get all people in lab group to choose from depending on the 
 $sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name
             FROM profiles
             JOIN company_members ON profiles.profile_id = company_members.profile_id

@@ -9,17 +9,26 @@
   -- log in. To make demo accounts usable, generate real hashes and paste
   -- them into the profiles INSERT below, e.g.:
   --   php -r "echo password_hash('ChangeMe!2026', PASSWORD_BCRYPT);"
+  -- All demo accounts have is_verified = TRUE so email verification does
+  -- not block login once real hashes are in place.
   -- The dataset intentionally covers documented edge cases:
     -- profile 5 is GDPR-anonymized (is_deleted, kept memberships, still
     --    owns project 3 -> admin ownership-transfer case)
     -- lab 2 has no projects (empty lab)
-    -- profile 8 has read-only access everywhere
+    -- profile 8 has read-only access everywhere (incl. an access_denied entry)
     -- login_log contains failed logins and a rate-limit burst
-  -- Timestamps fall inside the 90-day retention window around 2026-09-24.
+  -- activity_log and login_log timestamps are RELATIVE to the moment this
+  -- script runs (@now). This keeps them inside the 90-day retention window
+  -- and keeps the rate-limit burst inside the 15-minute lockout window
+  -- right after loading. Projects/experiments use fixed timestamps.
   -- experiments.updated_at and experiments.is_done are generated columns:
   -- they are NOT inserted here.
+  -- Experiment *_updated_at columns that are NULL rely on MySQL 8 default
+  -- behaviour (explicit_defaults_for_timestamp = ON) so NULL is stored.
 
 USE scriba_db;
+
+SET @now = NOW();
 
 -- ---------------------------------------------------------------------------
 -- Companies and labs
@@ -43,32 +52,32 @@ INSERT INTO `labs` (`lab_id`, `company_id`, `name`) VALUES
 INSERT INTO `profiles`
     (`profile_id`, `email`, `first_name`, `last_name`, `password`,
      `agreed_to_tos`, `saved_changes`, `last_login_at`, `streak`,
-     `is_scriba_admin`, `is_deleted`)
+     `is_verified`, `verify_token`, `is_scriba_admin`, `is_deleted`)
 VALUES
     (1, 'alice.chen@example.com', 'Alice', 'Chen',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 128, '2026-09-23 08:30:00', 12, TRUE,  FALSE),
+     TRUE, 128, @now - INTERVAL 26 HOUR, 12, TRUE, NULL, FALSE,  FALSE),
     (2, 'bob.martinez@example.com', 'Bob', 'Martinez',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 86,  '2026-09-23 09:10:00', 7,  FALSE, FALSE),
+     TRUE, 86,  @now - INTERVAL 25 HOUR, 7,  TRUE, NULL, FALSE, FALSE),
     (3, 'carla.rossi@example.com', 'Carla', 'Rossi',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 210, '2026-09-22 14:05:00', 21, FALSE, FALSE),
+     TRUE, 210, @now - INTERVAL 48 HOUR, 21, TRUE, NULL, FALSE, FALSE),
     (4, 'david.kim@example.com', 'David', 'Kim',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 64,  '2026-09-23 11:45:00', 3,  FALSE, FALSE),
+     TRUE, 64,  @now - INTERVAL 24 HOUR, 3,  TRUE, NULL, FALSE, FALSE),
     (5, 'deleted_5@example.com', 'Deleted', 'Deleted',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKK',
-     TRUE, 95,  '2026-09-20 16:00:00', 0,  FALSE, TRUE),  -- anonymized (GDPR); streak/saved_changes reset to 0 on deletion
+     TRUE, 0,   @now - INTERVAL 100 HOUR, 0, TRUE, NULL, FALSE, TRUE),  -- anonymized (GDPR); streak and saved_changes reset to 0 on deletion
     (6, 'eva.novak@example.com', 'Eva', 'Novak',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 142, '2026-09-23 10:20:00', 15, FALSE, FALSE),
+     TRUE, 142, @now - INTERVAL 27 HOUR, 15, TRUE, NULL, FALSE, FALSE),
     (7, 'grace.liu@example.com', 'Grace', 'Liu',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 38,  '2026-09-22 08:55:00', 5,  FALSE, FALSE),
+     TRUE, 38,  @now - INTERVAL 50 HOUR, 5,  TRUE, NULL, FALSE, FALSE),
     (8, 'henry.adams@example.com', 'Henry', 'Adams',
      '$2y$10$MOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKMOCKM',
-     TRUE, 9,   '2026-09-21 13:30:00', 1,  FALSE, FALSE);
+     TRUE, 9,   @now - INTERVAL 72 HOUR, 1,  TRUE, NULL, FALSE, FALSE);
 
 -- ---------------------------------------------------------------------------
 -- Memberships
@@ -105,7 +114,7 @@ INSERT INTO `projects`
     (`project_id`, `name`, `lab_id`, `created_at`, `updated_at`, `is_done`)
 VALUES
     (1, 'Enzyme Kinetics Study',          1, '2026-08-10 09:15:00', '2026-09-15 17:40:00', FALSE),
-    (2, 'Protein Purification Protocol',  1, '2026-07-01 10:00:00', '2026-09-20 12:30:00', TRUE),
+    (2, 'Protein Purification Protocol',  1, '2026-07-01 10:00:00', '2026-09-23 12:30:00', TRUE),   -- all experiments done
     (3, 'Assay Validation',               1, '2026-09-01 08:45:00', '2026-09-22 15:10:00', FALSE),
     (4, 'Groundwater Contaminant Screen', 3, '2026-08-20 07:30:00', '2026-09-18 16:20:00', FALSE),
     (5, 'Microplastics Survey',           3, '2026-09-05 09:00:00', '2026-09-23 11:05:00', FALSE);
@@ -167,8 +176,10 @@ VALUES
     (4, 'Repeat purification with lower load', 2, '2026-09-21 10:10:00',
      'Reduce column load by 50% to check resolution improvement observed in run 3.',
      '2026-09-21 10:15:00', TRUE,
-     NULL, NULL, FALSE,
-     NULL, NULL, FALSE),
+     'Load reduced to 50%; peaks baseline-separated, resolution improved over run 3.',
+     '2026-09-22 10:30:00', TRUE,
+     'Improvement confirmed; reduced load adopted as standard in the protocol.',
+     '2026-09-23 12:30:00', TRUE),
     (5, 'Inter-lab reproducibility run', 3, '2026-09-10 11:00:00',
      'Send matched aliquots to partner lab; compare ELISA standard curves within 10%.',
      '2026-09-10 11:05:00', TRUE,
@@ -214,40 +225,44 @@ INSERT INTO `experiment_members` (`experiment_id`, `profile_id`, `role`) VALUES
     (8, 7, 'edit');
 
 -- ---------------------------------------------------------------------------
--- Activity log (only authenticated actions; profile_id NOT NULL)
--- entity_id is VARCHAR(20) and holds the numeric ID of the entity as text.
+-- Activity log (only authenticated actions; profile_id NOT NULL in practice)
+-- entity_id is INT and holds the numeric ID of the entity.
+-- Timestamps are relative to @now so they stay inside the 90-day retention.
 -- ---------------------------------------------------------------------------
 
 INSERT INTO `activity_log`
     (`profile_id`, `acted_at`, `entity_type`, `entity_id`, `activity_type`, `detail`)
 VALUES
-    (1, '2026-07-01 09:00:00', 'company', '1',  'add_lab',      'Added lab Molecular Biology Lab'),
-    (1, '2026-07-01 09:30:00', 'company', '2',  'create',       'Registered company Helix Environmental Labs'),
-    (3, '2026-08-10 09:15:00', 'project', '1',  'create',       'Created project Enzyme Kinetics Study'),
-    (3, '2026-08-11 10:20:00', 'experiment', '1', 'create',     'Created experiment Amylase activity across pH gradients'),
-    (3, '2026-08-25 09:00:00', 'experiment', '2', 'create',      'Created experiment Substrate concentration series'),
-    (6, '2026-09-12 14:50:00', 'experiment', '1', 'update',      'Updated log text for experiment 1'),
-    (3, '2026-09-14 18:05:00', 'experiment', '2', 'update',      'Completed log for experiment 2'),
-    (5, '2026-09-10 11:00:00', 'experiment', '5', 'create',       'Created experiment Inter-lab reproducibility run'),
-    (5, '2026-09-20 16:00:00', 'profile',  '5',  'delete',       'Profile anonymized per GDPR request'),
-    (4, '2026-09-22 15:30:00', 'project',  '3',  'update',       'Renamed project Assay Validation'),
-    (7, '2026-09-18 16:20:00', 'experiment', '6', 'update',      'Completed log for Well sampling round 1'),
-    (7, '2026-09-23 11:05:00', 'experiment', '8', 'update',      'Updated log text for Beach sediment transects');
+    (1, @now - INTERVAL 80 DAY,  'company',    1, 'add_lab',       'Added lab Molecular Biology Lab'),
+    (1, @now - INTERVAL 79 DAY,  'company',    2, 'add_company',   'Registered company Helix Environmental Labs'),
+    (3, @now - INTERVAL 59 DAY,  'project',    1, 'create',        'Created project Enzyme Kinetics Study'),
+    (3, @now - INTERVAL 58 DAY,  'experiment', 1, 'create',        'Created experiment Amylase activity across pH gradients'),
+    (3, @now - INTERVAL 44 DAY,  'experiment', 2, 'create',        'Created experiment Substrate concentration series'),
+    (6, @now - INTERVAL 26 DAY,  'experiment', 1, 'update',        'Updated log text for experiment 1'),
+    (3, @now - INTERVAL 24 DAY,  'experiment', 2, 'update',        'Completed log for experiment 2'),
+    (5, @now - INTERVAL 28 DAY,  'experiment', 5, 'create',        'Created experiment Inter-lab reproducibility run'),
+    (4, @now - INTERVAL 16 DAY,  'project',    3, 'update',        'Renamed project Assay Validation'),
+    (7, @now - INTERVAL 20 DAY,  'experiment', 6, 'update',        'Completed log for Well sampling round 1'),
+    (7, @now - INTERVAL 15 DAY,  'experiment', 8, 'update',        'Updated log text for Beach sediment transects'),
+    (8, @now - INTERVAL 5 DAY,   'experiment', 1, 'access_denied', 'Read-only member attempted to edit experiment 1'),
+    (5, @now - INTERVAL 99 HOUR, 'profile',    5, 'delete',        'Profile anonymized per GDPR request');
 
 -- ---------------------------------------------------------------------------
 -- Login log (nullable profile_id: unknown emails / pre-deletion failures)
+-- The burst of failures for alice.chen is within the last 15 minutes after
+-- loading, so the lockout query in the schema returns 3.
 -- ---------------------------------------------------------------------------
 
 INSERT INTO `login_log`
-    (`profile_id`, `email`, `login_at`, `ip_address`, `success`)
+    (`profile_id`, `email`, `login_at`, `ip_address`, `success`, `detail`)
 VALUES
-    (3,   'carla.rossi@example.com',   '2026-09-22 14:05:00', '192.168.1.23',  TRUE),
-    (4,   'david.kim@example.com',      '2026-09-23 11:45:00', '192.168.1.41',  TRUE),
-    (6,   'eva.novak@example.com',      '2026-09-23 10:20:00', '192.168.1.58',  TRUE),
-    (7,   'grace.liu@example.com',      '2026-09-22 08:55:00', '10.0.0.14',     TRUE),
-    (5,   'deleted_5@example.com',      '2026-09-20 15:58:00', '192.168.1.72',  TRUE),   -- last login before anonymization
-    (NULL, 'unknown@example.com',       '2026-09-23 03:12:00', '203.0.113.7',   FALSE),  -- unknown email
-    (NULL, 'deleted_5@example.com',     '2026-09-23 03:15:00', '203.0.113.7',   FALSE),  -- deleted profile, anonymized email kept
-    (NULL, 'alice.chen@example.com',    '2026-09-23 03:20:00', '203.0.113.7',   FALSE),  -- rate-limit demo: burst of 3 failures
-    (NULL, 'alice.chen@example.com',    '2026-09-23 03:22:00', '203.0.113.7',   FALSE),  -- within 15 minutes
-    (NULL, 'alice.chen@example.com',    '2026-09-23 03:24:00', '203.0.113.7',   FALSE);  -- within 15 minutes
+    (3,    'carla.rossi@example.com',  @now - INTERVAL 48 HOUR,  '192.168.1.23', TRUE,  NULL),
+    (4,    'david.kim@example.com',    @now - INTERVAL 24 HOUR,  '192.168.1.41', TRUE,  NULL),
+    (6,    'eva.novak@example.com',    @now - INTERVAL 27 HOUR,  '192.168.1.58', TRUE,  NULL),
+    (7,    'grace.liu@example.com',    @now - INTERVAL 50 HOUR,  '10.0.0.14',    TRUE,  NULL),
+    (5,    'deleted_5@example.com',    @now - INTERVAL 100 HOUR, '192.168.1.72', TRUE,  'Last login before anonymization'),
+    (NULL, 'unknown@example.com',      @now - INTERVAL 5 HOUR,   '203.0.113.7',  FALSE, 'Email not found'),
+    (NULL, 'deleted_5@example.com',    @now - INTERVAL 295 MINUTE, '203.0.113.7', FALSE, 'Profile deleted; anonymized email kept'),
+    (NULL, 'alice.chen@example.com',   @now - INTERVAL 10 MINUTE, '203.0.113.7', FALSE, 'Incorrect password'),   -- rate-limit demo: burst of 3 failures
+    (NULL, 'alice.chen@example.com',   @now - INTERVAL 8 MINUTE,  '203.0.113.7', FALSE, 'Incorrect password'),   -- within 15 minutes
+    (NULL, 'alice.chen@example.com',   @now - INTERVAL 6 MINUTE,  '203.0.113.7', FALSE, 'Incorrect password');   -- within 15 minutes

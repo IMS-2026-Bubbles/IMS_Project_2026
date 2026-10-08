@@ -3,10 +3,12 @@
 
 // Arrive from:
 // scriba_admin.php
+
 // Action:
 // Register a new company,
 // Add admin to a company,
 // Remove admin from a company
+
 // Redirect to:
 // scriba_admin.php (with message indicating success or failure)
 
@@ -57,7 +59,7 @@ if (isset($_POST['make_admin'])) {
         );
     }
 }
-
+# if you want to remove a person as admin
 if (isset($_POST['admin_removal'])) {
     // profile_id of the user to be demoted from admin
     $profile_id = $_POST['profile_id'];
@@ -98,9 +100,8 @@ if (isset($_POST['admin_removal'])) {
     }
 }
 
-// for admin to add a person to company:
+// ADD A PERSON TO COMPANY
 if (isset($_POST['add_to_company'])) {
-    echo 'wohooo';
 
     // profile_id of the user to be added to the company
     $profile_id = $_POST['profile_id'];
@@ -141,13 +142,8 @@ if (isset($_POST['add_to_company'])) {
 
     $stmt->close();
 }
-// if(isset($_POST['admin_removal'])){
-//     $profile_id = $_POST['profile_id'];
-//     $sql_admin = "UPDATE company_members SET role = 'member' WHERE  profile_id = ?";
-//     $stmt = $conn->prepare($sql_admin);
-//     $stmt->bind_param("i", $profile_id);
-//     $result = $stmt->execute();}
 
+# REGISTER NEW COMPANY
 // if button to register new:
 if (isset($_POST['register_company'])) {
     // fetch data from POST request
@@ -179,7 +175,7 @@ if (isset($_POST['register_company'])) {
         // use placeholders to protect against sql injection
         $sql = 'INSERT INTO companies(name) VALUES (?)';
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('s', $name);
+        $stmt->bind_param('s', $new_comp_name);
         $result = $stmt->execute();
 
         // echos how it went
