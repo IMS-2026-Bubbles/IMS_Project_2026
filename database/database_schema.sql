@@ -96,6 +96,7 @@ CREATE TABLE `profiles` (
     -- to 0 where reasonable — the profile_points view also excludes deleted
     -- profiles, so points can never resurface after deletion.
   `is_verified` BOOLEAN NOT NULL DEFAULT FALSE, -- this is about email
+  `verify_token` VARCHAR(64), -- token for email verification, a little bigger than currently needed to allow for future changes in hashing algorithm
   `is_scriba_admin` BOOLEAN NOT NULL DEFAULT FALSE,
   `is_deleted` BOOLEAN NOT NULL DEFAULT FALSE, -- for GDPR profile deletion, 
   -- see delete restrictions/cascades above.
@@ -230,18 +231,20 @@ CREATE TABLE `lab_members` (
 -- Retention: Keep last 90 days, delete older automatically
 CREATE TABLE `activity_log` (
   `activity_id` INT AUTO_INCREMENT, -- PK id
-  `profile_id` INT NOT NULL, -- who did the action
+  `profile_id` INT, -- nullable, who did the action
   `acted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the action happened
   `entity_type` ENUM( -- what was the action performed on (project/experiment/profile/company/lab)
       'project', 'experiment', 
       'profile', 'company', 'lab'
   ) NOT NULL,
-  `entity_id` VARCHAR(20) NOT NULL, -- id of the project/experiment/profile/company acted upon
+  `entity_id` INT, -- nullable, id of the project/experiment/profile/company acted upon,
   `activity_type` ENUM( -- what action was performed
       'create', 'update', 'delete', -- project/experiment actions
       'change_role', 'change_permission', -- profile role/access permission actions
       'add_member', 'remove_member', -- membership actions
-      'add_lab', 'remove_lab' -- lab/company actions
+      'add_lab', 'remove_lab', -- lab/company actions
+      'add_company', 'remove_company', -- company actions
+      'access_denied' -- access denied actions
   ) NOT NULL,
   `detail` VARCHAR(255), -- additional details about the action, 
     -- e.g. which field was updated, which member was added/removed, etc.
@@ -275,10 +278,12 @@ CREATE INDEX `idx_activity_log_profile`
 CREATE TABLE `login_log` (
   `login_id` INT AUTO_INCREMENT, -- PK id
   `profile_id` INT, -- nullable, if login failed, profile_id is null
-  `email` VARCHAR(255) NOT NULL, -- email used for login attempt
+  `email` VARCHAR(255), -- nullable, email used for login attempt
   `login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- when the login attempt happened
   `ip_address` VARCHAR(45) NOT NULL, -- IP address of login attempt (IPv4 or IPv6)
   `success` BOOLEAN NOT NULL, -- whether the login attempt was successful
+  `detail` VARCHAR(255), -- additional details about the login attempt, 
+    -- e.g. "Incorrect password", "Email not found", "Login locked", etc.
   PRIMARY KEY (`login_id`),
   FOREIGN KEY (`profile_id`)
       REFERENCES `profiles`(`profile_id`)

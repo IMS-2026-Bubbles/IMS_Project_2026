@@ -14,10 +14,10 @@
 // include "session/check_user_logged_in.php";
 
 // Database connection
-require_once "database/db.php";
+require_once 'database/db.php';
 
 // Get user access level for the current page
-require_once "check_user_permission.php";
+require_once 'check_user_permission.php';
 ?>
 
     <!-- Adds an image -->
@@ -49,7 +49,6 @@ require_once "check_user_permission.php";
             // $company_id = $_SESSION['company_id'] ?? null;
 
             if (isset($_SESSION['company_id'])) {
-
                 $company_admin_access_level =
                     check_user_permission(
                         $conn,
@@ -59,7 +58,6 @@ require_once "check_user_permission.php";
                     );
 
                 if ($company_admin_access_level >= 3) {
-
                     echo "<li class='nav-item'>
                             <a class='nav-link active' href='company_admin.php'>
                                 Company Admin
@@ -84,19 +82,16 @@ require_once "check_user_permission.php";
                 );
 
             if ($scriba_admin_access_level == 1) {
-
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='scriba_admin.php'>
                             Scriba Admin
                         </a>
                       </li>";
-
             } else {
-
                 // Home Page/Projects
 
                 echo "<li class='nav-item'>
-                        <a class='nav-link active' href='project_library.php'>
+                        <a class='nav-link active' href='library.php'>
                             Home Page/Projects
                         </a>
                       </li>";

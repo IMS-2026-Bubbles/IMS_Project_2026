@@ -1,22 +1,21 @@
 <?php
 // User profile page
 
-// Arrive from: 
-    // actions/login.php (if user is not a scriba admin and does not belong to a company)
-    // inside Scriba via navigation bar
-// Action: 
-    // Display user profile information, 
-    // allow user to join a lab or company, 
-    // and delete account
+// Arrive from:
+// actions/login.php (if user is not a scriba admin and does not belong to a company)
+// inside Scriba via navigation bar
+// Action:
+// Display user profile information,
+// allow user to join a lab or company,
+// and delete account
 // Redirect to:
-    // navigation bar options
-    // actions/join_company_lab.php (join company or lab forms)
-    // actions/logout.php (delete account -> logout and redirect to index.php)
-
+// navigation bar options
+// actions/join_company_lab.php (join company or lab forms)
+// actions/logout.php (delete account -> logout and redirect to index.php)
 
 // starts the session
 require_once 'session/init.php';
-//check user is logged in 
+// check user is logged in
 require_once 'session/check_user_logged_in.php';
 // Connect to database
 require_once 'database/db.php';
@@ -24,62 +23,54 @@ require_once 'database/db.php';
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
 
-
-# get all info about a user, this will be displayed later on
-# retrieve names + email + company + labgroup
-$stmt = $conn->prepare( //statement
-    "SELECT profiles.email, profiles.first_name, profiles.last_name
+// get all info about a user, this will be displayed later on
+// retrieve names + email + company + labgroup
+$stmt = $conn->prepare(  // statement
+    'SELECT profiles.email, profiles.first_name, profiles.last_name
     FROM profiles 
-    WHERE profiles.profile_id = ?"
+    WHERE profiles.profile_id = ?'
 );
 
 // binds based on profile_id
-$stmt->bind_param("i", $profile_id);
+$stmt->bind_param('i', $profile_id);
 $stmt->execute();
-$result = $stmt->get_result();  
-$user = $result->fetch_assoc(); 
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 $stmt->close();
 
-
-//selecting points for the user 
+// selecting points for the user
 $stmt = $conn->prepare(
-    "SELECT scriba_points FROM profile_points WHERE profile_id = ?"
+    'SELECT scriba_points FROM profile_points WHERE profile_id = ?'
 );
-$stmt->bind_param("i", $profile_id);
+$stmt->bind_param('i', $profile_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $points = $result->fetch_assoc();
 $stmt->close();
 
-
-//selecting company
+// selecting company
 $stmt = $conn->prepare(
-    "SELECT companies.name, company_members.role 
+    'SELECT companies.name, company_members.role 
      FROM companies 
      JOIN company_members 
      ON companies.company_id = company_members.company_id 
-     WHERE company_members.profile_id = ?"
+     WHERE company_members.profile_id = ?'
 );
-$stmt->bind_param("i", $profile_id);
+$stmt->bind_param('i', $profile_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $company = $result->fetch_assoc();
 $stmt->close();
 
-
-// lab aswell 
+// lab aswell
 $stmt = $conn->prepare(
-    "SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?"
+    'SELECT labs.name FROM labs JOIN lab_members ON labs.lab_id = lab_members.lab_id WHERE lab_members.profile_id = ?'
 );
-$stmt->bind_param("i", $profile_id);
+$stmt->bind_param('i', $profile_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $lab = $result->fetch_assoc();
 $stmt->close();
-
-
-
-
 
 ?>
 
@@ -170,7 +161,7 @@ $stmt->close();
 <body>
 <!-- readfile() - reads a file and writes it to the output buffer -->
 
-<header>  <?php include "includes/navbar.php";?>  </header> 
+<header>  <?php include 'includes/navbar.php'; ?>  </header> 
 
 
 <main class="profile_container"> 
@@ -180,7 +171,7 @@ $stmt->close();
 <section class="profile_left">
     <div class="profile_card">
     <!-- I added so that the display name is showed up here instead / Tilda -->
-    <h2>Welcome to your user page <?php echo htmlspecialchars($user["first_name"] . " " . $user["last_name"]); ?> </h2>
+    <h2>Welcome to your user page <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?> </h2>
     <p>You have possibilities to overview your profile, add experiments and view your points. Log it or it didn't happen! </p>
 
 </div>
@@ -197,24 +188,24 @@ $stmt->close();
 
 <p>
         Lab:
-        <?php 
+        <?php
         // if you don't belong to a company, have the possibility to join one
         // tried ternary operator https://www.geeksforgeeks.org/php/php-ternary-operator/
-        // just makes code simpler 
-        echo empty($lab["name"]) ? "Belongs to no lab group" : htmlspecialchars($lab["name"]); ?>
+        // just makes code simpler
+        echo empty($lab['name']) ? 'Belongs to no lab group' : htmlspecialchars($lab['name']);
+        ?>
         <!-- where ? = is this is true, do this! And : = otherwise, do that  -->  
        
  </p>      
     
 
 <p>   Company:
-        <?php 
-        if (empty($company["name"])){ ?> No company <?php }
-        
-
-    # if invited
-    elseif ($company["role"]=="pending"){ ?>
-        You have been invited to join <?php echo htmlspecialchars($company["name"]); ?> 
+        <?php
+        if (empty($company['name'])) {
+            ?> No company <?php }
+        // if invited
+        elseif ($company['role'] == 'pending') { ?>
+        You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
         <form action="actions/join_company_lab.php" method="POST"> 
         <!-- Accept button -->
         <button type="submit" name="submit_type" value="accept">Accept</button>
@@ -222,10 +213,10 @@ $stmt->close();
         <!-- Decline Button -->
         <button type="submit" name="submit_type" value="decline">Decline</button>
         </form> <?php }
-
-
- //if user has a company it just shows
-else {echo htmlspecialchars($company["name"]); } ?>
+        // if user has a company it just shows
+        else {
+            echo htmlspecialchars($company['name']);
+        } ?>
        
         
 
@@ -237,7 +228,7 @@ else {echo htmlspecialchars($company["name"]); } ?>
 
 <div class="profile_card">
 <h2>Email</h2>
-<p>Your Email adress: <?php echo htmlspecialchars($user["email"]); ?>
+<p>Your Email adress: <?php echo htmlspecialchars($user['email']); ?>
     </p>
   
 </div>
@@ -248,7 +239,7 @@ else {echo htmlspecialchars($company["name"]); } ?>
 <h2>Points</h2>
 <p>
         You have
-        <?php echo htmlspecialchars($points["scriba_points"]); ?> points
+        <?php echo htmlspecialchars($points['scriba_points']); ?> points
     </p>
 </div>
 
@@ -271,11 +262,13 @@ else {echo htmlspecialchars($company["name"]); } ?>
 </form>
 
 
-<?php 
-    if (!empty($delete_account_message)) {
-        echo "<br>";
-        echo htmlspecialchars($delete_account_message); 
-        echo "<br>"; } ?>
+<?php
+if (!empty($delete_account_message)) {
+    echo '<br>';
+    echo htmlspecialchars($delete_account_message);
+    echo '<br>';
+}
+?>
 </div>
 
 </section>

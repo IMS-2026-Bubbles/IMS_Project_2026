@@ -18,7 +18,7 @@ done and can be cleaned up.
 
 ### Fixed: broken "Back to parent project" link
 `experiment.php` linked to a non-existent `project.php?proj_ID=...` page. It
-now links to `experiment_library.php?project_id=...`, which lists the
+now links to `project.php?project_id=...`, which lists the
 project's experiments and doubles as the parent project page.
 
 ### New TODO / NOTE markers

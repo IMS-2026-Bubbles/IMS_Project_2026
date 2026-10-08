@@ -1,0 +1,30 @@
+name: PHP format check
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+jobs:
+  pretty-php:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring
+          coverage: none
+
+      - name: Download pretty-php
+        run: |
+          curl -sSL -o pretty-php.phar \
+            https://github.com/lkrms/pretty-php/releases/latest/download/pretty-php.phar
+          chmod +x pretty-php.phar
+
+      - name: Check formatting
+        run: php pretty-php.phar --check .

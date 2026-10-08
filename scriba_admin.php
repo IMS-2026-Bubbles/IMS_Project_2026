@@ -1,129 +1,126 @@
 <?php
 // Scriba admin page
 
-// Arrive from: 
-    // index.php (after logging in as a Scriba admin, redirected from actions/login.php)
-    // scriba_admin.php (after making/removing a user as admin)
-    // scriba_admin.php (after registering a new company)
+// Arrive from:
+// index.php (after logging in as a Scriba admin, redirected from actions/login.php)
+// scriba_admin.php (after making/removing a user as admin)
+// scriba_admin.php (after registering a new company)
 // Action:
-    // Display all users and their company affiliations
-    // Display all companies
-    // Allow admins to make users admins or remove admin rights
-    // Allow admins to register new companies
+// Display all users and their company affiliations
+// Display all companies
+// Allow admins to make users admins or remove admin rights
+// Allow admins to register new companies
 // Redirect to:
-    // actions/manage_company.php (register company, make/remove admin rights)
+// actions/manage_company.php (register company, make/remove admin rights)
 
-
-require_once "session/init.php"; // Start the session and initialize session variables
-require_once "session/check_user_logged_in.php"; // Check if the user is logged in
+require_once 'session/init.php';  // Start the session and initialize session variables
+require_once 'session/check_user_logged_in.php';  // Check if the user is logged in
 require_once 'database/db.php';
 
-
-# if these variables have gotten updated messages - they are displayed (see where down in HTML)
-# they are updated when you (try to) register new company or when you change role on a person in company
+// if these variables have gotten updated messages - they are displayed (see where down in HTML)
+// they are updated when you (try to) register new company or when you change role on a person in company
 if (isset($_SESSION['manage_company_message'])) {
     $manage_company_message = $_SESSION['manage_company_message'];
     unset($_SESSION['manage_company_message']);
 } else {
-    $manage_company_message = "";
+    $manage_company_message = '';
 }
 if (isset($_SESSION['manage_company_toastClass'])) {
     $manage_company_toastClass = $_SESSION['manage_company_toastClass'];
     unset($_SESSION['manage_company_toastClass']);
 } else {
-    $manage_company_toastClass = "";
+    $manage_company_toastClass = '';
 }
 
-
-# DISPLAY TABLE WITH USERS AND COMPANIES
-# get all users names and their companies
-$sql = "SELECT profiles.profile_id, profiles.first_name, profiles.last_name, companies.name, company_members.role
+// DISPLAY TABLE WITH USERS AND COMPANIES
+// get all users names and their companies
+$sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name, companies.name, company_members.role
         FROM profiles
         LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
         LEFT JOIN companies ON company_members.company_id = companies.company_id
         WHERE profiles.is_deleted = 0 AND profiles.is_scriba_admin = 0
-        ORDER BY companies.name ASC";
+        ORDER BY companies.name ASC';
 
-# store in variable result
+// store in variable result
 $result = $conn->query($sql);
 
-# create empty string to fill up while going through result from query
-# choose names of person + company name + role for each person
-$rows_to_display = "";
+// create empty string to fill up while going through result from query
+// choose names of person + company name + role for each person
+$rows_to_display = '';
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        # if there is a role, choose it, otherwise it is null
-        $role = htmlspecialchars($row["role"] ?? '');
-        # add info to string
-        $rows_to_display .= "<tr>" .
-                            "<td>" . htmlspecialchars($row["first_name"]) . " " . htmlspecialchars($row["last_name"]) ."</td>" .
-                            "<td>" . htmlspecialchars($row["name"] ?? '') . "</td>" .
-                            "<td>" . htmlspecialchars($row["role"] ?? '') . "</td>" .
-                            "<td>";
-                
-        # if you are only a member - show button to update role to admin
-        if($role == "member"){
-            $rows_to_display .= 
-            "<form action='actions/manage_company.php' method='POST' style='display:inline;'>" .
-            # make it hidden so that the user id is saved in the post - is needed to change in database
-            "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" . # get the profile id for the person that will be affected
-            "<input type='submit' name='make_admin' value='Make admin'>" .
-            "</form>";}
+    while ($row = $result->fetch_assoc()) {
+        // if there is a role, choose it, otherwise it is null
+        $role = htmlspecialchars($row['role'] ?? '');
+        // add info to string
+        $rows_to_display .= '<tr>'
+            . '<td>' . htmlspecialchars($row['first_name']) . ' ' . htmlspecialchars($row['last_name']) . '</td>'
+            . '<td>' . htmlspecialchars($row['name'] ?? '') . '</td>'
+            . '<td>' . htmlspecialchars($row['role'] ?? '') . '</td>'
+            . '<td>';
 
-        # if you are admin - show button to update role to member
-        if($role == "admin"){
-            $rows_to_display .= 
-            "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>" .
-            # make it hidden so that the user id is saved in the post - is needed to change in database
-            "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" . # get the profile id for the person that will be affected
-            "<input type='submit' name='admin_removal' value='Remove as admin' >" .
-            "</form>";}
-                
-        # if the user doesn't belong to a company
-        # assign the person to a company
-        if(empty($row["name"])){
-            $company_options = ""; # create an empty string to be filled with all current companies
-            $sql_show_comp = "SELECT *
+        // if you are only a member - show button to update role to admin
+        if ($role == 'member') {
+            $rows_to_display .=
+                "<form action='actions/manage_company.php' method='POST' style='display:inline;'>"
+                // make it hidden so that the user id is saved in the post - is needed to change in database
+                . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"  // get the profile id for the person that will be affected
+                . "<input type='submit' name='make_admin' value='Make admin'>"
+                . '</form>';
+        }
+
+        // if you are admin - show button to update role to member
+        if ($role == 'admin') {
+            $rows_to_display .=
+                "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>"
+                // make it hidden so that the user id is saved in the post - is needed to change in database
+                . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"  // get the profile id for the person that will be affected
+                . "<input type='submit' name='admin_removal' value='Remove as admin' >"
+                . '</form>';
+        }
+
+        // if the user doesn't belong to a company
+        // assign the person to a company
+        if (empty($row['name'])) {
+            $company_options = '';  // create an empty string to be filled with all current companies
+            $sql_show_comp = 'SELECT *
                             FROM companies
-                            ORDER BY name ASC"; # getting all companies
+                            ORDER BY name ASC';  // getting all companies
             $result_com = $conn->query($sql_show_comp);
-            # adding the companies to the previous empty string, 
-            # if they are chosen later on in the dropdown meny, the company_id are saved and passed
-            while($r = $result_com->fetch_assoc()){
-                $company_options .= "<option value='" . htmlspecialchars($r["company_id"]) . "'>" .
-                                    htmlspecialchars($r["name"]) . "</option>";
+            // adding the companies to the previous empty string,
+            // if they are chosen later on in the dropdown meny, the company_id are saved and passed
+            while ($r = $result_com->fetch_assoc()) {
+                $company_options .= "<option value='" . htmlspecialchars($r['company_id']) . "'>"
+                    . htmlspecialchars($r['name']) . '</option>';
             }
 
-            $rows_to_display .= 
-            "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>" . # so that it can be next to other stuff
-            # make it hidden so that the user id is saved in the post - is needed to change in database
-            "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row["profile_id"]) . "'>" .
-                    
-            "<select name='add_to_company'>" . # open dropdown
-            "<option value='' disabled selected >Assign to a company</option>". # so that you can't choose this option
-            $company_options . # add the companies
-            "</select> " .
-            "<button type='submit'>Add</button>" .
-            "</form>";
+            $rows_to_display .=
+                "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>"  // so that it can be next to other stuff
+                // make it hidden so that the user id is saved in the post - is needed to change in database
+                . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"
+                . "<select name='add_to_company'>"  // open dropdown
+                . "<option value='' disabled selected >Assign to a company</option>"  // so that you can't choose this option
+                . $company_options  // add the companies
+                . '</select> '
+                . "<button type='submit'>Add</button>"
+                . '</form>';
         }
-        $rows_to_display .= "</td></tr>";
+        $rows_to_display .= '</td></tr>';
     }
-} 
+}
 
-
-# DISPLAY TABLE WITH COMPANIES
-$sql_company = "SELECT *
+// DISPLAY TABLE WITH COMPANIES
+$sql_company = 'SELECT *
                 FROM companies
-                ORDER BY name ASC"; # order by company name
+                ORDER BY name ASC';  // order by company name
 $result_company = $conn->query($sql_company);
 
-$rows_to_display_company = "";
+$rows_to_display_company = '';
 if ($result_company->num_rows > 0) {
-    while($row = $result_company->fetch_assoc()) {
-        $rows_to_display_company .= "<tr> <td>" . $row["name"] .
-            "</td></tr>";
+    while ($row = $result_company->fetch_assoc()) {
+        $rows_to_display_company .= '<tr> <td>' . $row['name']
+            . '</td></tr>';
     }
-}   
+}
 ?>
 
 
@@ -160,8 +157,8 @@ if ($result_company->num_rows > 0) {
 </head>
 
 <!-- i want nav bar here -->
-    <?php 
-    include "includes/navbar.php";
+    <?php
+    include 'includes/navbar.php';
     ?>
 
 
@@ -251,8 +248,7 @@ if ($result_company->num_rows > 0) {
 
 <?php
 
-
- // disconnect from database
-    include "database/close_db.php";
+// disconnect from database
+include 'database/close_db.php';
 
 ?>

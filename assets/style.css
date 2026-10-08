@@ -34,16 +34,16 @@ Each HTML page must include a reference to the external style sheet file inside 
    SCRIBA GLOBAL STYLE
    ========================================================= */
 
-
+  
 /* =========================================================
    1. GLOBAL
    ========================================================= */
 
-/* Page */
+/* 这里开始是 CSS 规则 */
 
 :root {
-    --scriba-blue: #0c8eae;
-    --scriba-light-blue: #98eefa;
+    --scriba-blue: #7794b6;
+    --scriba-light-blue: #d4f6fd;
     --scriba-dark: #263c55;
     --scriba-soft-blue: #cbd8f2;
     --scriba-card-blue: #c4d3ee;
@@ -51,6 +51,7 @@ Each HTML page must include a reference to the external style sheet file inside 
     --scriba-border: #263c55;
 }
 
+/* Page */
 /* this youtube video helped me understand flexbox /cornelia*/
 /* https://www.youtube.com/watch?v=wsTv9y931o8 */
 
@@ -72,138 +73,7 @@ body {
 
 
 /* =========================================================
-   2. NAVBAR
-   ========================================================= */
-
-/*
-   These styles are for the Scriba navigation bar.
-*/
-/* I'm going to fix the navbar so it looks universal for all pages cause we have two navbars here and also Tildas that i'm using / cornelia  */
-
-.scriba-navbar {
-    width: 100%;
-    min-height: 80px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 35px;
-
-    box-sizing: border-box;
-
-    background: rgba(255, 255, 255, 0.95);
-
-    border-bottom: 2px solid var(--scriba-dark);
-}
-
-
-/* Logo */
-
-.scriba-logo {
-    display: flex;
-    align-items: center;
-
-    text-decoration: none;
-
-    color: var(--scriba-dark);
-
-    font-size: 28px;
-
-    font-weight: bold;
-}
-
-
-.scriba-logo-box {
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-right: 10px;
-
-    background-color: var(--scriba-dark);
-
-    color: white;
-
-    font-size: 25px;
-
-    font-weight: bold;
-}
-
-
-/* Navigation links */
-
-.scriba-nav-links {
-    display: flex;
-
-    align-items: center;
-
-    gap: 20px;
-}
-
-
-.scriba-nav-links a {
-    display: inline-block;
-
-    padding: 10px 15px;
-
-    border-radius: 10px;
-
-    color: var(--scriba-dark);
-
-    text-decoration: none;
-
-    font-size: 17px;
-
-    transition: 0.2s;
-}
-
-
-.scriba-nav-links a:hover {
-    background-color: var(--scriba-light-blue);
-
-    color: var(--scriba-dark);
-}
-
-
-/* Logout */
-
-.scriba-logout {
-    display: inline-block;
-
-    padding: 10px 20px;
-
-    border: 2px solid var(--scriba-dark);
-
-    border-radius: 8px;
-
-    background-color: #9bc9e8;
-
-    color: var(--scriba-dark);
-
-    text-decoration: none;
-
-    font-size: 16px;
-}
-
-
-.scriba-logout:hover {
-    background-color: var(--scriba-blue);
-
-    color: white;
-}
-
-
-
-/* Plan to make some global css forms we can use together */
-
-
-
-/* =========================================================
-   3. GENERAL LIBRARY
+   2. GENERAL LIBRARY
    ========================================================= */
 
 .library-container {
@@ -229,7 +99,7 @@ body {
 
 
 /* =========================================================
-   4. SEARCH
+   3. SEARCH
    ========================================================= */
 
 .search-box {
@@ -260,7 +130,7 @@ body {
 
 
 /* =========================================================
-   5. ADD BUTTONS
+   4. ADD BUTTONS
    ========================================================= */
 
 .add-project,
@@ -297,7 +167,7 @@ body {
 
 
 /* =========================================================
-   6. ADD FORM
+   5. ADD FORM
    ========================================================= */
 
 .add-form {
@@ -357,7 +227,7 @@ body {
 
 
 /* =========================================================
-   7. PROJECT CARDS
+   6. PROJECT CARDS
    ========================================================= */
 
 .project-card {
@@ -443,7 +313,7 @@ body {
 
 
 /* =========================================================
-   8. EXPERIMENT CARDS
+   7. EXPERIMENT CARDS
    ========================================================= */
 
 .experiment-card {
@@ -510,7 +380,7 @@ body {
 
 
 /* =========================================================
-   9. BACK BUTTON
+   8. BACK BUTTON
    ========================================================= */
 
 .back-button {
@@ -532,7 +402,7 @@ body {
 
 
 /* =========================================================
-   10. LEADERBOARD
+   9. LEADERBOARD
    ========================================================= */
 
 .leaderboard-container {
@@ -659,7 +529,7 @@ body {
 
 
 /* =========================================================
-   11. NO RESULTS
+   10. NO RESULTS
    ========================================================= */
 
 .no-results {
@@ -672,7 +542,7 @@ body {
 
 
 /* =========================================================
-   12. RESPONSIVE
+   11. RESPONSIVE
    ========================================================= */
 
 @media (max-width: 991px) {
@@ -712,7 +582,7 @@ body {
 
 
 /* =========================================================
-   13. NAVBAR
+   12. NAVBAR
    ========================================================= */
 
    /* why do we have 2 navbars in this stylesheet*/ 

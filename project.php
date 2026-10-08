@@ -2,62 +2,58 @@
 // Experiment Library Page (change to project.php?)
 
 // Arrive from:
-    // project_library.php (click on project link)
-    // actions/create_experiment.php (after creating a new experiment)
+// library.php (click on project link)
+// actions/create_experiment.php (after creating a new experiment)
 // Action:
-    // Display a list of experiments for the selected project
-    // Add experiments to the project if the user has permission
+// Display a list of experiments for the selected project
+// Add experiments to the project if the user has permission
 // Redirect to:
-    // navbar options
-    // experiment.php (click on experiment link)
-    // actions/create_experiment.php (add experiment form submission)
-    // project_library.php (click on "Back to library" link)
-
-
+// navbar options
+// experiment.php (click on experiment link)
+// actions/create_experiment.php (add experiment form submission)
+// library.php (click on "Back to library" link)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 // Start session
-require_once "session/init.php";
-require_once "session/check_user_logged_in.php";
+require_once 'session/init.php';
+require_once 'session/check_user_logged_in.php';
 // Connect to database
-require_once "database/db.php";
+require_once 'database/db.php';
 
+require_once 'includes/log_activity.php';  // Include the log_activity function
 
 // Get current user
-$profile_id = (int) $_SESSION["profile_id"];
-
+$profile_id = (int) $_SESSION['profile_id'];
 
 // Get project ID
 $project_id = 0;
 
-if (isset($_GET["project_id"])) {
-    $project_id = (int) $_GET["project_id"];
+if (isset($_GET['project_id'])) {
+    $project_id = (int) $_GET['project_id'];
 }
 
-if (isset($_POST["project_id"])) {
-    $project_id = (int) $_POST["project_id"];
+if (isset($_POST['project_id'])) {
+    $project_id = (int) $_POST['project_id'];
 }
-
 
 // Check that the project belongs to the user's company
 if ($project_id > 0) {
-
-    $checkSql = "SELECT projects.project_id
+    $checkSql = 'SELECT projects.project_id
         FROM projects
         JOIN labs
             ON projects.lab_id = labs.lab_id
         JOIN company_members
             ON labs.company_id = company_members.company_id
         WHERE projects.project_id = ?
-          AND company_members.profile_id = ?";
+          AND company_members.profile_id = ?';
 
     $checkStmt = $conn->prepare($checkSql);
 
     $checkStmt->bind_param(
-        "ii",
+        'ii',
         $project_id,
         $profile_id
     );
@@ -67,12 +63,21 @@ if ($project_id > 0) {
     $checkResult = $checkStmt->get_result();
 
     if ($checkResult->num_rows == 0) {
-        die("You do not have permission to access this project.");
+        // Log the access denied attempt
+        log_activity(
+            $conn,
+            $profile_id,
+            'project',
+            $project_id,
+            'access_denied',
+            'User attempted to access project without permission'
+        );
+
+        die('You do not have permission to access this project.');
     }
 
     $checkStmt->close();
 }
-
 
 // // Add experiment
 // if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
@@ -100,31 +105,27 @@ if ($project_id > 0) {
 
 //         $stmt->close();
 
-
 //         // Return to current project
 //         header(
-//             "Location: experiment_library.php?project_id=" . $project_id
+//             "Location: project.php?project_id=" . $project_id
 //         );
 
 //         exit();
 //     }
 // }
 
-
 // Search experiments
-$search = "";
+$search = '';
 
-if (isset($_GET["search"])) {
-    $search = trim($_GET["search"]);
+if (isset($_GET['search'])) {
+    $search = trim($_GET['search']);
 }
-
 
 // Get experiments
 $projectExperiments = [];
 
 if ($project_id > 0) {
-
-    $sql = "SELECT
+    $sql = 'SELECT
             experiments.experiment_id,
             experiments.name
         FROM experiments
@@ -136,45 +137,38 @@ if ($project_id > 0) {
             ON labs.company_id = company_members.company_id
         WHERE company_members.profile_id = ?
           AND projects.project_id = ?
-    ";
+    ';
 
-    if ($search != "") {
-        $sql .= " AND experiments.name LIKE ?";
+    if ($search != '') {
+        $sql .= ' AND experiments.name LIKE ?';
     }
 
-    $sql .= " ORDER BY experiments.name";
-
+    $sql .= ' ORDER BY experiments.name';
 
     $stmt = $conn->prepare($sql);
 
-
-    if ($search != "") {
-
-        $searchValue = "%" . $search . "%";
+    if ($search != '') {
+        $searchValue = '%' . $search . '%';
 
         $stmt->bind_param(
-            "iis",
+            'iis',
             $profile_id,
             $project_id,
             $searchValue
         );
-
     } else {
-
         $stmt->bind_param(
-            "ii",
+            'ii',
             $profile_id,
             $project_id
         );
     }
-
 
     $stmt->execute();
 
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
-
         $projectExperiments[] = $row;
     }
 
@@ -378,7 +372,7 @@ if ($project_id > 0) {
 
     <!-- Navigation -->
 
-    <?php include "includes/navbar.php"; ?>
+    <?php include 'includes/navbar.php'; ?>
 
     <!-- Experiment Library -->
 
@@ -387,7 +381,7 @@ if ($project_id > 0) {
         <!-- Back -->
 
         <a
-            href="project_library.php"
+            href="library.php"
             class="back-button"
         >
             ← Back to Projects
@@ -400,7 +394,7 @@ if ($project_id > 0) {
         <!-- Search -->
 
         <form
-            action="experiment_library.php"
+            action="project.php"
             method="GET"
             class="mb-4"
         >
@@ -482,7 +476,7 @@ if ($project_id > 0) {
                     <div class="col-md-6">
 
                         <a
-                            href="experiment.php?experiment_id=<?php echo $experiment["experiment_id"]; ?>"
+                            href="experiment.php?experiment_id=<?php echo $experiment['experiment_id']; ?>"
                             class="experiment-card"
                         >
 
@@ -490,7 +484,7 @@ if ($project_id > 0) {
 
                                 <?php
                                 echo htmlspecialchars(
-                                    $experiment["name"]
+                                    $experiment['name']
                                 );
                                 ?>
 
