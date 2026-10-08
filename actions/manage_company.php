@@ -60,6 +60,7 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
         }
     }
 
+
     if(isset($_POST['admin_removal'])) {
         // profile_id of the user to be demoted from admin
         $profile_id = $_POST['profile_id'];
@@ -156,29 +157,18 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
     if(isset($_POST['register_company']))
     {
     # fetch data from POST request
-    $name = $_POST['name'];
-
-    # write a function that creates unique ID
-    // function createUniqueCompanyID($conn) {
-    //     $characters = 'abcdefghijklmnopqrstuvwxyz0123456789'; # these are possible char to choose from
-    //     $code = "C"; # all company ids start with C
-    //     # for loop that generates a random number and pick the char with that position
-    //     for ($i = 0; $i < 9; $i++) {
-    //         $random_number = random_int(0, strlen($characters) - 1);
-    //         $code .= $characters[$random_number];}
-    //     return $code;}
-
-    // $company_id = createUniqueCompanyID($conn);
+    $new_comp_name = $_POST['name'];
 
     # add a check here as well so that the same companies isn't added twice
-    $checkCompStmt = $conn->prepare("SELECT name FROM companies WHERE name = ?");
-    $checkCompStmt->bind_param("s", $name);
+    $sql_check_comp = "SELECT name 
+                    FROM companies 
+                    WHERE name = ?";
+    $checkCompStmt = $conn->prepare($sql_check_comp);
+    $checkCompStmt->bind_param("s", $new_comp_name);
     $checkCompStmt->execute();
     $checkCompStmt->store_result();
-    error_log("Checking company name: [$name], num_rows = " . $checkCompStmt->num_rows);
 
-
-    // check if the number of rows are more than 0 => Email exists
+    # check if the number of rows are more than 0 => company exists
     if ($checkCompStmt->num_rows > 0) {
         $_SESSION['manage_company_message'] = "Company already exists";
         $_SESSION['manage_company_toastClass'] = "#ff0019"; // Primary color
@@ -227,11 +217,10 @@ require_once '../includes/log_activity.php'; // provides log_activity() function
             "Failed to create company with name $name: " . $stmt->error // detail
         );
     }
+}
 
-    }
-    
-    }
-    header("Location: ../scriba_admin.php");
-    exit;
+# redirect back to admin page
+header("Location: ../scriba_admin.php");
+exit;
 
 ?>

@@ -52,11 +52,6 @@ else {
     <link rel="stylesheet" href="assets/style.css"> <!-- We can define our own design in this -->
     <!-- To get premade buttons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <style>
-        body{
-            padding: 70px ; /* Adds 50px of space around the inside of the web browser*/
-        }
-        </style>
 
 
 
@@ -69,41 +64,46 @@ else {
 
 
 <body>
-     <div class="register_user_page"> <!-- makes the form centered from css class  -->
-     <h1 style = "h1" > Welcome to Scriba!</h1>
-    <h2 style = "h2" Add the following information to create an account</h2>
+     <main class="register_user_page"> <!-- makes the form centered from css class  -->
+     <h1 class = "page_title" > Welcome to Scriba!</h1>
+    <h2 style = "h2"> Add the following information to create an account</h2>
 
 
     <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
     <?php if ($message): ?>
-    
     </div>
     <?php endif;?>
 
+
+    <!-- put all elemnts in one box..  -->
+
+    <div class = scriba_card >
     
      <!-- Create the action + call function to check if Passwords match-->
-    <form action="actions/create_profile.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
+    <form class "scriba_card register_form" action ="actions/create_profile.php" method= "POST" onsubmit ="return checkPassword(this)">  <!-- change action so you end up somewhere! -->
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="first_name">First name</label><br>
-        <input type="text" class="register_user_button" name="first_name" required><br>
+        <label for="first_name">First name</label>
+        <input type="text" class="scriba_input" name="first_name" required>
 
-        <label for="last_name">Last name</label><br>
-        <input type="text" class="register_user_button" name="last_name" required><br>
+        <label for="last_name">Last name</label>
+        <input type="text" class="scriba_input" name="last_name" required>
 
-        <label for="email">email adress</label><br>
-        <input type="email" class="register_user_button" name="email" required><br> <!-- @ is needed -->
+        <label for="email">Email adress</label>
+        <input type="email" class="scriba_input" name="email" required> <!-- @ is needed -->
 
         <!-- setting type as Password makes characters hidden + supports Password control -->
-        <label for="password">Password</label><br>
-        <input type="password" class="register_user_button" name="password1" minlength= "8" required> <br> <!-- must use 8 characters -->
+        <label for="password">Password</label>
+        <input type="password" class="scriba_input" name="password1" minlength= "8" required>  <!-- must use 8 characters -->
 
-        <label for="password2">Repeat Password</label><br>
-        <input type="password" class="register_user_button" name="password2" minlength= "8" required><br><br>
+        <label for="password2">Repeat Password</label>
+        <input type="password" class="scriba_input" name="password2" minlength= "8" required>
 
         <!-- https://www.geeksforgeeks.org/javascript/Password-matching-using-javascript/ -->
         
+ 
+
         <script>
             // Function to check Whether both Passwords is same or not.
             function checkPassword(form) {
@@ -121,15 +121,19 @@ else {
         </script>
 
 
+
+    
         <!-- GDPR button -->
         <label class="switch">
             <input type="checkbox" for="agreed_to_tos" name="agreed_to_tos" value="1" required>
             <span class="slider round" name=agreed_to_tos></span>
             <!-- create hyperlink (<a>) so you can view GDPR rules-->
             <!-- # so that you don't change page -->
-            I accept the <a class = "register_user_button" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a><br>
-        </label><br><br>
-        <a class = "register_user_button" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a><br><br>
+
+
+            I accept the <a class = "scriba_input" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a>
+        </label>
+        <a class = "scriba_input" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a>
 
         <script>
         function GDPR() {
@@ -138,10 +142,12 @@ else {
         }
         </script>
 
-        <input type="submit" class="btn btn-dark rounded-pill" name="register" value="Register"><br><br>
+        <input type="submit" class="btn btn-dark rounded-pill" name="register" value="Register">
     </form>
+  
 
 
+    </main>
     
 </body>
 </html>

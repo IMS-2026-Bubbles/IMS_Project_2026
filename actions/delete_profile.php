@@ -23,9 +23,7 @@ require_once '../includes/log_activity.php'; // Include the log_activity functio
 $profile_id = $_SESSION['profile_id'];
 
 
-//delete user account with SQL DELETE statement
-//i know i should use the is_deleted from profiles but rn its what it is 
-// UPDATE profiles SET is_delted = TRUE smth like this 
+// DELETE ACCOUNT
 if (isset($_POST["delete_account"])) {
     // Delete the user profile from the database (soft delete)
     $sql = "UPDATE profiles
@@ -39,7 +37,6 @@ if (isset($_POST["delete_account"])) {
                 is_scriba_admin = FALSE,
                 is_deleted = TRUE
             WHERE profile_id = ?";
-
     $stmt = $conn->prepare($sql); 
     $stmt->bind_param("i", $profile_id);
 
@@ -69,7 +66,6 @@ if (isset($_POST["delete_account"])) {
 
     # once you have deleted your account you should be logged out
     header("Location: ../actions/logout.php");
-    #header("Location: ../user_profile.php");
     exit;
 }
 
