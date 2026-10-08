@@ -82,34 +82,21 @@ include '../includes/fetch_experiment_progress.php';  // Fetches the progress st
 // Compare $done_flag with the current value in the database
 $experiment_progress = array_map('intval', $experiment_progress);  // Ensure all values are integers
 
-if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
-    // progress flag has changed, update the database
-    $sql_update_progress = 'UPDATE experiments SET ' . $experiment_section . '_is_done = ? WHERE experiment_id = ?';
-    $stmt_update_progress = $conn->prepare($sql_update_progress);
-    $stmt_update_progress->bind_param('ii', $done_flag, $experiment_id);
+// Begin transaction to ensure atomicity of updates
+$conn->begin_transaction();
 
-    if ($stmt_update_progress->execute()) {
-        // Log the progress update
-        log_activity(
-            $conn,
-            $_SESSION['profile_id'],
-            'experiment',
-            $experiment_id,
-            'update',
-            'User updated progress flag for section ' . $experiment_section . ' to ' . $done_flag
-        );
-        $messages[] = 'Progress flag for section ' . $experiment_section . ' updated successfully.<br>';
-    } else {
-        // Log the error
-        log_activity(
-            $conn,
-            $_SESSION['profile_id'],
-            'experiment',
-            $experiment_id,
-            'update',
-            'Error updating progress flag for section ' . $experiment_section . ': ' . $stmt_update_progress->error
-        );
-        $messages[] = 'Error updating progress flag for section ' . $experiment_section . ' : ' . $stmt_update_progress->error . '<br>';
+// $transaction_ok is a flag to track if all database operations succeed for a given transaction.
+// If any operation fails, we will roll back the transaction.
+$transaction_ok = true;
+
+if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+    if ($transaction_ok) {  // technically redundant, but keeps the logic clear
+        // Update the progress flag in the database if it has changed
+        $sql_update_progress = 'UPDATE experiments SET ' . $experiment_section . '_is_done = ? WHERE experiment_id = ?';
+        $stmt_update_progress = $conn->prepare($sql_update_progress);
+        $stmt_update_progress->bind_param('ii', $done_flag, $experiment_id);
+        $transaction_ok = $stmt_update_progress->execute();  // transaction flag updated
+        $stmt_update_progress->close();
     }
 }
 
@@ -125,36 +112,101 @@ if (hash('sha256', $text) === $text_fingerprint) {
     // Encrypt the text content before saving to the database
     $encrypted_text = encrypt_text($text, $encryption_key);
 
-    // Create query to update the text content for the specified section
-    $sql_update_text = 'UPDATE experiments SET ' . $experiment_section . '_text = ? WHERE experiment_id = ?';
-    // Prepare query
-    $stmt_update_text = $conn->prepare($sql_update_text);
-    // Bind parameters
-    $stmt_update_text->bind_param('si', $encrypted_text, $experiment_id);
+    if ($transaction_ok) {
+        // Update the text content for the specified section
+        $sql_update_text = 'UPDATE experiments SET ' . $experiment_section . '_text = ? WHERE experiment_id = ?';
+        $stmt_update_text = $conn->prepare($sql_update_text);
+        $stmt_update_text->bind_param('si', $encrypted_text, $experiment_id);
+        $transaction_ok = $stmt_update_text->execute();  // transaction flag updated
+        $stmt_update_text->close();
+    }
 
-    // Execute query
-    if ($stmt_update_text->execute()) {
-        // Log the text update
+    if ($transaction_ok) {
+        // Increment saved_changes counter
+        $sql_increment_saved_changes = 'UPDATE profiles SET saved_changes = saved_changes + 1 WHERE profile_id = ?';
+        $stmt_increment_saved_changes = $conn->prepare($sql_increment_saved_changes);
+        $stmt_increment_saved_changes->bind_param('i', $profile_id);
+        $transaction_ok = $stmt_increment_saved_changes->execute();  // transaction flag updated
+        $stmt_increment_saved_changes->close();
+    }
+}
+
+// Commit or rollback the transaction based on the success of the operations
+if ($transaction_ok) {
+    // All operations succeeded, commit the transaction
+    $conn->commit();
+    $messages[] = 'Experiment section ' . $experiment_section . ' updated successfully.<br>';
+
+    if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+        // Log the successful progress flag update if it was changed
         log_activity(
             $conn,
-            $profile_id,
+            $_SESSION['profile_id'],
+            'experiment',
+            $experiment_id,
+            'update',
+            'User updated progress flag for section ' . $experiment_section . ' to ' . $done_flag
+        );
+    }
+
+    if (hash('sha256', $text) !== $text_fingerprint) {
+        // Log the successful text update if it was changed
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
             'experiment',
             $experiment_id,
             'update',
             'User updated text content for section ' . $experiment_section
         );
-        $messages[] = 'Text content for section ' . $experiment_section . ' updated successfully.<br>';
-    } else {
-        // Log the error
+
+        // Log the successful saved_changes increment
         log_activity(
             $conn,
+            $_SESSION['profile_id'],
+            'profile',
             $profile_id,
+            'update',
+            'User successfully incremented saved_changes counter for experiment ' . $experiment_id . ' text update in section ' . $experiment_section
+        );
+    }
+} else {
+    // An error occurred during one of the operations, rollback the transaction
+    $conn->rollback();
+    $messages[] = 'Error updating experiment section ' . $experiment_section . '. Transaction rolled back.<br>';
+
+    // Log the error for progress flag update if it was changed
+    if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
+            'experiment',
+            $experiment_id,
+            'update',
+            'Error updating progress flag for section ' . $experiment_section . ': ' . $stmt_update_progress->error
+        );
+    }
+
+    // Log the error for text update if it was changed
+    if (hash('sha256', $text) !== $text_fingerprint) {
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
             'experiment',
             $experiment_id,
             'update',
             'Error updating text content for section ' . $experiment_section . ': ' . $stmt_update_text->error
         );
-        $messages[] = 'Error updating text content for section ' . $experiment_section . ' : ' . $stmt_update_text->error . '<br>';
+
+        // Log the error for saved_changes increment
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
+            'profile',
+            $profile_id,
+            'update',
+            'Error incrementing saved_changes counter for experiment ' . $experiment_id . ' text update in section ' . $experiment_section . ': ' . $stmt_increment_saved_changes->error
+        );
     }
 }
 
