@@ -37,20 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
     if (!is_null($project_id) && $experimentName != "") {
 
         // Add new experiment
-        $sql = 
-        "INSERT INTO experiments
-            (name, project_id)
-            VALUES (?, ?)
-        ";
-
+        $sql = "INSERT INTO experiments (name, project_id, plan_updated_at, log_updated_at, result_updated_at) VALUES (?, ?, NOW(), NOW(), NOW())";
         $stmt = $conn->prepare($sql);
-
-        $stmt->bind_param(
-            "si",
-            $experimentName,
-            $project_id
-        );
-
+        $stmt->bind_param("si", $experimentName, $project_id);
         $stmt->execute();
 
         // Log experiment creation
@@ -78,10 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
 
         // Return to current project
-        header(
-            "Location: ../project.php?project_id=" . urlencode($project_id)
-        );
-
+        header("Location: ../project.php?project_id=" . urlencode($project_id));
         exit();
     }
 }
