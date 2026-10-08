@@ -9,8 +9,14 @@
 // Redirect to:
     // index.php (with message indicating success or failure)
 
+//include to send the varification mail
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
-
+require __DIR__ . '/PHPMailer-master/src/Exception.php';
+require __DIR__ . '/PHPMailer-master/src/PHPMailer.php';
+require __DIR__ . '/PHPMailer-master/src/SMTP.php';
 
 require_once '../session/init.php'; // Start the session and initialize session variables
 //require_once '../session/check_user_logged_in.php'; // Check if the user is logged in
@@ -54,12 +60,17 @@ if(isset($_POST['register']))
             // (saved_changes, streak — rely on schema defaults or set explicitly).
             // TODO: write a login_log row / set last_login_at after registration,
             // per the ARCHITECTURE.md TODO items.
-            $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_tos) VALUES (?, ?, ?, ?, ?)";
-                                                                        // I know, I made a typo in the db, toc should be tos.
-                                                                        // This has been changed in the db schema file. -RH
+
+            //generate a 32-character token to verify the user
+            $token=bin2hex(random_bytes(16));
+
+            //insering the new user to the database
+            $sql = "INSERT INTO profiles (email, first_name, last_name, password, agreed_to_tos, verify_token) VALUES (?, ?, ?, ?, ?, ?)";
+
+            //conecting to the database
             $stmt = $conn->prepare($sql);
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt->bind_param("ssssi", $email, $first_name, $last_name, $hashedPassword, $agreed_to_tos);
+            $stmt->bind_param("ssssis", $email, $first_name, $last_name, $hashedPassword, $agreed_to_tos, $token);
             $result = $stmt->execute();
 
             if ($result==False) {
@@ -71,14 +82,68 @@ if(isset($_POST['register']))
 
                 header("Location: ../register_user.php");
             }
+            
+            //Defining a function send mail to the user via Scriba-Gmail
+            function send_mail_by_PHPMailer($to, $from, $subject, $message){
+                $mail = new PHPMailer();
+                $mail->SMTPDebug = SMTP::DEBUG_SERVER;   // shows the full SMTP conversation
+                $mail->SMTPDebug = SMTP::DEBUG_CONNECTION; // or DEBUG_SERVER for more detail
+                $mail->CharSet = 'UTF-8';
+                $mail->isSMTP(); // Use SMTP protocol
+                $mail->Host = 'smtp.gmail.com'; // Specify  SMTP server
+                $mail->SMTPAuth = true; // Auth. SMTP
+                $mail->Username = 'scribaadmin@gmail.com'; // Mail who send by PHPMailer
+                $mail->Password = 'fpqv wzef bpjq jipz'; // your pass mail box
+                $mail->SMTPSecure = 'ssl'; // Accept SSL
+                $mail->Port = 465; // port of your out server
+                $mail->setFrom($from); // Mail to send at
+                $mail->addAddress($to); // Add sender
+                $mail->addReplyTo($from); // Adress to reply
+                $mail->isHTML(true); // use HTML message
+                $mail->Subject = $subject;
+                $mail->Body = $message;
+
+                // SEND
+                if( !$mail->send() ){
+                    // error message if email failed to send
+                    $message = "Error: " . $mail->ErrorInfo;
+                    $_SESSION['register_user_message'] = $message;
+
+                    $toastClass = "#dc3545"; // Danger color
+                    $_SESSION['register_user_toastClass'] = $toastClass;
+                    exit;
+                }
+
+                else{
+                    // return true if message is send
+                    return true;
+                }
+
+            }
+            /*
+            *
+            * END send_mail_by_PHPMailer($to, $from, $subject, $message)
+            * send a mail by PHPMailer method
+            *
+            */
+        
+            //Use mail-function and actually sending mail to the user:
+            $to = $email;
+            $link = "http://localhost/actions/verify_user.php?token=$token";
+            $from = "Scribaadmin@gmail.com";
+            $subject = "Verify your Scriba account";
+            $message = "Hi! Verify your Scriba account by clicking the following link: ";
+            $message .= "<a href=$link >Verify my scriba account";
+            
+            send_mail_by_PHPMailer($to, $from, $subject, $message);
 
             $stmt->close();
         }
 
     $checkemailStmt->close();
 
-    # redirect here instead of in the form down below
-    # now the form is sent as a post, it would not be otherwise
+    // Directing the user back to the index page
+    // user should get email, where they have to click the link and verify
     if (isset($result) && $result) {
         $_SESSION['register_user_message'] = $message;
         $_SESSION['register_user_toastClass'] = $toastClass;

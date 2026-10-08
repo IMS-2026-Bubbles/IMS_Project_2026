@@ -39,6 +39,7 @@ Each HTML page must include a reference to the external style sheet file inside 
    1. GLOBAL
    ========================================================= */
 
+<<<<<<< HEAD
 :root {
     --scriba-blue: #c5dbe0;
     --scriba-light-blue: #98eefa;
@@ -50,6 +51,8 @@ Each HTML page must include a reference to the external style sheet file inside 
 }
 
 
+=======
+>>>>>>> d3522c7cbffb95f79d9e628e0c19ac2a89ca58bd
 /* Page */
 /* this youtube video helped me understand flexbox /cornelia*/
 /* https://www.youtube.com/watch?v=wsTv9y931o8 */
@@ -911,7 +914,7 @@ body {
 .text {
     color: black;
     text-align: center;
-    size: 36px;}
+    font-size: 36px;}
 
 
 .scriba_input{
@@ -1012,7 +1015,11 @@ body {
   gap: 10px;
 
     border: 2px solid var(--scriba-dark);
+<<<<<<< HEAD
     border-radius: 30px; /*had a dot here before so the form wasnt rounded */
+=======
+    border-radius: 30px;
+>>>>>>> d3522c7cbffb95f79d9e628e0c19ac2a89ca58bd
     background:linear-gradient(
             100deg,
             var(--scriba-soft-blue), var(--scriba-white));
@@ -1028,7 +1035,6 @@ body {
     text-align: center;
     margin-top: 30px;
     font-size: 18px; 
-    text-align: center;
 }
 
 
