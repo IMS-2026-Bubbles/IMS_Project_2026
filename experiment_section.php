@@ -29,7 +29,7 @@ if ($experiment_id === null) {
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to project library page
-    header("Location: project_library.php");
+    header("Location: library.php");
     exit();
 }
 $experiment_section = $_GET['section'] ?? NULL; // Section name from URL (URL is always a GET request)
@@ -58,6 +58,8 @@ if (!in_array($experiment_section, $valid_sections)) {
 // Connect to database
 require_once "database/db.php";
 
+require_once "includes/log_activity.php"; // Include the log_activity function
+
 // Check if the user has permission to view this experiment
 include "includes/check_user_permission.php"; // Include the user permission check function
 // TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id'];
@@ -68,6 +70,17 @@ $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment
 if ($user_access < 1) {
     // Access level 0 means no access
     echo "You do not have permission to view this content.";
+
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to access experiment without permission'
+    );
+
     exit();
 }
 

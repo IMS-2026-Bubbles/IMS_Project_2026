@@ -96,7 +96,7 @@ require_once "check_user_permission.php";
                 // Home Page/Projects
 
                 echo "<li class='nav-item'>
-                        <a class='nav-link active' href='project_library.php'>
+                        <a class='nav-link active' href='library.php'>
                             Home Page/Projects
                         </a>
                       </li>";

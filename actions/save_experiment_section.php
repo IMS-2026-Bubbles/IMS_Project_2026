@@ -14,6 +14,9 @@
 require_once "../session/init.php"; // Make the session available
 require_once "../session/check_user_logged_in.php"; // Check if the user is logged in
 
+// Log activity helper function
+require_once "../includes/log_activity.php"; // Include the log_activity function
+
 $messages = array(); // Create message array
 
 // Variables from POST request
@@ -23,7 +26,7 @@ if ($experiment_id === null) {
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
     // Redirect back to project library page
-    header("Location: ../project_library.php");
+    header("Location: ../library.php");
     exit();
 }
 $experiment_section = $_POST['section'] ?? null;
@@ -45,14 +48,29 @@ if (!in_array($experiment_section, $valid_sections)) {
 // Connect to database
 require_once "../database/db.php";
 
+// Encryption
+require_once "../includes/encryption.php";
+
+
 // Check if the user has permission to edit progress for this experiment
 include "../includes/check_user_permission.php"; // Include the user permission check function
-// TODO(schema-migration): $_SESSION['user_id'] becomes $_SESSION['profile_id']
+
 $user_access = check_user_permission($conn, $_SESSION['profile_id'], 'experiment', $experiment_id);
 if ($user_access < 2) {
+    // Log the access denied event
+    log_activity(
+        $conn,
+        $_SESSION['profile_id'],
+        'experiment',
+        $experiment_id,
+        'access_denied',
+        'User attempted to edit experiment section without permission'
+    );
+
     $messages[] = "You do not have permission to edit this experiment section.<br>";
     // Store messages in session to display
     $_SESSION['messages_save_experiment_section'] = $messages;
+    
     // Redirect back to experiment section with the same experiment_id
     header("Location: ../experiment_section.php?experiment_id=" . urlencode($experiment_id) . "&section=" . urlencode($experiment_section));
     exit();
@@ -61,58 +79,78 @@ if ($user_access < 2) {
 // Check if $done_flag differs from database value, and if so, update the database
     // Fetch current progress flag from the database
 include "../includes/fetch_experiment_progress.php"; // Fetches the progress status for the specified experiment ID
+
     // Compare $done_flag with the current value in the database
     $done_flag = (int)$done_flag; // Cast to int for comparison
     $experiment_progress = array_map('intval', $experiment_progress); // Ensure all values are integers
+
 if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
-    // TODO(schema-migration): old table/column names and old array key. Becomes
-    // UPDATE experiments SET <section>_is_done = ? WHERE experiment_id = ?
-    // and the key above becomes $experiment_section . '_is_done'
-    // Update the progress flag in the database
     // NOTE: $experiment_id is bound as "i" here but as "s" in the fetchers.
     // It can be bound as "i" everywhere since the column is INT — normalize when convenient.
     $sql_update_progress = "UPDATE experiments SET " . $experiment_section . "_is_done = ? WHERE experiment_id = ?";
     $stmt_update_progress = $conn->prepare($sql_update_progress);
     $stmt_update_progress->bind_param("ii", $done_flag, $experiment_id);
+
     if ($stmt_update_progress->execute()) {
+        // Log the progress update
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
+            'experiment',
+            $experiment_id,
+            'update',
+            'User updated progress flag for section ' . $experiment_section . ' to ' . $done_flag
+        );
         $messages[] = "Progress flag for section " . $experiment_section . " updated successfully.<br>";
     } else {
+        // Log the error
+        log_activity(
+            $conn,
+            $_SESSION['profile_id'],
+            'experiment',
+            $experiment_id,
+            'update',
+            'Error updating progress flag for section ' . $experiment_section . ': ' . $stmt_update_progress->error
+        );
         $messages[] = "Error updating progress flag for section " . $experiment_section . " : " . $stmt_update_progress->error . "<br>";
     }
 }
 
 // Update the text content for the specified section in the database
+    // Encrypt the text content before saving to the database
+$encrypted_text = encrypt_text($text, $encryption_key);
+
     // Create query to update the text content for the specified section
-// TODO(schema-migration): old table/column names. Becomes
-// UPDATE experiments SET <section>_text = ? WHERE experiment_id = ?
 $sql_update_text = "UPDATE experiments SET " . $experiment_section . "_text = ? WHERE experiment_id = ?";
     // Prepare query
 $stmt_update_text = $conn->prepare($sql_update_text);
     // Bind parameters
-$stmt_update_text->bind_param("si", $text, $experiment_id);
+$stmt_update_text->bind_param("si", $encrypted_text, $experiment_id);
     // Execute query
+
 if ($stmt_update_text->execute()) {
+        // Log the text update
+        log_activity(
+            $conn,
+            $profile_id,
+            'experiment',
+            $experiment_id,
+            'update',
+            'User updated text content for section ' . $experiment_section
+        );
         $messages[] = "Text content for section " . $experiment_section . " updated successfully.<br>";
 } else {
+        // Log the error
+        log_activity(
+            $conn,
+            $profile_id,
+            'experiment',
+            $experiment_id,
+            'update',
+            'Error updating text content for section ' . $experiment_section . ': ' . $stmt_update_text->error
+        );
         $messages[] = "Error updating text content for section " . $experiment_section . " : " . $stmt_update_text->error . "<br>";
 }
-
-// TODO(schema-migration): DELETE this whole timestamp update — the new schema's
-// *_updated_at columns have ON UPDATE CURRENT_TIMESTAMP (they update automatically
-// when the text changes) and experiments.updated_at is a generated column that
-// cannot be written. Remove this statement and its messages block.
-//     // Create query to update the last update timestamp for the specified section
-// $sql_update_timestamp = "UPDATE experiments SET " . $experiment_section . "_updated_at = NOW() WHERE experiment_id = ?";
-//     // Prepare query
-// $stmt_update_timestamp = $conn->prepare($sql_update_timestamp);
-//     // Bind parameters
-// $stmt_update_timestamp->bind_param("i", $experiment_id);
-//     // Execute query
-// if ($stmt_update_timestamp->execute()) {
-//         $messages[] = "Last update timestamp for section " . $experiment_section . " updated successfully.<br>";
-// } else {
-//         $messages[] = "Error updating last update timestamp for section " . $experiment_section . " : " . $stmt_update_timestamp->error . "<br>";
-// }
 
 // Store messages in session to display
 $_SESSION['messages_save_experiment_section'] = $messages;

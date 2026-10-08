@@ -6,15 +6,14 @@
 // Returns a string of text content in $experiment_section_text, which can be used to display the text on the page.
 
 // Retrieve the text content for the specified section
-// TODO(schema-migration): old table/column names. Section values become lowercase
-// (plan/log/result), so the interpolated column becomes $experiment_section . '_text',
-// the table becomes experiments, and the WHERE key becomes experiment_id.
+
     // Create query
 $sql_experiment_section_text = "SELECT " . $experiment_section . "_text FROM experiments WHERE experiment_id = ?";
     // Prepare query
 $stmt_experiment_section_text = $conn->prepare($sql_experiment_section_text);
     // Bind the experiment ID parameter
 $stmt_experiment_section_text->bind_param("s", $experiment_id);
+
     // Execute query
 if ($stmt_experiment_section_text->execute()) {
     // Get the result set from the executed query
@@ -27,4 +26,12 @@ if ($stmt_experiment_section_text->execute()) {
 } else {
     echo "Error retrieving text for experiment " . $experiment_id . " section " . $experiment_section . " : " . $stmt_experiment_section_text->error . "<br>";
 }
+
+
+// Decrypt the text content
+    // Require the encryption functions to decrypt the text content after fetching from the database
+require "encryption.php";
+
+$experiment_section_text = decrypt_text($experiment_section_text, $encryption_key);
+
 ?>
