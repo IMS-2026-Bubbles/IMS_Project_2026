@@ -57,15 +57,10 @@ $stmt_labs->bind_param("i", $profile_id);
 $stmt_labs->execute();
 
 $labs = $stmt_labs->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
-// while ($row = $result_labs->fetch_assoc()) {
-//     $labs[] = $row;
-// }
 $stmt_labs->close();
 
 
 // Get projects from the user's companies
-// $projects = [];
-
     // Get projects where the user is an owner
 $sql_projects = "SELECT projects.project_id, projects.lab_id, projects.name, project_members.role, project_members.profile_id  
         FROM projects
@@ -99,9 +94,6 @@ if ($search != "") {
 $stmt_projects->execute();
 
 $projects = $stmt_projects->get_result()->fetch_all(MYSQLI_ASSOC); // fetch all rows as an associative array
-// while ($row = $result->fetch_assoc()) {
-//     $projects[] = $row;
-// }
 $stmt_projects->close();
 
 ?>
