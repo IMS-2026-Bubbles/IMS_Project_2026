@@ -101,7 +101,7 @@ if ($result->num_rows > 0) {
                 . "<option value='' disabled selected >Assign to a lab</option>"
                 . $lab_options
                 . '</select> '
-                . "<button type='submit'>Add</button>"
+                . "<button type='submit' class = 'admin_button' >Add</button>"
                 . '</form>';
         }
         // $rows_to_display .= '</td></tr>'; here??
@@ -176,7 +176,7 @@ if ($result_proj->num_rows > 0) {
             . "<option value='' disabled selected >Choose new project owner</option>"
             . $people_in_comp
             . '</select> '
-            . "<button type='submit'>Add</button>"
+            . "<button type='submit' class = 'admin_button' >Add</button>"
             . '</form>'
             . '</td></tr>';
     }
@@ -262,7 +262,7 @@ if ($result_proj->num_rows > 0) {
     <!-- Table 1 -->
     <div class = "admin_container">
     <div>
-    <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
+    <table class = "table table-striped table-hover  "> <!-- update to another class maybe -->
         <thead>
         <tr>
             <!-- specifying the column names names -->
@@ -282,7 +282,7 @@ if ($result_proj->num_rows > 0) {
 
     <!-- Table 2 -->
     <div>
-        <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
+        <table class = "table table-striped table-hover "> <!-- update to another class maybe -->
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -299,7 +299,7 @@ if ($result_proj->num_rows > 0) {
 
     <!-- Table 3 -->
     <div>
-        <table class = "table table-striped table-hover admin_table"> <!-- update to another class maybe -->
+        <table class = "table table-striped table-hover "> <!-- update to another class maybe -->
             <thead>
             <tr>
                 <!-- specifying the column names names -->
