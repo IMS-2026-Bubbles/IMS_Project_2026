@@ -29,10 +29,13 @@ require '../database/db.php';
 // require logging functions
 require_once '../includes/log_activity.php'; // Log login attempts
 
+// require ip address functions
+require_once '../includes/fetch_ip_address.php'; // provides $ip_address and $ip_address_proxy
+
 $message = "";
 $toastClass = "";
 
-$token = $_GET['token'];
+$token = $_GET['token'] ?? ""; // set to empty to prevent possible undefined variable error
 
 
 
@@ -44,14 +47,23 @@ if ($token == "NULL" || strlen($token) < 32 || strlen($token) > 32) {
 }
 
 //retrieving if the user is verified from the database
-$sql = "SELECT is_verified, profile_id FROM profiles WHERE verify_token = ?";
+$sql = "SELECT is_verified, profile_id, email FROM profiles WHERE verify_token = ?";
 $checkVerifiedStmt = $conn->prepare($sql);
 $checkVerifiedStmt->bind_param("s", $token);
 $checkVerifiedStmt->execute();
-$checkVerifiedStmt->store_result();
+// $checkVerifiedStmt->store_result(); // use get_results() and fetch_assoc() instead so I can use ID and email for logging
+$check_verified_result = $checkVerifiedStmt->get_result()->fetch_assoc(); // should only be one row
 
-if ($checkVerifiedStmt == "0") { // zero rows == token not found => invalid token OR NULL because user already verified
-    // Don't we need to check the value of is_verified too?
+// Check if the token is valid (i.e., if a user with this token exists)
+// if ($checkVerifiedStmt->num_rows === 0) {
+if ($check_verified_result === false) { // $check_verified_result === false if no row was returned, the token is invalid
+    // Invalid token, redirect to index.php without a message
+    header("Location: ../index.php");
+    exit();
+}
+
+// Check if the user is already verified
+if ((int)$check_verified_result['is_verified'] == 1) { // 0 => not verified, 1 => verified (changed from 0 -> 1)
     //if user is already verified, return to index page with an message
 
     $message = "Verified user";
@@ -60,25 +72,30 @@ if ($checkVerifiedStmt == "0") { // zero rows == token not found => invalid toke
     $_SESSION['toastClass'] = $toastClass;
 
     // Log the verification attempt
-    // log_login(
-    //     $conn,
-        
-    // )
+    log_login(
+        $conn,
+        $check_verified_result['profile_id'],
+        $check_verified_result['email'],
+        $ip_address,
+        0, // success = 0 because verification failed
+        "User already verified but tried to verify again."
+    );
 
     header("Location: ../index.php");
     exit();
-    }
+}
 $checkVerifiedStmt->close();
 
 
 //otherwise the user will now get verified
-$sql = "UPDATE profiles SET is_verified=1 WHERE verify_token = ?";
+$sql = "UPDATE profiles SET is_verified=1 WHERE verify_token = ?"; // set the token to NULL after verification to prevent re-use? 
+// Then the earlier check for already verified users would merge with the check for invalid token. 
 $verifyStmt = $conn->prepare($sql);
 $verifyStmt->bind_param("s", $token);
 $verifyStmt->execute();
-$verifyStmt->store_result();
+// $verifyStmt->store_result(); // results are never used?
 
-if ($verifyStmt) {
+if (!($verifyStmt->error)) { // if ($verifyStmt) is always true! but if (!($verifyStmt->error)) is false (inverted) if there is an error
     $verifyStmt->close();
     //user is now verified!
 
@@ -87,17 +104,38 @@ if ($verifyStmt) {
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
 
+    // Log the successful verification
+    log_login(
+        $conn,
+        $check_verified_result['profile_id'],
+        $check_verified_result['email'],
+        $ip_address,
+        1, // success = 1 because verification succeeded
+        "User successfully verified their account."
+    );
+
     header("Location: ../index.php");
     exit();
-    }
 
-else {
+} else {
     //something went wrong!
     $message = "Something went wrong!";
     $toastClass = "#dc3545"; // Danger color
-    header("Location: ../index.php");
+    // header("Location: ../index.php"); // redirect before adding messages to session makes them never be set
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
+
+    // Log the failed verification attempt
+    log_login(
+        $conn,
+        $check_verified_result['profile_id'],
+        $check_verified_result['email'],
+        $ip_address,
+        0, // success = 0 because verification failed
+        "User failed to verify their account due to an error: " . $verifyStmt->error
+    );
+
+    header("Location: ../index.php");
     exit();
 
 }
