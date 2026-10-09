@@ -102,6 +102,17 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
         }
         $stmt_update_progress->close();
     }
+
+    // Check if now all sections are done => give a message to the user with confetti or something.
+    // Flip the progress flag in $experiment_progress to reflect the new value for comparison
+    $experiment_progress[$experiment_section . '_is_done'] = $done_flag;
+    if (
+        $experiment_progress['plan_is_done'] &&
+        $experiment_progress['log_is_done'] &&
+        $experiment_progress['result_is_done']
+    ) {
+        $_SESSION['all_sections_done'] = '🎉🎉🎉 Congratulations! Experiment done! 🎉🎉🎉';
+    }
 }
 
 // Update the text content for the specified section in the database

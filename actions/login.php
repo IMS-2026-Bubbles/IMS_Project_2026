@@ -173,13 +173,43 @@ if (isset($_POST['login'])) {
                 'Successful login'
             );
 
-            // Update last login timestamp in profiles table
-            $sql_update_last_login = 'UPDATE profiles SET last_login_at = NOW() WHERE profile_id = ?';
-            $stmt_update_last_login = $conn->prepare($sql_update_last_login);
-            $stmt_update_last_login->bind_param('i', $profile['profile_id']);
-            $result_update_last_login = $stmt_update_last_login->execute();
+            // Transaction to update last login timestamp in profiles table and increment streak
+            $conn->begin_transaction();
+            $transaction_ok = true;
 
-            if ($result_update_last_login->error) {
+            if ($transaction_ok) {
+                // Update last login timestamp in profiles table
+                $sql_update_last_login = 'UPDATE profiles SET last_login_at = NOW() WHERE profile_id = ?';
+                $stmt_update_last_login = $conn->prepare($sql_update_last_login);
+                $stmt_update_last_login->bind_param('i', $profile['profile_id']);
+                $transaction_ok = $stmt_update_last_login->execute();
+                if (!$transaction_ok) {
+                    // On failure, save error
+                    $error_update_last_login = $stmt_update_last_login->error;
+                }
+                $stmt_update_last_login->close();
+            }
+
+            if ($transaction_ok) {
+                // Increment login streak in profiles table
+                // Only increment if last login was yesterday
+                $sql_increment_streak = 'UPDATE profiles 
+                    SET login_streak = login_streak + 1 
+                    WHERE profile_id = ? AND last_login_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
+                $stmt_increment_streak = $conn->prepare($sql_increment_streak);
+                $stmt_increment_streak->bind_param('i', $profile['profile_id']);
+                $transaction_ok = $stmt_increment_streak->execute();
+                if (!$transaction_ok) {
+                    // On failure, save error
+                    $error_increment_streak = $stmt_increment_streak->error;
+                }
+                $stmt_increment_streak->close();
+            }
+
+            if ($transaction_ok) {
+                // All updates successful, commit the transaction
+                $conn->commit();
+
                 // Log the successful update of last login timestamp
                 log_activity(
                     $conn,
@@ -189,18 +219,38 @@ if (isset($_POST['login'])) {
                     'update',
                     'Updated last login timestamp'
                 );
-            } else {
-                // Log the failed update of last login timestamp
+
+                // Log the successful increment of login streak
                 log_activity(
                     $conn,
                     $profile['profile_id'],
                     'profile',
                     $profile['profile_id'],
                     'update',
-                    'Failed to update last login timestamp: ' . $result_update_last_login->error
+                    'Incremented login streak'
+                );
+            } else {
+                // Something went wrong, rollback the transaction
+                $conn->rollback();
+
+                // Log the failure
+                if (isset($error_update_last_login)) {
+                    $details = 'Error updating last login timestamp: ' . $error_update_last_login;
+                } elseif (isset($error_increment_streak)) {
+                    $details = 'Error incrementing login streak: ' . $error_increment_streak;
+                } else {
+                    $details = 'Unknown error during login transaction.';
+                }
+
+                log_activity(
+                    $conn,
+                    $profile['profile_id'],
+                    'profile',
+                    $profile['profile_id'],
+                    'update',
+                    'Failed to update last login timestamp: ' . $details
                 );
             }
-            $stmt_update_last_login->close();
 
             // Redirect to the appropriate page based on user type
             // Using $_SESSION['profile_id'] and $_SESSION['company_id'] (see above).
