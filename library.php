@@ -39,13 +39,13 @@ if (isset($_GET['search'])) {
 }
 
 // Retrieve view page error messages from the session if they exist
+$message = '';
+
 if (isset($_SESSION['view_page_message'])) {
     $message = $_SESSION['view_page_message'];
 
     // Clear the messages from the session after retrieving them
     unset($_SESSION['view_page_message']);
-} else {
-    $message = '';
 }
 
 if (isset($_SESSION['toastClass'])) {
@@ -53,10 +53,7 @@ if (isset($_SESSION['toastClass'])) {
 
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
-} else {
-    $toastClass = '';
 }
-
 
 
 

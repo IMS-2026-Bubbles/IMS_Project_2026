@@ -22,13 +22,13 @@ require_once 'database/db.php';
 
 
 // Retrieve login error messages from the session if they exist
+$message = '';
+
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];
 
     // Clear the messages from the session after retrieving them
     unset($_SESSION['login_error']);
-} else {
-    $message = '';
 }
 
 // RETRIEVE ERRORS/GOOD MESSAGES FROM ACTIONS/VERIFY_USER
@@ -37,19 +37,17 @@ if (isset($_SESSION['verify_user'])) {
 
     // Clear the messages from the session after retrieving them
     unset($_SESSION['verify_user']);
-} else {
-    $message = '';
 }
+
+// Set the color of the error messages
+$toastClass = '';
 
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
 
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
-} else {
-    $toastClass = '';
 }
-
 ?>
 
 
