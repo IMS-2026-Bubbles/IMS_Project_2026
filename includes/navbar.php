@@ -132,15 +132,15 @@ require_once 'check_user_permission.php';
 
             if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) { //comp id = all users that belongs to company
                 // prepare q, protect ag sql injection, fills the place w the users id in the ? place
-                $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?');$stmt_navbar_points ->bind_param('i', $_SESSION['profile_id']);
-                $stmt_navbar_points->execute();
+                 $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?'); $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
+                 $stmt_navbar_points->execute();
                 // get result 
-                $row_navbar = $stmt_navbar_points t->get_result()->fetch_assoc();
-                $navbar_points = $row_navbar['scriba_points'] ;
-                // echooo
+                $row_navbar = $stmt_navbar_points->get_result()->fetch_assoc();
+                $navbar_points = $row_navbar['scriba_points'] ?? 0;
+                // echo
 
-                echo "<li class='nav-item'> <span class='nav-link active'>$points navbar_points</span> </li>";
-            }
+                 echo "<li class='nav-item'> <span class='nav-link active'>$navbar_points points</span> </li>";
+                 }  
             ?>
 
    
