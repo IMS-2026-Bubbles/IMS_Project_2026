@@ -87,7 +87,7 @@ require_once 'check_user_permission.php';
                             Scriba Admin
                         </a>
                       </li>";
-            } else {
+            } elseif (isset($_SESSION['company_id'])) {
                 // Home Page/Projects
 
                 echo "<li class='nav-item'>
@@ -103,15 +103,14 @@ require_once 'check_user_permission.php';
                             Leaderboard
                         </a>
                       </li>";
-
-                // Profile page
-
-                echo "<li class='nav-item'>
-                        <a class='nav-link active' href='user_profile.php'>
-                            User Profile
-                        </a>
-                      </li>";
             }
+            // Profile page
+
+            echo "<li class='nav-item'>
+                    <a class='nav-link active' href='user_profile.php'>
+                        User Profile
+                    </a>
+                  </li>";
 
             ?>
 
