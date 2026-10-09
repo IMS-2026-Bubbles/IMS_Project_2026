@@ -243,13 +243,6 @@ $stmt->close();
     </p>
 </div>
 
-<!-- I SUGGEST THAT WE REMOVE THIS PART -->
-<!--
-<div class="user">
-<h2>Display name</h2>
-<p>Your display name is:
-</p>
-</div> -->
 
 
 <!-- suns project card  -->

@@ -98,7 +98,7 @@ if ($result->num_rows > 0) {
                 . "<option value='' disabled selected >Assign to a company</option>"  // so that you can't choose this option
                 . $company_options  // add the companies
                 . '</select> '
-                . "<button type='submit'>Add</button>"
+                . "<button type='submit' class='admin_button'>Add</button>" //admin button added 
                 . '</form>';
         }
         $rows_to_display .= '</td></tr>';
@@ -153,11 +153,6 @@ if ($result_company->num_rows > 0) {
     <title>Admin</title>
 </head>
 
-<!-- i want nav bar here -->
-    <?php
-    include 'includes/navbar.php';
-    ?>
-
 
 
 
@@ -166,6 +161,13 @@ if ($result_company->num_rows > 0) {
 
 
 <body>
+
+<!-- i want nav bar here -->
+    <?php
+    include 'includes/navbar.php';
+    ?>
+
+
     <main class = "company_admin_page">
 
     <h1 class = "page_title" >Admin Page </h1>
@@ -185,15 +187,15 @@ if ($result_company->num_rows > 0) {
 
     <!-- adding a company -->
     
-    <form action="actions/manage_company.php" method= "POST" class = ""> 
 
-        <!-- forms for all free text info that is needed-->
+     <form action="actions/manage_company.php" method="POST" class="admin_form ">
+          <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
-        <label for="companies">Register a new company</label><br>
-        <input type="text" class="scriba_input" name="name" required><br><br>
-
-    <input type="submit" class="login_button" name="register_company" value="Register"><br><br>
+        <label for="company_name">Register a new company</label>
+        <input type="text" class="scriba_input" id="company_name" name="name" required>
+        <input type="submit" class="login_button" name="register_company" value="Register">
     </form>
+
 
 
     
@@ -202,12 +204,16 @@ if ($result_company->num_rows > 0) {
     <!-- Table 1 -->
 
     <div class = "admin_container">
-    <div>
-        
-        <!--<table class = "table table-striped">  update to another class maybe -->
-        <table class="table table-striped table-hover border border-dark" >  <!-- moved hover to css style document in class table  -->
+ 
+    
+    <!-- admin table to make the page look more clean  -->
+        <div class="admin_box">
 
-        <thead>
+
+        <!--<table class = "table table-striped">  update to another class maybe -->
+            <table class="table table-striped table-hover admin_table " >  <!-- moved hover to css style document in class table  -->
+
+            <thead>
             <tr>
                 <!-- specifying the column names names -->
             <th scope="col">Name</th>
@@ -215,25 +221,25 @@ if ($result_company->num_rows > 0) {
             <th scope="col">Status</th>
             <th scope="col">Action</th>
             </tr>
-    </thead> 
-        <tbody>
+            </thead> 
+            <tbody>
             <?php echo $rows_to_display; ?>
-        </tbody>
+            </tbody>
         
-        </table>
-    </div>
-    
+      </table>
+ </div>
+
     <!-- Table 2 -->
-    <div>
+<div class="admin_box">
         <!-- <table class = "table table-striped">  update to another class maybe -->
-            <!-- https://getbootstrap.com/docs/4.0/utilities/borders/ -->
-            <table class="table table-striped table-hover admin_table border border-dark">
+          
+            <table class="table table-striped table-hover admin_table">
             <thead>
             <tr>
                 <!-- specifying the column names names -->
             <th scope="col">Companies</th>
             </tr>
-        <thead> 
+    </thead> 
         <tbody>
             <?php echo $rows_to_display_company; ?>
         </tbody>
@@ -242,6 +248,7 @@ if ($result_company->num_rows > 0) {
     </div>
 </div>
   
+</main>
 </body>
 </html>
 
