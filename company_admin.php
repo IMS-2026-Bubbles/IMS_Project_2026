@@ -3,12 +3,14 @@
 
 // Arrive from:
 // navigation bar (click on "Company admin" link)
+
 // Action:
 // Display company admin information, including lab groups and members
 // Create new labs inside company
 // Invite members to company
 // Assign members to lab groups
 // Assign project without owner to another person
+
 // Redirect to:
 // navigation bar options
 // actions/join_company_lab.php (invite member, assign to lab, assign new project owner)
@@ -22,36 +24,29 @@ require_once 'database/db.php';
 $profile_ID = $_SESSION['profile_id'];
 $admin_company_ID = $_SESSION['company_id'];
 
+$message = '';
 // preparing to show error messages for creating lab
 // only shows if they are actually filled (done in actions/create_lab.php)
 if (isset($_SESSION['create_lab_message'])) {
     $message = $_SESSION['create_lab_message'];
     unset($_SESSION['create_lab_message']);
-} else {
-    $message = '';
-}
+}; 
 if (isset($_SESSION['create_lab_toastClass'])) {
     $toastClass = $_SESSION['create_lab_toastClass'];
     unset($_SESSION['create_lab_toastClass']);
-} else {
-    $toastClass = '';
-}
+};
 
 // # preparing to show error messages for creating lab
 // only shows if they are actually filled (done in actions/join_company_lab.php)
 if (isset($_SESSION['create_invite_message'])) {
     $message = $_SESSION['create_invite_message'];
     unset($_SESSION['create_invite_message']);
-} else {
-    $message = '';
-}
+};
 
 if (isset($_SESSION['create_invite_toastClass'])) {
     $toastClass = $_SESSION['create_invite_toastClass'];
     unset($_SESSION['create_invite_toastClass']);
-} else {
-    $toastClass = '';
-}
+};
 
 // ------------ TABLE SHOWING PEOPLE AND LAB GROUPS ------------
 $sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name, labs.name, company_members.role
@@ -157,6 +152,7 @@ $stmt->bind_param('i', $admin_company_ID);
 $stmt->execute();
 $result_people = $stmt->get_result();
 
+# create all people you want in drop down list
 $people_in_comp = '';
 while ($r = $result_people->fetch_assoc()) {  // using the query used to display people in company
     $people_in_comp .= "<option value='" . htmlspecialchars($r['profile_id']) . "'>"

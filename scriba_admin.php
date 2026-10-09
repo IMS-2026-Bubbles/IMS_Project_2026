@@ -17,20 +17,17 @@ require_once 'session/init.php';  // Start the session and initialize session va
 require_once 'session/check_user_logged_in.php';  // Check if the user is logged in
 require_once 'database/db.php';
 
+$manage_company_message = '';
 // if these variables have gotten updated messages - they are displayed (see where down in HTML)
 // they are updated when you (try to) register new company or when you change role on a person in company
 if (isset($_SESSION['manage_company_message'])) {
     $manage_company_message = $_SESSION['manage_company_message'];
     unset($_SESSION['manage_company_message']);
-} else {
-    $manage_company_message = '';
-}
+};
 if (isset($_SESSION['manage_company_toastClass'])) {
     $manage_company_toastClass = $_SESSION['manage_company_toastClass'];
     unset($_SESSION['manage_company_toastClass']);
-} else {
-    $manage_company_toastClass = '';
-}
+};
 
 // DISPLAY TABLE WITH USERS AND COMPANIES
 // get all users names and their companies

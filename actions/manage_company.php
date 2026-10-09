@@ -35,7 +35,7 @@ if (isset($_POST['make_admin'])) {
 
     if ($result) {
         $_SESSION['manage_company_message'] = 'User promoted to admin successfully.';
-
+        $_SESSION['manage_company_toastClass'] = '#1ea324';
         // Log the activity of promoting a user to admin
         log_activity(
             $conn,
@@ -75,7 +75,7 @@ if (isset($_POST['admin_removal'])) {
 
     if ($result) {
         $_SESSION['manage_company_message'] = 'Admin rights removed successfully.';
-
+        $_SESSION['manage_company_toastClass'] = '#1ea324';
         // Log the activity of removing admin rights from a user
         log_activity(
             $conn,
