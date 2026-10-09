@@ -35,101 +35,137 @@ $toastClass = '';
 
 $token = $_GET['token'] ?? '';  // set to empty to prevent possible undefined variable error
 
+// IP-address
+require_once '../includes/fetch_ip_address.php';  // provides $ip_address and $ip_address_proxy
 
-if ($token == "NULL" || strlen($token) < 32 || strlen($token) > 32) {
-    //If the token is invalid, send the user to the homepage
-    header("Location: ../index.php");
-    exit();
+// Rate limiting and lockout to prevent brute-force attacks
+// If 5 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
+$sql_failed_attempts =
+    'SELECT COUNT(*) as failed_attempts 
+    FROM login_log 
+    WHERE ip_address = ? 
+        AND success = 0 
+        AND login_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)';
+$stmt_failed_attempts = $conn->prepare($sql_failed_attempts);
+$stmt_failed_attempts->bind_param('s', $ip_address);
+$stmt_failed_attempts->execute();
+$result_failed_attempts = $stmt_failed_attempts->get_result();
+
+if ($result_failed_attempts) {
+    $row = $result_failed_attempts->fetch_assoc();
+    $failed_attempts = $row['failed_attempts'];
 }
 
-//retrieving if the user is verified from the database
-$sql = "SELECT is_verified FROM profiles WHERE verify_token = ?";
+if ($failed_attempts >= 5) {
+    $message = 'Too many failed login attempts. Please try again later.';
+    $toastClass = '#dc3545';  // Danger color
 
-//get the info from the database
-$checkVerifiedStmt = $conn->prepare($sql);
-$checkVerifiedStmt->bind_param('s', $token);
-$checkVerifiedStmt->execute();
-$checkVerifiedStmt->store_result();
-echo"$checkVerifiedStmt";
-
-//Does not work o.o 
-if ($checkVerifiedStmt == "1") {
-    //The user is verified, send them back to the homepage
-
-// Check if the user is already verified
-if ((int) $check_verified_result['is_verified'] == 1) {  // 0 => not verified, 1 => verified (changed from 0 -> 1)
-    // if user is already verified, return to index page with an message
-
-    $message = 'Verified user';
-    $toastClass = '#007bff';  // Primary color
-    $_SESSION['verify_user'] = $message;
-    $_SESSION['toastClass'] = $toastClass;
-
-    // Log the verification attempt
+    // Log a failed verification attempt (verification locked)
     log_login(
         $conn,
-        $check_verified_result['profile_id'],
-        $check_verified_result['email'],
+        NULL,  // No profile_id since login is locked
+        NULL,
         $ip_address,
-        0,  // success = 0 because verification failed
-        'User already verified but tried to verify again.'
+        0,  // success = 0
+        'Verification locked due to too many recent failed attempts: ' . $token
     );
 
+    // Redirect back to the login page with an error message
+    $_SESSION['verify_user'] = $message;
+    $_SESSION['toastClass'] = $toastClass;
     header('Location: ../index.php');
     exit();
 }
-$checkVerifiedStmt->close();
 
-// otherwise the user will now get verified
-$sql = 'UPDATE profiles SET is_verified=1 WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
-// Then the earlier check for already verified users would merge with the check for invalid token.
-$verifyStmt = $conn->prepare($sql);
-$verifyStmt->bind_param('s', $token);
-$verifyStmt->execute();
-// $verifyStmt->store_result(); // results are never used?
+if (!isset($token) || empty($token) || strlen($token) != 32) {
+    // If the token is invalid, send the user to the homepage
+    header('Location: ../index.php');
+    exit();
+}
 
-if (!($verifyStmt->error)) {  // if ($verifyStmt) is always true! but if (!($verifyStmt->error)) is false (inverted) if there is an error
+$conn->begin_transaction();  // Start a transaction to ensure atomicity of the verification process
+$transaction_ok = true;  // Flag to track if the transaction is successful
+
+if ($transaction_ok) {
+    // otherwise the user will now get verified
+    $sql = 'UPDATE profiles SET is_verified=1 WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
+    // Then the earlier check for already verified users would merge with the check for invalid token.
+    $verifyStmt = $conn->prepare($sql);
+    $verifyStmt->bind_param('s', $token);
+    $transaction_ok = $verifyStmt->execute();
+    if (!$transaction_ok) {
+        // On failure, save error
+        $error_update_verification = $verifyStmt->error;
+    }
     $verifyStmt->close();
-    // user is now verified!
+    // $verifyStmt->store_result(); // results are never used?
+}
+
+if ($transaction_ok) {
+    $sql_token_to_null = 'UPDATE profiles SET verify_token=NULL WHERE verify_token = ?';
+    $stmt_token_to_null = $conn->prepare($sql_token_to_null);
+    $stmt_token_to_null->bind_param('s', $token);
+    $transaction_ok = $stmt_token_to_null->execute();
+    if (!$transaction_ok) {
+        // On failure, save error
+        $error_token_to_null = $stmt_token_to_null->error;
+    }
+    $stmt_token_to_null->close();
+}
+
+if ($transaction_ok) {
+    // All updates succeded, commit the transaction
+    $conn->commit();
 
     $message = 'You have now been verified!';
     $toastClass = '#007bff';  // Primary color
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
 
-    // Log the successful verification
+    // Log successful verification
     log_login(
         $conn,
-        $check_verified_result['profile_id'],
-        $check_verified_result['email'],
+        null,  // TODO: add profile_id retrieval based on token if needed
+        null,  // TODO: add email retrieval based on token if needed
         $ip_address,
         1,  // success = 1 because verification succeeded
         'User successfully verified their account.'
     );
 
+    // Redirect to index.php after successful verification
     header('Location: ../index.php');
     exit();
 } else {
-    // something went wrong!
+    // Something went wrong, rollback the transaction
+    $conn->rollback();
+
     $message = 'Something went wrong!';
     $toastClass = '#dc3545';  // Danger color
     // header("Location: ../index.php"); // redirect before adding messages to session makes them never be set
     $_SESSION['verify_user'] = $message;
     $_SESSION['toastClass'] = $toastClass;
 
+    if (isset($error_update_verification)) {
+        $details = 'Error updating verification status: ' . $error_update_verification;
+    } elseif (isset($error_token_to_null)) {
+        $details = 'Error setting token to NULL: ' . $error_token_to_null;
+    } else {
+        $details = 'Unknown error during verification process.';
+    }
+
     // Log the failed verification attempt
     log_login(
         $conn,
-        $check_verified_result['profile_id'],
-        $check_verified_result['email'],
+        NULL,  // profile_id is NULL since verification failed
+        NULL,
         $ip_address,
         0,  // success = 0 because verification failed
-        'User failed to verify their account due to an error: ' . $verifyStmt->error
+        $details
     );
 
+    // Redirect to index.php after failed verification
     header('Location: ../index.php');
     exit();
 }
-$verifyStmt->close();
 ?>
 
