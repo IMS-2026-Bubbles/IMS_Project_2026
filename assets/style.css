@@ -541,6 +541,7 @@ body {
 }
 
 
+
 /* =========================================================
    11. RESPONSIVE
    ========================================================= */
@@ -559,7 +560,7 @@ body {
         flex-direction: column;
         align-items: center;
     }
-/* 
+
     .scriba-navbar {
         padding: 10px 20px;
     }
@@ -576,102 +577,84 @@ body {
     .scriba-nav-links a {
         width: 100%;
         text-align: left;
-    } */
-
+    }
 }
 
-
+ 
 /* =========================================================
    12. NAVBAR
    ========================================================= */
 
-   /* why do we have 2 navbars in this stylesheet*/ 
-/* .scriba-navbar {
-    background-color: #e3f2fd !important;
+    .scriba-navbar {
+        background-color: #e3f2fd !important;
+        padding: 10px 15px;
+        min-height: 70px;
+    }
 
-    padding: 10px 25px;
+/* Logo and Scriba title */
 
-    min-height: 70px;
-} */
-
-/* coomneted the navbar styles here so we have the same invluding all our pages  */
-
-
-/* Logo */
-
-/* .scriba-navbar-brand {
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    color: #263c55 !important;
-
-    font-size: 25px;
-
-    font-weight: bold;
-
-    text-decoration: none;
-} */
-
+    .scriba-navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #263c55 !important;
+        font-size: 25px;
+        font-weight: bold;
+        text-decoration: none;
+    }
 
 /* Navigation links */
+    .scriba-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        flex-direction: row;
+    }
 
-/* .scriba-nav-links {
-    display: flex;
+    .scriba-nav-links .nav-link {
+        color: #263c55 !important;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
 
-    align-items: center;
+    .scriba-nav-links .nav-link:hover {
+        background-color: #d4f6fd;
+        color: #263c55 !important;
+    }
 
-    gap: 10px;
+/* Logout button */
+    .scriba-nav-links .logout {
+        border: 1px solid #263c55;
+        background-color: #9acaed;
+        color: #263c55 !important;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-    margin-left: auto;
-} */
+    .scriba-nav-links .logout:hover {
+        border: 1px solid #263c55;
+        background-color: #33709c;
+        color: white !important;
+    }
 
+/* Keep the navbar usable on small screens */
+    @media (max-width: 768px) {
+    .scriba-navbar .container-fluid {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
 
-/* .scriba-nav-links .nav-link {
-    color: #263c55 !important;
-
-    padding: 10px 15px;
-
-    border-radius: 8px;
-
-    font-size: 16px;
+    .scriba-nav-links {
+        flex-wrap: wrap;
+        margin-left: 0;
+        gap: 4px;
+    }
 }
-
-
-.scriba-nav-links .nav-link:hover {
-    background-color: #d4f6fd;
-
-    color: #263c55 !important;
-} */
-
-
-/* Logout */
-
-/* .scriba-nav-links .logout {
-    border: 1px solid black;
-
-    background-color: #9acaed;
-
-    color: black !important;
-
-    border-radius: 5px;
-
-    font-size: 16px;
-
-    cursor: pointer;
-}
-
-
-.scriba-nav-links .logout:hover {
-    border: 1px solid black;
-
-    background-color: #33709c;
-
-    color: white !important;
-}
- */
 
 
 
@@ -1239,6 +1222,7 @@ width: 90%;
 
 /* ==========================================
    Scriba - Experiment page
+   
    ========================================== */
 
 /* Apply these styles only to the experiment page */
