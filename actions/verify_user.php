@@ -35,27 +35,26 @@ $toastClass = '';
 
 $token = $_GET['token'] ?? '';  // set to empty to prevent possible undefined variable error
 
-if ($token == 'NULL' || strlen($token) < 32 || strlen($token) > 32) {
-    // check for a valid token
-    header('Location: ../index.php');
+
+if ($token == "NULL" || strlen($token) < 32 || strlen($token) > 32) {
+    //If the token is invalid, send the user to the homepage
+    header("Location: ../index.php");
     exit();
 }
 
-// retrieving if the user is verified from the database
-$sql = 'SELECT is_verified, profile_id, email FROM profiles WHERE verify_token = ?';
+//retrieving if the user is verified from the database
+$sql = "SELECT is_verified FROM profiles WHERE verify_token = ?";
+
+//get the info from the database
 $checkVerifiedStmt = $conn->prepare($sql);
 $checkVerifiedStmt->bind_param('s', $token);
 $checkVerifiedStmt->execute();
-// $checkVerifiedStmt->store_result(); // use get_results() and fetch_assoc() instead so I can use ID and email for logging
-$check_verified_result = $checkVerifiedStmt->get_result()->fetch_assoc();  // should only be one row
+$checkVerifiedStmt->store_result();
+echo"$checkVerifiedStmt";
 
-// Check if the token is valid (i.e., if a user with this token exists)
-// if ($checkVerifiedStmt->num_rows === 0) {
-if ($check_verified_result === false) {  // $check_verified_result === false if no row was returned, the token is invalid
-    // Invalid token, redirect to index.php without a message
-    header('Location: ../index.php');
-    exit();
-}
+//Does not work o.o 
+if ($checkVerifiedStmt == "1") {
+    //The user is verified, send them back to the homepage
 
 // Check if the user is already verified
 if ((int) $check_verified_result['is_verified'] == 1) {  // 0 => not verified, 1 => verified (changed from 0 -> 1)

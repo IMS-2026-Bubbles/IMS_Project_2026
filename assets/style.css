@@ -853,6 +853,8 @@ body {
 
 
 
+
+
 .register_user {
     text-align: center;
     margin-top: 30px;
@@ -1031,6 +1033,7 @@ width: 90%;
     max-width: 1200px; /*max width cant get bigger than 1200 px */ 
     /* auto gives 50 px up and down but auto in the sides, like a short command but also centering the box horisontally */
     margin: 50px auto; 
+  
 }
 
 /* display flex enables the elemnts, in this case the fors to be beside each other usually its udner each other  */
@@ -1052,10 +1055,40 @@ width: 90%;
 /* hover pesudo class https://www.w3schools.com/cssref/sel_hover.php */
 /* hides the corners with hidden */
 
-.admin_table{
-    --bs-table-striped-bg: var(--scriba-white);
-    --bs-table-hover-bg: var(--scriba-light-blue); border-radius: 15px; overflow: hidden;
+
+
+
+/* add buttons for admin forms, same code as for ogin_button just samller  */
+.admin_button {
+    
+  background-color: rgb(74, 230, 137);
+  border-radius: 13px; /* makes corners rounded*/ 
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 10px;
+  cursor: pointer;
 }
+
+
+
+/* want to make the tables beside themselves  */
+.admin_container {
+     display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+
+.admin_table {
+    width: 100%;
+    margin-top: 30px;
+}
+
+
 
 
 

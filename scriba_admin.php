@@ -64,7 +64,7 @@ if ($result->num_rows > 0) {
                 "<form action='actions/manage_company.php' method='POST' style='display:inline;'>"
                 // make it hidden so that the user id is saved in the post - is needed to change in database
                 . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"  // get the profile id for the person that will be affected
-                . "<input type='submit' name='make_admin' value='Make admin'>"
+                . "<input type='submit' class = 'admin_button' name='make_admin' value='Make admin'>"
                 . '</form>';
         }
 
@@ -74,7 +74,7 @@ if ($result->num_rows > 0) {
                 "<form action='actions/manage_company.php' method= 'POST' style='display:inline;'>"
                 // make it hidden so that the user id is saved in the post - is needed to change in database
                 . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"  // get the profile id for the person that will be affected
-                . "<input type='submit' name='admin_removal' value='Remove as admin' >"
+                . "<input type='submit' class = 'admin_button' name='admin_removal'  value='Remove as admin' >"
                 . '</form>';
         }
 
@@ -169,7 +169,7 @@ if ($result_company->num_rows > 0) {
 
 
 <body>
-    <main class = "admin_page">
+    <main class = "company_admin_page">
 
     <h1 class = "page_title" >Admin Page </h1>
 
@@ -187,8 +187,8 @@ if ($result_company->num_rows > 0) {
     </p> -->
 
     <!-- adding a company -->
-     
-    <form action="actions/manage_company.php" method= "POST" class = "register_form"> 
+    
+    <form action="actions/manage_company.php" method= "POST" class = ""> 
 
         <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
@@ -203,10 +203,12 @@ if ($result_company->num_rows > 0) {
 
 
     <!-- Table 1 -->
-    <div class = "container">
+
+    <div class = "admin_container">
     <div>
+        
         <!--<table class = "table table-striped">  update to another class maybe -->
-        <table class="table table-striped table-hover">  <!-- moved hover to css style document in class table  -->
+        <table class="table table-striped table-hover border border-dark" >  <!-- moved hover to css style document in class table  -->
 
         <thead>
             <tr>
@@ -227,7 +229,8 @@ if ($result_company->num_rows > 0) {
     <!-- Table 2 -->
     <div>
         <!-- <table class = "table table-striped">  update to another class maybe -->
-            <table class="table table-striped table-hover">
+            <!-- https://getbootstrap.com/docs/4.0/utilities/borders/ -->
+            <table class="table table-striped table-hover admin_table border border-dark">
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -241,7 +244,7 @@ if ($result_company->num_rows > 0) {
         </table>
     </div>
 </div>
-    
+  
 </body>
 </html>
 
