@@ -2,3 +2,4 @@
 docs/.quarto/
 /.quarto/
 **/*.quarto_ipynb
+includes/.encryption_key.env

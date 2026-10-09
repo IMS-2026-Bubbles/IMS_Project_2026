@@ -223,3 +223,34 @@ include '../database/close_db.php';
 header('Location: ../experiment_section.php?experiment_id=' . urlencode($experiment_id) . '&section=' . urlencode($experiment_section));
 exit();
 ?>
+
+Pattern for transactions:
+
+1. $conn->begin_transaction();
+
+2. $transaction_ok = true;  // Initialize transaction success flag
+// technically reduntant, but keeps the logic clear
+
+3. Do query with:
+if ($transaction_ok) {
+    // Query code here
+    $transaction_ok = $stmt->execute();  // transaction flag updated
+    if (!$transaction_ok) {
+        // On failure, capture error for logging
+        $error_variable = $stmt->error;
+    }
+    $stmt->close();
+}
+
+4. Repeat step 3 for each query in the transaction.
+
+5. Commit or rollback the transaction based on the success of the operations
+if ($transaction_ok) {
+    // All operations succeeded, commit the transaction
+    $conn->commit();
+    // Log success messages here
+} else {
+    // An error occurred during one of the operations, rollback the transaction
+    $conn->rollback();
+    // Log error messages here based on which operation failed
+}
