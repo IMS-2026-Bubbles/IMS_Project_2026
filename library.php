@@ -134,7 +134,7 @@ $stmt_projects->close();
     <title>Library</title>
     
     
-
+<!-- do we need css in here if we have all in css.style? /Cornelia -->
     <style>
 
         /* Page */
@@ -301,17 +301,27 @@ $stmt_projects->close();
     </style>
     
 
+
+
+<!-- Scriba CSS  -->
+<link rel="stylesheet" href="assets/style.css">
+
 </head>
+
+
+
+
 
 <body>
 
-    <!-- Navigation -->
+<!-- navbar that tilda created  -->
+<header>  <?php include 'includes/navbar.php'; ?>  </header> 
 
-    <?php include 'includes/navbar.php'; ?>
+  
 
     <!-- Project Library -->
 
-    <h1 > Projects </h1>
+    <h1 class = "page_title" > Projects </h1>
 
     <main class="library-container">
 

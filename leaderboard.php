@@ -409,6 +409,11 @@ elseif ($scope === 'lab') {
 
     </style>
 
+
+
+<!-- and here aswell, the link to the stylesheet /cornelia  -->
+<link rel="stylesheet" href="assets/style.css">
+
 </head>
 
 

@@ -366,6 +366,10 @@ $project_name = $row['name'] ?? '';    // empty string if project not found
 
     </style>
 
+
+<!-- same, linking the stylesheet here in the head as all other pages //Cornelia -->
+<link rel="stylesheet" href="assets/style.css">
+
 </head>
 
 <body>
