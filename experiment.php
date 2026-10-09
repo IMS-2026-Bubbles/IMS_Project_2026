@@ -5,14 +5,18 @@
 // project.php (click on experiment link)
 // experiment_section.php (click on plan/log/result link)
 // actions/save_experiment_tags.php (after adding/removing tags)
+
 // Action:
 // Display experiment information, including tags, progress flags, and last updated timestamps
 // Allow users with sufficient permissions to add/remove tags
+// Rename experiments
+
 // Redirect to:
 // navbar options
 // experiment_section.php (click on plan/log/result link)
 // actions/save_experiment_tags.php (after adding/removing tags)
 // project.php (click on "Back to parent project" link)
+// actions/create_experiment.php (to change name)
 
 // Session initialization
 require_once 'session/init.php';  // Make the session available
@@ -54,7 +58,18 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['messages_save_experiment_tags']);
 }
-?>
+
+
+
+// to display error messages
+if (isset($_SESSION['create_renamed_message'])) {
+    $manage_company_message = $_SESSION['create_renamed_message'];
+    unset($_SESSION['create_renamed_message']);
+};
+if (isset($_SESSION['create_renamed_toastClass'])) {
+    $manage_company_toastClass = $_SESSION['create_renamed_toastClass'];
+    unset($_SESSION['create_renamed_toastClass']);
+};?>
 
 <!--  -->
 <!-- Front end starts here -->
@@ -153,3 +168,58 @@ echo '<br><br>';
 // Close connection when done
 include 'database/close_db.php';
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your experiment</title>
+</head>
+<body>
+
+<!-- Makes sure that the message is actually displayed -->
+    <?php if (!empty($manage_company_message)): ?>
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; margin: 10px 0;" >
+            <?php echo htmlspecialchars($manage_company_message); ?>
+        </div>
+    <?php endif; ?>
+
+<!-- CHANGE NAME OF experiment - FRONT END NEEDS TO BE FIXED HERE!!! -->
+
+    <!-- this calls a function ased on id, it opens up field where text field is-->
+
+    <button type="button" class="add-experiment d-flex justify-content-center align-items-center mb-4" onclick="showAddForm('change_experiment_name')"> Change name of experiment</button>
+
+    <div id="change_experiment_name" class="add-form"> <!-- Same style as add experiment -->
+        <form action="actions/create_experiment.php" method="POST">
+            <input type="hidden" name="experiment_id" value="<?php echo htmlspecialchars($experiment_id); ?>">
+            <input type="text" name="new_experiment_name" class="form-control add-input mb-3" placeholder="Enter new name" required>
+            <button type="submit" name="change_experiment_name" class="add-button">Add</button>
+        </form>
+    </div>
+
+    <script>
+
+        function showAddForm(id) {
+
+            var form = document.getElementById(id);
+
+            if (form.style.display === "none" || form.style.display === "") {
+
+                form.style.display = "block";
+
+            } else {
+
+                form.style.display = "none";
+
+            }
+
+        }
+
+    </script>
+
+
+    
+</body>
+</html>

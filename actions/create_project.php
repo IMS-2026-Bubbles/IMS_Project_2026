@@ -3,10 +3,16 @@
 
 // Arrive from:
 // library.php (create new project form)
+// project.php
+
 // Action:
 // Create a new project in the database
+// Rename existing project
+
 // Redirect to:
 // library.php (after creating a new project)
+// project.php (after renaming)
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -19,6 +25,50 @@ require_once '../session/check_user_logged_in.php';
 require_once '../database/db.php';
 
 require_once '../includes/log_activity.php';  // Include the log_activity function
+
+// RENAME PROJECT
+if (isset($_POST['change_project_name'])){
+    # get project id and the new name from the forms
+    $project_id = $_POST['project_id'];
+    $new_name = $_POST['new_project_name'];
+
+    # only do the name change if it is a name
+    if ($new_name !== ' '){
+        $sql = "UPDATE projects 
+                SET name = ? 
+                WHERE projects.project_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('si', $new_name, $project_id);
+        $result = $stmt->execute();
+
+        # generate succeed message
+        $message =  'Project renamed to: ' . $new_name . '.';
+        $toastClass = '#1ea324';
+
+        // add to message
+        $_SESSION['create_renamed_message'] = $message;
+        $_SESSION['create_renamed_toastClass'] = $toastClass;
+
+        // redirect back to admin page
+        header('Location: ../project.php?project_id=' . $project_id);
+        exit;}
+    
+    # end up here if you entered ' '
+    # generate error message
+    $message =  'Renaming of project failed. Enter a real name.';
+    $toastClass = '#ff0019';
+
+    // add to message
+    $_SESSION['create_renamed_message'] = $message;
+    $_SESSION['create_renamed_toastClass'] = $toastClass;
+
+    # then you will stay at original page
+    header('Location: ../project.php?project_id=' . $project_id);
+    exit;
+}
+
+
+
 
 // Add project
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_project'])) {

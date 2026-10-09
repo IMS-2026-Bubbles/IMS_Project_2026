@@ -4,14 +4,18 @@
 // Arrive from:
 // library.php (click on project link)
 // actions/create_experiment.php (after creating a new experiment)
+
 // Action:
 // Display a list of experiments for the selected project
 // Add experiments to the project if the user has permission
+// Change name of project you're standing in
+
 // Redirect to:
 // navbar options
 // experiment.php (click on experiment link)
 // actions/create_experiment.php (add experiment form submission)
 // library.php (click on "Back to library" link)
+// actions/create_project.php (if you want to change name)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -24,6 +28,16 @@ require_once 'session/check_user_logged_in.php';
 require_once 'database/db.php';
 
 require_once 'includes/log_activity.php';  // Include the log_activity function
+
+
+if (isset($_SESSION['create_renamed_message'])) {
+    $manage_company_message = $_SESSION['create_renamed_message'];
+    unset($_SESSION['create_renamed_message']);
+};
+if (isset($_SESSION['create_renamed_toastClass'])) {
+    $manage_company_toastClass = $_SESSION['create_renamed_toastClass'];
+    unset($_SESSION['create_renamed_toastClass']);
+};
 
 // Get current user
 $profile_id = (int) $_SESSION['profile_id'];
@@ -79,40 +93,8 @@ if ($project_id > 0) {
     $checkStmt->close();
 }
 
-// // Add experiment
-// if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_experiment"])) {
 
-//     $experimentName = trim($_POST["experiment_name"]);
 
-//     if ($project_id > 0 && $experimentName != "") {
-
-//         // Add new experiment
-//         $sql = "
-//             INSERT INTO experiments
-//             (name, project_id)
-//             VALUES (?, ?)
-//         ";
-
-//         $stmt = $conn->prepare($sql);
-
-//         $stmt->bind_param(
-//             "si",
-//             $experimentName,
-//             $project_id
-//         );
-
-//         $stmt->execute();
-
-//         $stmt->close();
-
-//         // Return to current project
-//         header(
-//             "Location: project.php?project_id=" . $project_id
-//         );
-
-//         exit();
-//     }
-// }
 
 // Search experiments
 $search = '';
@@ -175,6 +157,22 @@ if ($project_id > 0) {
     $stmt->close();
 }
 
+
+# store project name for the project where expermients are shown
+$sql = "SELECT projects.name
+        FROM projects
+        WHERE projects.project_id = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $project_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$project_name = $row['name'] ?? '';    // empty string if project not found
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -198,7 +196,9 @@ if ($project_id > 0) {
         crossorigin="anonymous"
     >
 
-    <title>Experiment Library</title>
+    <title>Project</title>
+
+   
 
     <style>
 
@@ -378,6 +378,13 @@ if ($project_id > 0) {
 
     <main class="library-container">
 
+     <!-- Makes sure that the message is actually displayed -->
+    <?php if (!empty($manage_company_message)): ?>
+        <div style="background-color: <?php echo $manage_company_toastClass; ?>; color: white; padding: 10px; margin: 10px 0;" >
+            <?php echo htmlspecialchars($manage_company_message); ?>
+        </div>
+    <?php endif; ?>
+
         <!-- Back -->
 
         <a
@@ -388,8 +395,27 @@ if ($project_id > 0) {
         </a>
 
         <h1 class="library-title">
-            EXPERIMENT LIBRARY
+            Experiment Library of <?php echo htmlspecialchars($project_name); ?>
         </h1>
+
+
+        <!-- CHANGE NAME OF PROJECT -->
+        <!-- this calls a function ased on id, it opens up field where text field is-->
+        <!-- just copied from other fields -->
+        <button type="button" class="add-experiment d-flex justify-content-center align-items-center mb-4" onclick="showAddForm('change_project_name')"> Change name of project</button>
+
+        <div id="change_project_name" class="add-form"> <!-- Same style as add experiment -->
+            <form action="actions/create_project.php" method="POST">
+                <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
+                <input type="text" name="new_project_name" class="form-control add-input mb-3" placeholder="Enter new name" required>
+                <button type="submit" name="change_project_name" class="add-button">Add</button>
+            </form>
+        </div>
+
+
+
+
+
 
         <!-- Search -->
 
@@ -420,7 +446,7 @@ if ($project_id > 0) {
         <button
             type="button"
             class="add-experiment d-flex justify-content-center align-items-center mb-4"
-            onclick="showAddForm()"
+            onclick="showAddForm('addForm')"
         >
             add experiment
         </button>
@@ -514,9 +540,9 @@ if ($project_id > 0) {
 
     <script>
 
-        function showAddForm() {
+        function showAddForm(id) {
 
-            var form = document.getElementById("addForm");
+            var form = document.getElementById(id);
 
             if (form.style.display === "none" || form.style.display === "") {
 

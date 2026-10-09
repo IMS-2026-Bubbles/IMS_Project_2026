@@ -63,14 +63,6 @@ if (isset($_SESSION['toastClass'])) {
 
 
 // Create list of labs the user has access to (for the add project form) (currently 'owner' role only)
-// $labs = [];
-
-// Get labs the user is a member of
-// $sql = "SELECT profiles.profile_id, lab_members.lab_id, labs.name
-//         FROM profiles
-//         LEFT JOIN lab_members on profiles.profile_id = lab_members.profile_id
-//         LEFT JOIN labs on lab_members.lab_id = labs.lab_id
-//         WHERE profiles.profile_id = ?";
 $sql_labs = 'SELECT labs.lab_id, labs.name
         FROM labs
         JOIN lab_members ON labs.lab_id = lab_members.lab_id
@@ -125,6 +117,7 @@ $stmt_projects->close();
 
 <head>
 
+
     <meta charset="UTF-8">
 
     <meta
@@ -141,7 +134,9 @@ $stmt_projects->close();
         crossorigin="anonymous"
     >
 
-    <title>Project Library</title>
+    <title>Library</title>
+    
+    
 
     <style>
 
@@ -307,6 +302,7 @@ $stmt_projects->close();
         }
 
     </style>
+    
 
 </head>
 
@@ -317,6 +313,8 @@ $stmt_projects->close();
     <?php include 'includes/navbar.php'; ?>
 
     <!-- Project Library -->
+
+    <h1 > Projects </h1>
 
     <main class="library-container">
 
