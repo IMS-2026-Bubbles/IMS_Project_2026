@@ -20,6 +20,7 @@ ini_set('display_startup_errors', 1);
 // Start session
 require_once 'session/init.php';
 require_once 'session/check_user_logged_in.php';
+require_once 'session/check_user_in_company.php';
 
 // Connect to database
 require_once 'database/db.php';
@@ -34,6 +35,30 @@ $search = '';
 if (isset($_GET['search'])) {
     $search = trim($_GET['search']);
 }
+
+// Retrieve view page error messages from the session if they exist
+if (isset($_SESSION['view_page_message'])) {
+    $message = $_SESSION['view_page_message'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['view_page_message']);
+} else {
+    $message = '';
+}
+
+if (isset($_SESSION['toastClass'])) {
+    $toastClass = $_SESSION['toastClass'];
+
+    // Clear the toast class from the session after retrieving it
+    unset($_SESSION['toastClass']);
+} else {
+    $toastClass = '';
+}
+
+
+
+
+
 
 // Create list of labs the user has access to (for the add project form) (currently 'owner' role only)
 // $labs = [];
