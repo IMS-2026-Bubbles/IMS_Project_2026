@@ -92,8 +92,19 @@ if (isset($_SESSION['messages_save_experiment_section'])) {
 
 
 
-<!Doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+
+    <title>Experiment Section - Scriba</title>
+</head>
+<body class="scriba-experiment-body">
 
 <!--  -->
 <!-- Front end starts here -->
@@ -103,7 +114,8 @@ if (isset($_SESSION['messages_save_experiment_section'])) {
 <?php
 // Navbar
 include 'includes/navbar.php';  // Include the navbar
-
+// Start the main content container
+echo '<main class="experiment-section-page">';
 // Display project name, experiment name, and experiment section name
 include 'includes/fetch_project_experiment_names.php';  // fetch the name and ID for project and experiment as $project_experiment_name
 
@@ -128,12 +140,6 @@ echo 'Last updated: ' . $experiment_updated_at[$experiment_section . '_updated_a
 
 // Display the "Done" toggle for the experiment plan
 include 'includes/fetch_experiment_progress.php';  // Fetches the progress status for the specified experiment ID
-// Define the progress flag display helper.
-include 'includes/render_progress_badge.php';
-echo "<div class='exp_progress_flags'>"  // String structured vertically for code readability.
-    . experiment_progress_badge($experiment_section, $experiment_progress[$experiment_section . '_is_done'])
-    . '</div>';
-echo '<br>';
 
 // Retrieve the text content for the experiment plan section
 include 'includes/fetch_experiment_section_text.php';  // Fetches the text content for the specified experiment ID and section
@@ -146,7 +152,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> Mark as Done<br>'
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars(ucfirst($experiment_section)) . '<br>'
         . '<br>'
         // Save button
         . "<input type='submit' value='Save Changes'>"
@@ -172,5 +178,7 @@ if (isset($messages_save_experiment_section)) {
         echo $message . '<br>';
     }
 }
+echo '</main>';
 ?>
+</body>
 </html>
