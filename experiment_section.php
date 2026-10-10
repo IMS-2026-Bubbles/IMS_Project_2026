@@ -92,8 +92,19 @@ if (isset($_SESSION['messages_save_experiment_section'])) {
 
 
 
-<!Doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+
+    <title>Experiment Section - Scriba</title>
+</head>
+<body class="scriba-experiment-body">
 
 <!--  -->
 <!-- Front end starts here -->
@@ -169,4 +180,5 @@ if (isset($messages_save_experiment_section)) {
 }
 echo '</main>';
 ?>
+</body>
 </html>

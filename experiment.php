@@ -65,11 +65,12 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
 if (isset($_SESSION['create_renamed_message'])) {
     $manage_company_message = $_SESSION['create_renamed_message'];
     unset($_SESSION['create_renamed_message']);
-};
+}
 if (isset($_SESSION['create_renamed_toastClass'])) {
     $manage_company_toastClass = $_SESSION['create_renamed_toastClass'];
     unset($_SESSION['create_renamed_toastClass']);
-};?>
+}
+;?>
 
 <!--  -->
 <!-- Front end starts here -->
