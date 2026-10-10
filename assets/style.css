@@ -582,79 +582,93 @@ body {
 
  
 /* =========================================================
-   12. NAVBAR
+   12. NAVBAR - shared by all Scriba pages
    ========================================================= */
 
-    .scriba-navbar {
-        background-color: #e3f2fd !important;
-        padding: 10px 15px;
-        min-height: 70px;
+.scriba-navbar {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 25px;
+    box-sizing: border-box;
+    background-color: #e3f2fd !important;
+}
+
+.scriba-navbar > .container-fluid {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+}
+
+.scriba-navbar .scriba-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #263c55 !important;
+    font-size: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.scriba-navbar ul.scriba-nav-links {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end;
+    gap: 10px;
+    width: auto !important;
+    margin: 0 0 0 auto !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.scriba-navbar .scriba-nav-links .nav-item {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none !important;
+}
+
+.scriba-navbar .scriba-nav-links .nav-link {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #263c55 !important;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+
+.scriba-navbar .scriba-nav-links .nav-link:hover {
+    background-color: #d4f6fd;
+}
+
+.scriba-navbar .scriba-nav-links .logout {
+    border: 1px solid #263c55;
+    border-radius: 5px;
+    background-color: #9acaed;
+}
+
+.scriba-navbar .scriba-nav-links .logout:hover {
+    background-color: #33709c;
+    color: #ffffff !important;
+}
+
+@media (max-width: 760px) {
+    .scriba-navbar > .container-fluid {
+        flex-wrap: wrap !important;
     }
 
-/* Logo and Scriba title */
-
-    .scriba-navbar-brand {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #263c55 !important;
-        font-size: 25px;
-        font-weight: bold;
-        text-decoration: none;
-    }
-
-/* Navigation links */
-    .scriba-nav-links {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-left: auto;
-        flex-direction: row;
-    }
-
-    .scriba-nav-links .nav-link {
-        color: #263c55 !important;
-        padding: 10px 12px;
-        border-radius: 8px;
-        font-size: 16px;
-        text-decoration: none;
-        transition: background-color 0.2s ease;
-    }
-
-    .scriba-nav-links .nav-link:hover {
-        background-color: #d4f6fd;
-        color: #263c55 !important;
-    }
-
-/* Logout button */
-    .scriba-nav-links .logout {
-        border: 1px solid #263c55;
-        background-color: #9acaed;
-        color: #263c55 !important;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    .scriba-nav-links .logout:hover {
-        border: 1px solid #263c55;
-        background-color: #33709c;
-        color: white !important;
-    }
-
-/* Keep the navbar usable on small screens */
-    @media (max-width: 768px) {
-    .scriba-navbar .container-fluid {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .scriba-nav-links {
-        flex-wrap: wrap;
-        margin-left: 0;
-        gap: 4px;
+    .scriba-navbar ul.scriba-nav-links {
+        flex-wrap: wrap !important;
+        justify-content: flex-start;
+        width: 100% !important;
+        margin: 8px 0 0 !important;
     }
 }
+
 
 
 
@@ -851,7 +865,7 @@ body {
 
 .login_button {
     
-  background-color: rgb(46, 237, 119);
+  background-color: #7794b6;
   border-radius: 18px; /* makes corners rounded*/ 
   color: white;
   padding: 15px 32px;
@@ -861,9 +875,12 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+.login_button:hover {
+    background-color: #627fa1;
+    color: white;
+    border-color: #263c55;
+}
 
-
- 
 
 .register_user_button {
     display: inline-block;
@@ -880,6 +897,7 @@ body {
             var(--scriba-soft-blue),
             var(--scriba-white)
         );
+    
 
     color: var(--scriba-dark);
     font-size: 18px;
@@ -1225,193 +1243,521 @@ width: 90%;
    
    ========================================== */
 
-/* Apply these styles only to the experiment page */
-body:has(a[href*="experiment_section.php"]) {
-    --experiment-blue: #7794b6;
-    --experiment-light-blue: #d4f6fd;
-    --experiment-dark: #263c55;
-    --experiment-border: #d6e5f6;
 
-    font-family: "Segoe UI", Arial, sans-serif;
-    color: var(--experiment-dark);
-    background: linear-gradient(
-        135deg,
-        #e6efff 0%,
-        #d4f6fd 100%
-    );
-    min-height: 100vh;
-    line-height: 1.6;
+/* =========================================================
+   EXPERIMENT PAGE - layout and components
+   ========================================================= */
+
+.experiment-page {
+    width: min(92%, 1200px);
+    margin: 32px auto 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+    color: #263c55;
 }
 
-/* Links */
-body:has(a[href*="experiment_section.php"]) a {
-    color: #315f9b;
-    text-decoration: none;
-    transition: color 0.2s ease, background 0.2s ease;
+.experiment-heading {
+    width: 100%;
+    margin: 0;
+    padding: 24px 28px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #d6e5f6;
+    border-radius: 18px;
+    box-shadow: 0 4px 14px rgba(38, 60, 85, 0.08);
 }
 
-body:has(a[href*="experiment_section.php"]) a:hover {
-    color: #173f73;
-    text-decoration: underline;
+.experiment-project {
+    margin: 0 0 8px;
+    color: #52769f;
+    font-size: 15px;
 }
 
-/* Parent project link */
-body:has(a[href*="experiment_section.php"])
-a[href*="project.php"] {
-    display: inline-block;
-    margin: 12px 0 20px;
-    padding: 9px 16px;
-    border: 1px solid var(--experiment-border);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    font-weight: 600;
+.experiment-page .experiment-page-title {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #263c55;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
 }
 
-/* Experiment Plan, Log and Result links */
-body:has(a[href*="experiment_section.php"])
-a[href*="experiment_section.php"] {
+.experiment-page .experiment-page-title::before {
+    content: none;
+}
+
+.experiment-back {
+    align-self: flex-start;
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
-    width: min(100%, 320px);
-    min-height: 90px;
-    margin: 8px 12px 8px 0;
-    padding: 20px;
-    border: 1px solid #b9d4f5;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 4px 14px rgba(38, 60, 85, 0.07);
-    font-size: 17px;
-    font-weight: 700;
-    vertical-align: top;
+    padding: 10px 16px;
+    background: #ffffff;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    color: #315f9b !important;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none !important;
 }
 
-body:has(a[href*="experiment_section.php"])
-a[href*="experiment_section.php"]:hover {
+.experiment-back:hover {
     background: #eef7ff;
-    border-color: var(--experiment-blue);
-    box-shadow: 0 8px 20px rgba(38, 60, 85, 0.12);
-    text-decoration: none;
-    transform: translateY(-2px);
+    color: #173f73 !important;
 }
 
-/* Tag management form */
-body:has(a[href*="experiment_section.php"])
-form[action*="save_experiment_tags.php"] {
-    box-sizing: border-box;
-    width: min(100% - 32px, 760px);
-    margin: 18px 0 24px;
-    padding: 22px;
-    border: 1px solid var(--experiment-border);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.92);
+.experiment-content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 22px;
+}
+
+.experiment-panel {
+    min-width: 0;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #d6e5f6;
+    border-radius: 18px;
     box-shadow: 0 4px 14px rgba(38, 60, 85, 0.06);
+    box-sizing: border-box;
 }
 
-/* Text fields */
-body:has(a[href*="experiment_section.php"])
-input[type="text"] {
-    box-sizing: border-box;
-    width: min(100%, 520px);
+.experiment-panel h2 {
+    margin: 0 0 16px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #263c55;
+}
+
+.experiment-tag-list {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.experiment-page .experiment-tag-form {
+    width: 100%;
+    margin: 18px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.experiment-page .experiment-tag-form input[type="text"],
+.experiment-page .experiment-rename-form input[type="text"] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
     min-height: 44px;
-    margin: 6px 0 12px;
+    margin: 0 0 12px;
     padding: 11px 14px;
     border: 1px solid #c5d8ef;
     border-radius: 10px;
-    background: #fff;
-    color: var(--experiment-dark);
+    box-sizing: border-box;
+    background: #ffffff;
+    color: #263c55;
     font: inherit;
 }
 
-body:has(a[href*="experiment_section.php"])
-input[type="text"]:focus {
+.experiment-page .experiment-tag-form input[type="submit"],
+.experiment-page .experiment-rename-form .add-button {
+    min-height: 42px;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 10px;
+    background: #7794b6;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.experiment-message {
+    margin: 12px 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #e8f4fc;
+    color: #263c55;
+}
+
+.experiment-meta {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-wrap: anywhere;
+}
+
+.experiment-meta p {
+    margin: 0;
+}
+
+.experiment-page .exp_progress_flags {
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+    box-sizing: border-box;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    background: #f4f8fd;
+    line-height: 2;
+}
+
+.experiment-sections-panel,
+.experiment-rename-panel {
+    width: 100%;
+}
+
+.experiment-section-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.experiment-page .experiment-section-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 80px;
+    margin: 0;
+    padding: 18px;
+    box-sizing: border-box;
+    border: 1px solid #b9d4f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #315f9b !important;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none !important;
+    overflow-wrap: anywhere;
+}
+
+.experiment-page .experiment-section-link:hover {
+    background: #eef7ff;
+    border-color: #7794b6;
+}
+
+.experiment-rename-toggle {
+    padding: 10px 20px;
+    border: 1px solid #263c55;
+    border-radius: 10px;
+    background: #7794b6;
+    color: #ffffff;
+    font: inherit;
+    cursor: pointer;
+}
+
+.experiment-page .experiment-rename-form {
+    width: 100%;
+    margin-top: 16px;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+@media (max-width: 800px) {
+    .experiment-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .experiment-section-links {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .experiment-page {
+        width: 94%;
+        margin-top: 20px;
+    }
+
+    .experiment-heading,
+    .experiment-panel {
+        padding: 18px;
+    }
+}
+/* Make progress labels black */
+.experiment-page .exp_progress_flags,
+.experiment-page .exp_progress_flags * {
+    color: #000000 !important;
+}
+
+/* =========================================================
+   Experiment section page and automatic status updates
+   ========================================================= */
+
+body.scriba-experiment-body {
+    min-height: 100vh;
+    background: linear-gradient(120deg, #7d9bbb 0%, #b1ddea 100%);
+}
+
+
+.experiment-section-page {
+    width: min(92%, 1260px);
+    margin: 32px auto 48px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    
+}
+
+.experiment-section-page h1,
+.experiment-section-page h2 {
+    color: #263c55;
+    font-weight: 700;
+}
+
+.experiment-section-page h2 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.experiment-section-page a {
+    color: #315f9b;
+}
+
+.section-status-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 22px 0;
+    padding: 18px 20px;
+    background: #f2f7fd;
+    border: 1px solid #d6e5f6;
+    border-radius: 14px;
+}
+
+.section-status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #000;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.section-status-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #7794b6;
+    cursor: pointer;
+}
+
+.section-status-toggle input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+}
+
+.section-save-message {
+    margin: 0;
+    color: #263c55;
+    font-size: 14px;
+}
+
+.experiment-page .exp_progress_flags {
+    display: grid;
+    gap: 8px;
+}
+
+.experiment-page .progress-status-row {
+    display: grid;
+    grid-template-columns: 12px 80px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #d6e5f6;
+    border-radius: 11px;
+    background: #f5f9ff;
+    color: #000 !important;
+    text-decoration: none !important;
+    transition: background-color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.experiment-page .progress-status-row:hover {
+    background: #e8f2ff;
+    border-color: #9dbce4;
+}
+
+.progress-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #9299a1;
+}
+
+.progress-status-dot.is-done {
+    background: #35a765;
+}
+
+.progress-status-name {
+    color: #000;
+    font-weight: 700;
+}
+
+.progress-status-date {
+    color: #000;
+    overflow-wrap: anywhere;
+}
+
+.progress-status-open {
+    color: #315f9b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .experiment-section-page {
+        width: 94%;
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    .experiment-page .progress-status-row {
+        grid-template-columns: 12px 70px minmax(0, 1fr);
+    }
+
+    .progress-status-open {
+        display: none;
+    }
+}
+.experiment-page .exp_progress_flags {
+    text-align: center;
+}
+
+.experiment-page .exp_progress_flags p {
+    text-align: center !important;
+    margin: 12px 0 24px;
+}
+/* Experiment section page */
+.experiment-section-page {
+    width: min(92%, 1000px);
+    margin: 32px auto 48px;
+    padding: 32px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #d6e5f6;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(38, 60, 85, 0.08);
+    color: #263c55;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.experiment-section-page h1 {
+    margin: 28px 0 16px;
+    color: #263c55;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.experiment-section-page a {
+    color: #356da5;
+}
+
+.experiment-section-page input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #7794b6;
+}
+
+.experiment-section-page p {
+    margin: 12px 0;
+}
+
+/* Improve typography and form controls on experiment section pages */
+.experiment-section-page {
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: #263c55;
+}
+
+.experiment-section-page h1 {
+    font-size: 30px;
+    line-height: 1.3;
+    letter-spacing: -0.4px;
+}
+
+.experiment-section-page h3 {
+    margin: 24px 0 16px;
+    font-size: 24px;
+    line-height: 1.4;
+    font-weight: 700;
+    color: #263c55;
+}
+
+/* Make progress text readable */
+.experiment-section-page .exp_progress_flags,
+.experiment-section-page .exp_progress_flags * {
+    color: #263c55 !important;
+    font-family: inherit;
+    font-size: 17px !important;
+    line-height: 1.6;
+}
+
+/* Text area */
+.experiment-section-page textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-height: 260px;
+    margin: 12px 0;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    border: 1px solid #c5d8ef;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #263c55;
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.7;
+    resize: vertical;
+}
+
+.experiment-section-page textarea:focus {
     outline: none;
-    border-color: var(--experiment-blue);
+    border-color: #7794b6;
     box-shadow: 0 0 0 3px rgba(119, 148, 182, 0.18);
 }
 
 /* Buttons */
-body:has(a[href*="experiment_section.php"])
-input[type="submit"],
-body:has(a[href*="experiment_section.php"])
-button.add-experiment,
-body:has(a[href*="experiment_section.php"])
-button.add-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
+.experiment-section-page input[type="submit"] {
+    min-height: 44px;
     padding: 10px 22px;
     border: none;
     border-radius: 10px;
-    background: var(--experiment-blue);
-    color: white;
-    font: inherit;
-    font-weight: 700;
+    background: #7794b6;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
 }
 
-body:has(a[href*="experiment_section.php"])
-input[type="submit"]:hover,
-body:has(a[href*="experiment_section.php"])
-button.add-experiment:hover,
-body:has(a[href*="experiment_section.php"])
-button.add-button:hover {
-    background: #52769f;
-    transform: translateY(-1px);
+.experiment-section-page input[type="submit"]:hover {
+    background: #627fa1;
 }
 
-/* Progress information */
-body:has(a[href*="experiment_section.php"])
-.exp_progress_flags {
-    box-sizing: border-box;
-    width: min(100% - 32px, 760px);
-    margin: 16px 0 24px;
-    padding: 18px 22px;
-    border: 1px solid var(--experiment-border);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.8);
-    line-height: 2;
-}
-
-/* Rename experiment form */
-body:has(a[href*="experiment_section.php"])
-#change_experiment_name {
-    box-sizing: border-box;
-    width: min(100% - 32px, 600px);
-    margin: 12px 0 24px;
-    padding: 20px;
-    border: 1px solid var(--experiment-border);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.92);
-}
-
-/* Rename form input */
-body:has(a[href*="experiment_section.php"])
-#change_experiment_name input[type="text"] {
-    display: block;
-    width: 100%;
-}
-
-/* Responsive layout */
-@media (max-width: 640px) {
-    body:has(a[href*="experiment_section.php"])
-    a[href*="experiment_section.php"] {
-        width: calc(100% - 12px);
-        margin-right: 0;
-    }
-
-    body:has(a[href*="experiment_section.php"])
-    form[action*="save_experiment_tags.php"],
-    body:has(a[href*="experiment_section.php"])
-    .exp_progress_flags,
-    body:has(a[href*="experiment_section.php"])
-    #change_experiment_name {
-        width: calc(100% - 16px);
-        padding: 16px;
-    }
+.experiment-section-page input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    accent-color: #7794b6;
+    vertical-align: middle;
 }
 
 
