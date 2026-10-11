@@ -42,11 +42,11 @@ Each HTML page must include a reference to the external style sheet file inside 
 /* 这里开始是 CSS 规则 */
 
 :root {
-    --scriba-blue: #7794b6;
-    --scriba-light-blue: #bce8f1;
+    --scriba-blue: #bfd4fb;
+    --scriba-light-blue: #066683;
     --scriba-dark: #263c55;
     --scriba-soft-blue: #b9caec;
-    --scriba-card-blue: #c4d3ee;
+    --scriba-card-blue: #a0bef6;
     --scriba-white: #ffffff;
     --scriba-border: #263c55;
     --scriba-blueborder: #2d67a8;
