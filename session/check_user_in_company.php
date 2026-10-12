@@ -5,7 +5,7 @@
 // that require user authentication. If the user is not in a company,
 // it will send the user to the user profile and display a message there.
 
-//for displaying error message if user is not in a company
+// for displaying error message if user is not in a company
 
 $message = '';
 $toastClass = '';
@@ -17,8 +17,8 @@ if (!isset($_SESSION['lab_id'])) {
 
     require_once __DIR__ . '/../database/db.php';
     require_once __DIR__ . '/../includes/log_activity.php';
-    //require '../database/db.php';  // Include the database connection
-    //require '../includes/log_activity.php';  // Include the log_activity function
+    // require '../database/db.php';  // Include the database connection
+    // require '../includes/log_activity.php';  // Include the log_activity function
     log_activity(
         $conn,
         $_SESSION['lab_id'] ?? NULL,  // Use NULL if lab_id is not set
@@ -34,7 +34,7 @@ if (!isset($_SESSION['lab_id'])) {
     $_SESSION['view_page_message'] = $message;
     $_SESSION['toastClass'] = $toastClass;
 
-    header('Location:/../user_profile.php');
+    header('Location: ../user_profile.php');
     exit();
 }
 
