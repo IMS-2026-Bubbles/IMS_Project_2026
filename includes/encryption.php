@@ -6,7 +6,7 @@
 // before saving to or after fetching from the database.
 
 // key variable
-$encryption_key = $_ENV['ENCRYPTION_KEY'];  // Use environment variable for encryption key
+$encryption_key = $_ENV['ENCRYPTION_KEY'] ?? die('ENCRYPTION_KEY not set in .env file');  // Use environment variable for encryption key
 
 // Encryption function
 function encrypt_text(

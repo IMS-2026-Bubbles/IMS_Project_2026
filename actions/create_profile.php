@@ -124,15 +124,16 @@ if (isset($_POST['register'])) {
         function send_mail_by_PHPMailer($to, $from, $subject, $body)
         {
             $mail = new PHPMailer();
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
-            $mail->SMTPDebug = SMTP::DEBUG_CONNECTION;  // or DEBUG_SERVER for more detail
-            echo 'debugger was passed';
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
+            // $mail->SMTPDebug = SMTP::DEBUG_CONNECTION;  // or DEBUG_SERVER for more detail
+            // echo 'debugger was passed';
+            $mail->SMTPDebug = SMTP::DEBUG_OFF;  // Disable debug output for production
             $mail->CharSet = 'UTF-8';
             $mail->isSMTP();  // Use SMTP protocol
-            $mail->Host = $_ENV['MAIL_HOST'];  // Specify  SMTP server
+            $mail->Host = $_ENV['MAIL_HOST'] ?? die('MAIL_HOST not set in .env file');  // Specify  SMTP server
             $mail->SMTPAuth = true;  // Auth. SMTP
-            $mail->Username = $_ENV['MAIL_USERNAME'];  // Mail who send by PHPMailer
-            $mail->Password = $_ENV['MAIL_PASSWORD'];  // your pass mail box
+            $mail->Username = $_ENV['MAIL_USERNAME'] ?? die('MAIL_USERNAME not set in .env file');  // Mail who send by PHPMailer
+            $mail->Password = $_ENV['MAIL_PASSWORD'] ?? die('MAIL_PASSWORD not set in .env file');  // your pass mail box
             $mail->SMTPSecure = 'ssl';  // Accept SSL
             $mail->Port = 465;  // port of your out server
             $mail->setFrom($from);  // Mail to send at
