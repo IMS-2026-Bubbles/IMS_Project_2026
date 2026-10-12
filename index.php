@@ -5,7 +5,10 @@
 // outside Scriba (first page you see when you go to the site)
 // actions/login.php (invalid login credentials)
 // actions/create_profile.php (after registering a new user)
+// actions/delete_profile.php (after you have deleted a user)
+
 // Action: Display login form and any error messages from previous login attempts
+
 // Redirect to:
 // actions/login.php (on form submission)
 // register_user.php (if user clicks "Register new user" button)
@@ -66,9 +69,6 @@ if (isset($_SESSION['delete_account_message'])) {
 
 
 
-
-
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -99,13 +99,6 @@ if (isset($_SESSION['delete_account_message'])) {
 <!-- Linked to our stylesheet, linked is often used to link to the stylesheet but also other files  -->
  <link rel="stylesheet" href="assets/style.css">
 </head>
-
-
-
-
-
-
-
 
 
 
@@ -182,58 +175,9 @@ if (isset($_SESSION['delete_account_message'])) {
 
          <!-- Apply global buttons in css and reuse everything -->
 
-
- 
-
-
-
 </main>
 
-
-        
-
-
-
-
-
-
-
-
 </body>
 </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--
-        <form action="actions/login.php" method= "POST">   change action so you end up somewhere! 
-
-             forms for all free text info that is needed
-            required so that the field is mandatory before registering 
-            <label for="email">Email adress</label><br>
-            <input type="email" class="" name="email" required ><br>
-
-            <label for="password">Password</label><br>
-            <input type="password" class="" name="password" minlength="8"  required><br><br>
-            <input type="submit" class="btn btn-dark rounded-pill" name="login" value="Log in"><br><br>
-    
-        </div>
-    </form>
-    
-</body>
-</html>
-
--->

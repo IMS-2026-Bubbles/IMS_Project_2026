@@ -95,6 +95,12 @@ if (isset($_POST['login'])) {
             0,  // success = 0 for failure
             'Login failed: Email not found'
         );
+        // Redirect back to the login page with an error message
+        $_SESSION['login_error'] = $message;
+        $_SESSION['toastClass'] = $toastClass;
+        header('Location: ../index.php');
+        exit();
+
     } else {
         // use placeholders to protect against sql injection
 
