@@ -7,4 +7,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Load environment variables from .env file, provides:
+// // Database credentials
+// // Mail server credentials
+// // Encryption key for encrypting/decrypting sensitive data.
+require_once __DIR__ . '/load_env.php';
+load_dotenv();  // Load environment variables from .env file
 ?>

@@ -18,7 +18,6 @@ ini_set('display_startup_errors', 1);
 require_once '../session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here, login action
 require_once '../database/db.php';
-
 require_once '../includes/log_activity.php';  // Include the log_activity function
 
 $message = '';
@@ -162,6 +161,7 @@ if (isset($_POST['login'])) {
             // Fetch the user's affiliations from the database. Need if they are scriba admin
             // and if they belong to at least one company.
             $profile_id = $_SESSION['profile_id'];
+
             require_once '../includes/fetch_profile_affiliation.php';  // expects $conn and $profile_id
             // Add company_id to session if user has one.
             $_SESSION['company_id'] = $user_affiliations['company_id'][0] ?? NULL;  // If user has no company, set to NULL
