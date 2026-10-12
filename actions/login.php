@@ -163,8 +163,8 @@ if (isset($_POST['login'])) {
             // and if they belong to at least one company.
             $profile_id = $_SESSION['profile_id'];
             require_once '../includes/fetch_profile_affiliation.php';  // expects $conn and $profile_id
-            // Add company_id to session if user has one.
-            $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL;  // If user has no company, set to NULL
+            // Add lab_id to session if user has one.
+            $_SESSION['lab_id'] = $user_affiliations['lab_id'][0] ?? NULL;  // If user has no lab, set to NULL
             // Scriba admin
             $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0;  // One value, 1 or 0
 
@@ -258,16 +258,16 @@ if (isset($_POST['login'])) {
             }
 
             // Redirect to the appropriate page based on user type
-            // Using $_SESSION['profile_id'] and $_SESSION['company_id'] (see above).
+            // Using $_SESSION['profile_id'] and $_SESSION['lab_id'] (see above).
             // Scriba admin => scriba_admin.php
-            // User with company_id => library.php
+            // User with lab_id => library.php
             // User that doesn't belong to a company => user_profile.php
             if ($user_is_scriba_admin == 1) {
                 // Scriba admin => scriba_admin.php
                 header('Location:../scriba_admin.php');
                 exit();
-            } elseif (isset($_SESSION['company_id'])) {
-                // User with company_id => library.php
+            } elseif (isset($_SESSION['lab_id'])) {
+                // User with lab_id => library.php
                 header('Location:../library.php');
                 exit();
             } else {
