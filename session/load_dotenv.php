@@ -20,7 +20,7 @@ function load_dotenv()
         $lines,
         function ($line) {
             return strpos(trim($line), '#') !== 0 &&  // Skip comments (lines starting with '#')
-                !str_begins_with(trim($line), '=') &&  // Skip lines that begin with '=' (invalid format)
+                !str_starts_with(trim($line), '=') &&  // Skip lines that begin with '=' (invalid format)
                 str_contains(trim($line), '=');  // Only keep lines that contain at least one '='
         }
     );
