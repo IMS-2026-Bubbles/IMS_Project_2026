@@ -123,7 +123,7 @@ if (isset($_POST['register'])) {
         }
 
         // Defining a function send mail to the user via Scriba-Gmail
-        function send_mail_by_PHPMailer($to, $from, $subject, $message)
+        function send_mail_by_PHPMailer($to, $from, $subject, $body)
         {
             $mail = new PHPMailer();
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
@@ -141,7 +141,7 @@ if (isset($_POST['register'])) {
             $mail->addReplyTo($from);  // Adress to reply
             $mail->isHTML(true);  // use HTML message
             $mail->Subject = $subject;
-            $mail->Body = $message;
+            $mail->Body = $body;
 
             // SEND
             if (!$mail->send()) {
@@ -168,10 +168,10 @@ if (isset($_POST['register'])) {
         $link = "http://localhost/actions/verify_user.php?token=$token";
         $from = 'Scribaadmin@gmail.com';
         $subject = 'Verify your Scriba account';
-        $message = 'Hi! Verify your Scriba account by clicking the following link: ';
-        $message .= "<a href=$link >Verify my scriba account";
+        $body = 'Hi! Verify your Scriba account by clicking the following link: ';
+        $body .= "<a href=$link>Verify my scriba account";
 
-        send_mail_by_PHPMailer($to, $from, $subject, $message);
+        send_mail_by_PHPMailer($to, $from, $subject, $body);
 
         // If registration is successful, log the successful registration
         // Get the profile_id of the newly registered user
