@@ -76,18 +76,15 @@ $scriba_admin_access_level =
 
             <!-- Company/lab admin page = company/lab admin only -->
             <?php
-
-            // $lab_id = $_SESSION['lab_id'] ?? null;
-
-            if (isset($_SESSION['lab_id'])) {
+            // Check if the user is a company admin
+            if (isset($_SESSION['company_id'])) {
                 $company_admin_access_level =
                     check_user_permission(
                         $conn,
                         $_SESSION['profile_id'],
                         'company',
-                        $_SESSION['lab_id']
+                        $_SESSION['company_id']
                     );
-
                 if ($company_admin_access_level >= 3) {
                     echo "<li class='nav-item'>
                             <a class='nav-link active' href='company_admin.php'>
@@ -96,35 +93,40 @@ $scriba_admin_access_level =
                           </li>";
                 }
             }
-
             ?>
-
 
             <!-- Scriba admin page = scriba admin only -->
             <?php
 
+            // Scriba admin page = scriba admin only
             if ($scriba_admin_access_level == 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='scriba_admin.php'>
                             Scriba Admin
                         </a>
                       </li>";
-            } elseif (isset($_SESSION['lab_id'])) {
-                // Home Page/Projects
+            }
 
-                // echo "<li class='nav-item'>
-                //         <a class='nav-link active' href='library.php'>
-                //             Home Page/Projects
-                //         </a>
-                //       </li>";
+            // Home Page/Projects page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
+                echo "<li class='nav-item'>
+                        <a class='nav-link active' href='library.php'>
+                            Home Page/Projects
+                        </a>
+                      </li>";
+            }
 
-                // // Leaderboard
-
-                // echo "<li class='nav-item'>
-                //         <a class='nav-link active' href='leaderboard.php'>
-                //             Leaderboard
-                //         </a>
-                //       </li>";
+            // Leaderboard page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
+                echo "<li class='nav-item'>
+                        <a class='nav-link active' href='leaderboard.php'>
+                            Leaderboard
+                        </a>
+                      </li>";
             }
 
             // Profile page (everyone, except if you are a scriba admin)
@@ -135,26 +137,6 @@ $scriba_admin_access_level =
                     </a>
                   </li>";
             }
-            ?>
-
-            
-            <!-- points for user and company admin, excluding scriba admin -->
-            <?php
-            // requirement for type of user, ! = 1 excludes scriba admin 
-            // https://www.php.net/manual/en/language.operators.logical.php
-            // https://www.w3schools.com/php/func_mysqli_fetch_assoc.asp
-
-            if ($scriba_admin_access_level != 1 && isset($_SESSION['lab_id'])) { //comp id = all users that belongs to company
-                // prepare q, protect ag sql injection, fills the place w the users id in the ? place
-                 $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?'); $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
-                 $stmt_navbar_points->execute();
-                // get result 
-                $row_navbar = $stmt_navbar_points->get_result()->fetch_assoc();
-                $navbar_points = $row_navbar['scriba_points'] ?? 0;
-                // echo
-
-                 echo "<li class='nav-item'> <span class='nav-link active'>$navbar_points points</span> </li>";
-                 }  
             ?>
 
    
