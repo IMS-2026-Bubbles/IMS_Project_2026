@@ -132,6 +132,7 @@ require_once 'check_user_permission.php';
 
             if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) { //comp id = all users that belongs to company
                 // prepare q, protect ag sql injection, fills the place w the users id in the ? place
+
                  $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?'); $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
                  $stmt_navbar_points->execute();
                 // get result 
@@ -142,6 +143,11 @@ require_once 'check_user_permission.php';
                  echo "<li class='nav-item'> <span class='nav-link active'>$navbar_points points</span> </li>";
                  }  
             ?>
+
+            <!-- https://www.w3schools.com/css/css_icons_bootstrap.asp this is used to implement an icon for the points in the navbar  -->
+             <!-- theese are the page where i took the botstrap icons from  -->
+             <!-- https://icons.getbootstrap.com -->
+
 
    
             <!-- Logout = everyone -->

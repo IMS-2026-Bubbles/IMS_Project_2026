@@ -184,7 +184,7 @@ $stmt->close();
 <section class="profile_right">
     <div class="profile_card">
         <!-- amp means & in HTML -->
-    <h2>Company &amp; Department</h2>
+    <h2>Company &amp; Lab Group</h2>
 
     
 
