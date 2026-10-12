@@ -1,9 +1,9 @@
 <?php
 // This is code to connect the server to the database
-$servername = 'localhost';
-$username = 'root';
-$password = 'root';
-$dbname = 'scriba_db';  // add the name of our database here
+$servername = $_ENV['DB_SERVERNAME'];
+$username = $_ENV['DB_USERNAME'];
+$password = $_ENV['DB_PASSWORD'];
+$dbname = $_ENV['DB_NAME'];
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

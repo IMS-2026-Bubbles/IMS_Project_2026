@@ -124,41 +124,5 @@ if (isset($_POST['delete_account'])) {
         header('Location: ../user_profile.php');
         exit;
     }
-
-
-    
-
-    
-
-
-    // if ($stmt->execute()) {
-    //     $_SESSION['delete_account_message'] = 'Record deleted successfully';
-    //     // Log the deletion action
-    //     log_activity(
-    //         $conn,
-    //         $profile_id,
-    //         'profile',
-    //         $profile_id,
-    //         'delete',
-    //         'User requested account deletion: successfully deleted profile information'
-    //     );
-    // } else {
-    //     $_SESSION['delete_account_message'] = 'Error deleting user profile: ' . $conn->error;
-    //     // Log the deletion action failed
-    //     log_activity(
-    //         $conn,
-    //         $profile_id,
-    //         'profile',
-    //         $profile_id,
-    //         'delete',
-    //         'User requested account deletion: failed to delete profile information: ' . $conn->error
-    //     );
-    // }
-
-    // once you have deleted your account you should be logged out
-    //header('Location: ../actions/logout.php');
-    //exit;
 }
-
 ?>
-
