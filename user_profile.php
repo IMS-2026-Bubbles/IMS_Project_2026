@@ -206,11 +206,11 @@ $stmt->close();
         if (empty($company['name'])) {
             ?> No company <?php }
         // if invited
-        elseif ($company['role'] == 'pending') { ?>
-        You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
-        <form action="actions/join_company_lab.php" method="POST"> 
-        <!-- Accept button -->
-        <button type="submit" name="submit_type" value="accept">Accept</button>
+            elseif ($company['role'] == 'pending') { ?>
+            You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
+            <form action="actions/join_company_lab.php" method="POST"> 
+            <!-- Accept button -->
+            <button type="submit" name="submit_type" value="accept">Accept</button>
 
         <!-- Decline Button -->
         <button type="submit" name="submit_type" value="decline">Decline</button>
