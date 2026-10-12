@@ -82,6 +82,7 @@ if (isset($_POST['login'])) {
     }
 
     // check if the number of rows are more than 0 => email exists
+    // if email is not in database:
     if ($checkemailStmt->num_rows < 1) {
         $message = 'Invalid email or password.';
         $toastClass = '#dc3545';  // Danger color
@@ -101,45 +102,38 @@ if (isset($_POST['login'])) {
         header('Location: ../index.php');
         exit();
 
+    // email is in database:
     } else {
         // use placeholders to protect against sql injection
 
         // Email exists, fetch the hashed password, profile_id, and is_verified from the database
-        $sql = 'SELECT password, profile_id, is_verified FROM profiles WHERE email = ?';
+        $sql = 'SELECT password, profile_id, is_verified 
+                FROM profiles 
+                WHERE email = ?';
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $result = $stmt->get_result();
         $profile = $result->fetch_assoc();
 
-        // Check if user is verified
-        if ((int) $profile['is_verified'] == 1) {
-            // Check if the password matches the hashed password in the database
-            if (password_verify($password, $profile['password'])) {
-                // Correct password
-                // user is verfied and can now log in
+        // Check if user info are matching, then if it is verified
+        # Check if the password matches the hashed password in the database
+        if (password_verify($password, $profile['password'])){
+        
+            // Check if the user is verified
+            if ((int) $profile['is_verified'] == 1) {
+                // verified + correct password -> user can now log in
                 $logincredentials = True;
-            } else {
-                // Wrong password
-                $message = 'Invalid email or password.';
+            } 
+            else {
+                // not verified
+                # safe to display error message with specific reason as correct info is already entered
+                $message = 'Please verify your email before logging in.';
                 $toastClass = '#dc3545';  // Danger color
-
-                // Log a failed login attempt (incorrect password)
-                log_login(
-                    $conn,
-                    $profile['profile_id'],
-                    $email,
-                    $ip_address,
-                    0,  // success = 0 for failure
-                    'Login failed: Incorrect password'
-                );
-            }
-
-            $stmt->close();
-        } else {
-            // User is not verified
-
-            // Log a failed login attempt (user not verified)
+                $_SESSION['login_error'] = $message;
+                $_SESSION['toastClass'] = $toastClass;
+                
+                // Log a failed login attempt (user not verified)
             log_login(
                 $conn,
                 $profile['profile_id'],
@@ -148,13 +142,29 @@ if (isset($_POST['login'])) {
                 0,  // success = 0 for failure
                 'Login failed: User not verified'
             );
+            }
 
-            // We didn't have an error message for if the email is not verified. This can be useful to inform the user. But should we show WHAT the problem is by security resons??
+            $stmt->close();
+        }
+        
+        // User entered wrong password: 
+        else {
+            $message = 'Invalid email or password.';
+            $toastClass = '#dc3545';  // Danger color
+            $_SESSION['login_error'] = $message;
+            $_SESSION['toastClass'] = $toastClass;
 
-            // $_SESSION['login_error'] = 'Please verify your email before logging in.';
-            // $toastClass = '#dc3545';  // Danger color as the other ones
+            // Log a failed login attempt (incorrect password)
+            log_login(
+                $conn,
+                $profile['profile_id'],
+                $email,
+                $ip_address,
+                0,  // success = 0 for failure
+                'Login failed: Incorrect password'
+                );
 
-            // Redirect back to the login page (with message?)
+            // Redirect back to the login page (with message)
             header('Location: ../index.php');
             exit();
         }
