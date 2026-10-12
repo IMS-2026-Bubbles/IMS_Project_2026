@@ -14,10 +14,10 @@
 // include "session/check_user_logged_in.php";
 
 // Database connection
-require_once 'database/db.php';
+require_once __DIR__ . '/../database/db.php';
 
 // Get user access level for the current page
-require_once 'check_user_permission.php';
+require_once __DIR__ . '/check_user_permission.php';
 $scriba_admin_access_level =
     check_user_permission(
         $conn,
