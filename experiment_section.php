@@ -152,7 +152,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars(ucfirst($experiment_section)) . '<br>'
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
         . '<br>'
         // Save button
         . "<input type='submit' value='Save Changes'>"
@@ -162,6 +162,23 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         // Hidden input for the text fingerprint (hash) to detect changes (htmlspecialchars is redundant but _pro forma_)
         . "<input type='hidden' name='text_fingerprint' value='" . htmlspecialchars(hash('sha256', $experiment_section_text)) . "'><br>"
         . '</form>';
+} elseif ($experiment_progress[$experiment_section . '_is_done'] == 1) {
+    // User has edit permission, but the section is marked as done, display as static text
+    // Display form to allow user to unmark the section as done, but not edit the text
+    echo "<form action='actions/save_experiment_section.php' method='post'>"
+        // Hidden field info
+        . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
+        . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
+        // Checkbox for progress flag (checked, allowing to uncheck the section => editable again)
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
+        . '<br>'
+        // Save button
+        . "<input type='submit' value='Save Changes'>"
+        . '</form>'
+        . '<br>';
+
+    echo '<h3>Experiment ' . htmlspecialchars($experiment_section) . ' (Read Only)</h3>';
+    echo "<div class='experiment_section_text'>" . nl2br(htmlspecialchars($experiment_section_text)) . '</div>';
 } else {
     // We already check for access level < 1 at the start and >=2 here,
     // so only access level = 1 remains, which is read-only access.
@@ -173,6 +190,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
 // Close the database connection when done
 include 'database/close_db.php';
 // Display messages from save_experiment_section.php if they exist
+echo '<br>';
 if (isset($messages_save_experiment_section)) {
     foreach ($messages_save_experiment_section as $message) {
         echo $message . '<br>';

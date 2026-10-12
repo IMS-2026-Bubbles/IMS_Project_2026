@@ -34,7 +34,7 @@ if (!isset($_SESSION['lab_id'])) {
     $_SESSION['view_page_message'] = $message;
     $_SESSION['toastClass'] = $toastClass;
 
-    header('Location: ../user_profile.php');
+    header('Location: user_profile.php');
     exit();
 }
 
