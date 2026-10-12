@@ -13,7 +13,7 @@
 // actions/join_company_lab.php (join company or lab forms)
 // actions/logout.php (delete account -> logout and redirect to index.php)
 
-//preparations
+// preparations
 // starts the session
 require_once 'session/init.php';
 // check user is logged in
@@ -184,7 +184,7 @@ $stmt->close();
 <section class="profile_right">
     <div class="profile_card">
         <!-- amp means & in HTML -->
-    <h2>Company &amp; Department</h2>
+    <h2>Company &amp; Lab Group</h2>
 
     
 
@@ -204,21 +204,23 @@ $stmt->close();
 <p>   Company:
         <?php
         if (empty($company['name'])) {
-            ?> No company <?php }
-        // if invited
-        elseif ($company['role'] == 'pending') { ?>
-        You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
-        <form action="actions/join_company_lab.php" method="POST"> 
-        <!-- Accept button -->
-        <button type="submit" name="submit_type" value="accept">Accept</button>
+            ?> No company <?php
+        } elseif ($company['role'] == 'pending') {
+            ?>
+            You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
+            <form action="actions/join_company_lab.php" method="POST"> 
+            <!-- Accept button -->
+            <button type="submit" name="submit_type" value="accept">Accept</button>
 
-        <!-- Decline Button -->
-        <button type="submit" name="submit_type" value="decline">Decline</button>
-        </form> <?php }
-        // if user has a company it just shows
-        else {
+            <!-- Decline Button -->
+            <button type="submit" name="submit_type" value="decline">Decline</button>
+            </form> 
+            <?php
+        } else {
+            // if user has a company it just shows
             echo htmlspecialchars($company['name']);
-        } ?>
+        }
+        ?>
        
         
 

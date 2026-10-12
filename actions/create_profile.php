@@ -65,11 +65,11 @@ if (isset($_POST['register'])) {
     $checkemailStmt->bind_param('s', $email);
     $checkemailStmt->execute();
     $checkemailStmt->store_result();
-    //error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
+    // error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
     // check if the number of rows are more than 0 => email exists
     if ($checkemailStmt->num_rows > 0) {
-        $message = 'email ID already exists';
+        $message = 'Email is already used';
         $_SESSION['register_user_message'] = $message;
         $toastClass = '#007bff';  // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
@@ -124,14 +124,16 @@ if (isset($_POST['register'])) {
         function send_mail_by_PHPMailer($to, $from, $subject, $body)
         {
             $mail = new PHPMailer();
-            $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
-            $mail->SMTPDebug = SMTP::DEBUG_CONNECTION;  // or DEBUG_SERVER for more detail
+            // $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
+            // $mail->SMTPDebug = SMTP::DEBUG_CONNECTION;  // or DEBUG_SERVER for more detail
+            // echo 'debugger was passed';
+            $mail->SMTPDebug = SMTP::DEBUG_OFF;  // Disable debug output for production
             $mail->CharSet = 'UTF-8';
             $mail->isSMTP();  // Use SMTP protocol
-            $mail->Host = 'smtp.gmail.com';  // Specify  SMTP server
+            $mail->Host = $_ENV['MAIL_HOST'] ?? die('MAIL_HOST not set in .env file');  // Specify  SMTP server
             $mail->SMTPAuth = true;  // Auth. SMTP
-            $mail->Username = 'scribaadmin@gmail.com';  // Mail who send by PHPMailer
-            $mail->Password = 'fpqv wzef bpjq jipz';  // your pass mail box
+            $mail->Username = $_ENV['MAIL_USERNAME'] ?? die('MAIL_USERNAME not set in .env file');  // Mail who send by PHPMailer
+            $mail->Password = $_ENV['MAIL_PASSWORD'] ?? die('MAIL_PASSWORD not set in .env file');  // your pass mail box
             $mail->SMTPSecure = 'ssl';  // Accept SSL
             $mail->Port = 465;  // port of your out server
             $mail->setFrom($from);  // Mail to send at
@@ -149,7 +151,9 @@ if (isset($_POST['register'])) {
 
                 $toastClass = '#dc3545';  // Danger color
                 $_SESSION['register_user_toastClass'] = $toastClass;
-                exit;
+
+                header('Location: ../register_user.php');
+                exit();
             } else {
                 // return true if message is send
                 return true;

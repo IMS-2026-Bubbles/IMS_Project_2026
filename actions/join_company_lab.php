@@ -82,7 +82,7 @@ if (isset($_POST['invite_person'])) {
     $get_profile_id = 'SELECT profiles.profile_id, company_members.company_id 
                     FROM profiles
                     LEFT JOIN company_members ON profiles.profile_id = company_members.profile_id
-                    WHERE company_members.company_id IS NULL AND email = ? AND profiles.is_verified = 1';
+                    WHERE company_members.company_id IS NULL AND email = ? AND profiles.is_verified = 1 AND profiles.is_scriba_admin = 0';
     $stmt = $conn->prepare($get_profile_id);
     $stmt->bind_param('s', $email_to_invite);
     $result = $stmt->execute();
@@ -262,6 +262,14 @@ if (isset($_POST['submit_type'])) {
             );
 
             $_SESSION['invitation_response_message'] = 'Successfully accepted invitation to join company.';
+
+            // TODO(session-refresh): company_id/lab_id in $_SESSION are only set at login
+            // (actions/login.php). The user just joined a company, but their session still
+            // has no company_id, so the navbar (Projects/Leaderboard buttons) and
+            // permission checks won't see it until they log out and back in.
+            // Fix: re-fetch affiliations (includes/fetch_profile_affiliation.php) and
+            // update $_SESSION['company_id'] / $_SESSION['lab_id'] here, or centralize
+            // the refresh in a helper called after any membership change.
         }
 
         $stmt->close();

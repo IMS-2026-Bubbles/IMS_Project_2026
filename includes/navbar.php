@@ -19,20 +19,14 @@ require_once 'database/db.php';
 // Get user access level for the current page
 require_once 'check_user_permission.php';
 $scriba_admin_access_level =
-                check_user_permission(
-                    $conn,
-                    $_SESSION['profile_id'],
-                    'scriba',
-                    NULL
-                );
+    check_user_permission(
+        $conn,
+        $_SESSION['profile_id'],
+        'scriba',
+        NULL
+    );
 
 ?>
-
-
-
-
-
-
 
 
     <!-- Adds an image -->
@@ -54,22 +48,23 @@ $scriba_admin_access_level =
 
      <!-- points for user and company admin, excluding scriba admin -->
             <?php
-            // requirement for type of user, ! = 1 excludes scriba admin 
+            // requirement for type of user, ! = 1 excludes scriba admin
             // https://www.php.net/manual/en/language.operators.logical.php
             // https://www.w3schools.com/php/func_mysqli_fetch_assoc.asp
 
-            if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) { //comp id = all users that belongs to company
+            if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) {  // comp id = all users that belongs to company
                 // prepare q, protect ag sql injection, fills the place w the users id in the ? place
-                 $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?'); $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
-                 $stmt_navbar_points->execute();
-                // get result 
+                $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?');
+                $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
+                $stmt_navbar_points->execute();
+                // get result
                 $row_navbar = $stmt_navbar_points->get_result()->fetch_assoc();
                 $navbar_points = $row_navbar['scriba_points'] ?? 0;
                 // echo
 
-                echo "<span class='navbar-points'>" .
-                htmlspecialchars((string) $navbar_points) .
-                " points</span>";  
+                echo "<span class='navbar-points'>"
+                    . htmlspecialchars((string) $navbar_points)
+                    . ' points</span>';
             }
             ?>
 
@@ -80,11 +75,8 @@ $scriba_admin_access_level =
         <ul class="navbar-nav scriba-nav-links">
 
             <!-- Company/lab admin page = company/lab admin only -->
-
             <?php
-
-            // $company_id = $_SESSION['company_id'] ?? null;
-
+            // Check if the user is a company admin
             if (isset($_SESSION['company_id'])) {
                 $company_admin_access_level =
                     check_user_permission(
@@ -93,7 +85,6 @@ $scriba_admin_access_level =
                         'company',
                         $_SESSION['company_id']
                     );
-
                 if ($company_admin_access_level >= 3) {
                     echo "<li class='nav-item'>
                             <a class='nav-link active' href='company_admin.php'>
@@ -102,51 +93,52 @@ $scriba_admin_access_level =
                           </li>";
                 }
             }
-
             ?>
 
-
             <!-- Scriba admin page = scriba admin only -->
-
             <?php
 
-            
+            // Scriba admin page = scriba admin only
             if ($scriba_admin_access_level == 1) {
-                
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='scriba_admin.php'>
                             Scriba Admin
                         </a>
                       </li>";
-            } elseif (isset($_SESSION['company_id'])) {
-                // Home Page/Projects
+            }
 
+            // Home Page/Projects page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='library.php'>
                             Home Page/Projects
                         </a>
                       </li>";
+            }
 
-                // Leaderboard
-
+            // Leaderboard page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='leaderboard.php'>
                             Leaderboard
                         </a>
                       </li>";
             }
-            // Profile page
 
-            echo "<li class='nav-item'>
+            // Profile page (everyone, except if you are a scriba admin)
+            if ($scriba_admin_access_level != 1) {
+                echo "<li class='nav-item'>
                     <a class='nav-link active' href='user_profile.php'>
                         User Profile
                     </a>
                   </li>";
-
+            }
             ?>
 
-            
-           
    
             <!-- Logout = everyone -->
 

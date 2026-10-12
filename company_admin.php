@@ -55,7 +55,8 @@ $sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name, lab
             JOIN companies ON company_members.company_id = companies.company_id
             LEFT JOIN lab_members ON profiles.profile_id = lab_members.profile_id
             LEFT JOIN labs ON lab_members.lab_id = labs.lab_id
-            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0';
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0 AND company_members.role <> "pending"
+            ORDER BY profiles.last_name ASC';
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $admin_company_ID);
@@ -99,7 +100,7 @@ if ($result->num_rows > 0) {
                 . "<button type='submit' class = 'admin_button' >Add</button>"
                 . '</form>';
         }
-        // $rows_to_display .= '</td></tr>'; here??
+        
     }
 }
 // ------------
@@ -140,12 +141,12 @@ $stmt->execute();
 $result_proj = $stmt->get_result();
 
 
-// get all people in lab group to choose from depending on the 
-$sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name
+// get all people in company to choose from
+$sql = 'SELECT profiles.profile_id, profiles.first_name, profiles.last_name, company_members.role
             FROM profiles
             JOIN company_members ON profiles.profile_id = company_members.profile_id
             JOIN companies ON company_members.company_id = companies.company_id
-            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0';
+            WHERE company_members.company_ID = ? AND profiles.is_deleted = 0 AND company_members.role = "member" OR company_members.role = "admin"';
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $admin_company_ID);
@@ -229,7 +230,7 @@ if ($result_proj->num_rows > 0) {
     // include "includes/navbar.php";
     ?>
 
-<h1 class="page_title">Company admin page</h1>
+<h1 class="page_title">Company Admin Page</h1>
 
     <!-- adding a lab group -->
       <!-- Theese were under each other before, but i would like them to be ebside each other  -->

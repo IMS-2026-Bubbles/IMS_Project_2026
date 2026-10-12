@@ -1,9 +1,9 @@
 <?php
 // This is code to connect the server to the database
-$servername = 'localhost';
-$username = 'root';
-$password = 'root';
-$dbname = 'scriba_db';  // add the name of our database here
+$servername = $_ENV['DB_SERVERNAME'] ?? die('DB_SERVERNAME not set in .env file');
+$username = $_ENV['DB_USERNAME'] ?? die('DB_USERNAME not set in .env file');
+$password = $_ENV['DB_PASSWORD'] ?? die('DB_PASSWORD not set in .env file');
+$dbname = $_ENV['DB_NAME'] ?? die('DB_NAME not set in .env file');
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -11,10 +11,5 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die('Connection failed: ' . $conn->connect_error);
 }
-// // Commenting if successful, not necessary after a while
-// if (isset($messages)) {
-//     $messages[] = "Connected successfully :) <br>";
-// } else {
-//     echo "Connected successfully :) <br>";
-// }
+
 ?>
