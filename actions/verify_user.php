@@ -14,10 +14,10 @@
 // ../Index.php (Something went wrong!, Message given)
 
 // displaying all errors
-ini_set('display_errors', true);
-ini_set('log_errors', true);
-error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+// ini_set('display_errors', true);
+// ini_set('log_errors', true);
+// error_reporting(E_ALL);
+// mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // sessions
 require_once '../session/init.php';  // Start the session and initialize session variables

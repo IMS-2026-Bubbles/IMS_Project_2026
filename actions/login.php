@@ -11,9 +11,9 @@
 // scriba_admin.php, library.php, or user_profile.php (depending on user type)
 // index.php (invalid login credentials)
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
 
 require_once '../session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here, login action

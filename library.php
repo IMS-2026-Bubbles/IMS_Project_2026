@@ -14,10 +14,9 @@
 //  navigation bar options
 //  project.php (after clicking on a project)
 
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
 
 // Start session
 require_once 'session/init.php';
@@ -54,10 +53,6 @@ if (isset($_SESSION['toastClass'])) {
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 }
-
-
-
-
 
 // Create list of labs the user has access to (for the add project form) (currently 'owner' role only)
 $sql_labs = 'SELECT labs.lab_id, labs.name

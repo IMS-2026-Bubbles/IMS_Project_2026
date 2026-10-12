@@ -13,16 +13,13 @@
 // actions/login.php (on form submission)
 // register_user.php (if user clicks "Register new user" button)
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here, front page
 require_once 'database/db.php';
-
-
-
 
 // Retrieve login error messages from the session if they exist
 $message = '';
@@ -44,15 +41,12 @@ if (isset($_SESSION['verify_user'])) {
     unset($_SESSION['verify_user']);
 }
 
-
-
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
 
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 }
-
 
 // WHEN SOMEONE HAS DELETED A USER
 if (isset($_SESSION['delete_account_message'])) {

@@ -15,8 +15,8 @@ require_once 'session/check_user_logged_in.php';
 require_once 'session/check_user_in_company.php';
 require_once 'database/db.php';
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 // Get current logged-in user
 $profile_id = $_SESSION['profile_id'];
