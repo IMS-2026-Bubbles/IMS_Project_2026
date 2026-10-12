@@ -6,7 +6,6 @@
 // before saving to or after fetching from the database.
 
 // key variable
-// $encryption_key = base64_decode(require 'encryption_key.php');
 $encryption_key = $_ENV['ENCRYPTION_KEY'];  // Use environment variable for encryption key
 
 // Encryption function
