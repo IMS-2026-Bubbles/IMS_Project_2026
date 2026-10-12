@@ -5,7 +5,10 @@
 // outside Scriba (first page you see when you go to the site)
 // actions/login.php (invalid login credentials)
 // actions/create_profile.php (after registering a new user)
+// actions/delete_profile.php (after you have deleted a user)
+
 // Action: Display login form and any error messages from previous login attempts
+
 // Redirect to:
 // actions/login.php (on form submission)
 // register_user.php (if user clicks "Register new user" button)
@@ -23,6 +26,8 @@ require_once 'database/db.php';
 
 // Retrieve login error messages from the session if they exist
 $message = '';
+// Set the color of the error messages
+$toastClass = '';
 
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];
@@ -39,8 +44,7 @@ if (isset($_SESSION['verify_user'])) {
     unset($_SESSION['verify_user']);
 }
 
-// Set the color of the error messages
-$toastClass = '';
+
 
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
@@ -48,10 +52,16 @@ if (isset($_SESSION['toastClass'])) {
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 }
+
+
+// WHEN SOMEONE HAS DELETED A USER
+if (isset($_SESSION['delete_account_message'])) {
+    $message = $_SESSION['delete_account_message'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['delete_account_message']);
+}
 ?>
-
-
-
 
 
 
@@ -89,13 +99,6 @@ if (isset($_SESSION['toastClass'])) {
 <!-- Linked to our stylesheet, linked is often used to link to the stylesheet but also other files  -->
  <link rel="stylesheet" href="assets/style.css">
 </head>
-
-
-
-
-
-
-
 
 
 
@@ -146,6 +149,8 @@ if (isset($_SESSION['toastClass'])) {
             <p class="error_message" > <?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
 
+        
+
 
 <!-- Create login class-->
  <!-- for element belongs to both classes and gets css style from both -->
@@ -170,58 +175,9 @@ if (isset($_SESSION['toastClass'])) {
 
          <!-- Apply global buttons in css and reuse everything -->
 
-
- 
-
-
-
 </main>
 
-
-        
-
-
-
-
-
-
-
-
 </body>
 </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--
-        <form action="actions/login.php" method= "POST">   change action so you end up somewhere! 
-
-             forms for all free text info that is needed
-            required so that the field is mandatory before registering 
-            <label for="email">Email adress</label><br>
-            <input type="email" class="" name="email" required ><br>
-
-            <label for="password">Password</label><br>
-            <input type="password" class="" name="password" minlength="8"  required><br><br>
-            <input type="submit" class="btn btn-dark rounded-pill" name="login" value="Log in"><br><br>
-    
-        </div>
-    </form>
-    
-</body>
-</html>
-
--->
