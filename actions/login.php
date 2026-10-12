@@ -199,7 +199,7 @@ if (isset($_POST['login'])) {
                 // Increment login streak in profiles table
                 // Only increment if last login was yesterday
                 $sql_increment_streak = 'UPDATE profiles 
-                    SET login_streak = login_streak + 1 
+                    SET streak = streak + 1 
                     WHERE profile_id = ? AND last_login_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
                 $stmt_increment_streak = $conn->prepare($sql_increment_streak);
                 $stmt_increment_streak->bind_param('i', $profile['profile_id']);
