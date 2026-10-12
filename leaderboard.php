@@ -353,7 +353,11 @@ if ($scope === 'company') {
                 <?php echo 'You are ranked ' . $user_viewing_company['rank'] . ' in your company with ' . $user_viewing_company['points'] . ' points.'; ?>
         <?php else: ?>
             <!-- Ugly percentile -->
-            <?php echo 'You are ahead of ' . $user_viewing_company['percent'] . '% of your company!'; ?>
+            <p class="leaderboard-percent">
+            You are ahead of
+            <strong><?php echo $user_viewing_company['percent']; ?>%</strong>
+            of your company!
+</p>
     <?php endif; ?>
     <?php elseif ($scope === 'company'): ?>
         <!-- Display message if user is not in on the leaderboard -->

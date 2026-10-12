@@ -120,9 +120,18 @@ echo '<main class="experiment-section-page">';
 include 'includes/fetch_project_experiment_names.php';  // fetch the name and ID for project and experiment as $project_experiment_name
 
 // Diplay the project, experiment, and section name
-echo 'Project: ' . htmlspecialchars($project_experiment_name['project_name']) . '<br>';
-echo 'Experiment: ' . htmlspecialchars($project_experiment_name['experiment_name']) . '<br>';
-echo 'Section: ' . htmlspecialchars($experiment_section) . '<br><br>';
+echo '<div class="experiment-page-info">';
+echo '<p class="experiment-info-project">Project: '
+    . htmlspecialchars($project_experiment_name['project_name'])
+    . '</p>';
+echo '<p class="experiment-info-name">Experiment: '
+    . htmlspecialchars($project_experiment_name['experiment_name'])
+    . '</p>';
+echo '<p class="experiment-info-section">Section: '
+    . htmlspecialchars($experiment_section)
+    . '</p>';
+echo '</div>';
+
 ?>
 
 <!-- Link back to main experiment page -->
@@ -153,6 +162,8 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
         . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
+        . '<br>'
+        . '<p style="color: red;">Note: Once you mark this section as done, it cannot be edited.</p>'
         . '<br>'
         // Save button
         . "<input type='submit' value='Save Changes'>"
@@ -197,6 +208,7 @@ if (isset($messages_save_experiment_section)) {
     }
 }
 echo '</main>';
+
 ?>
 </body>
 </html>
