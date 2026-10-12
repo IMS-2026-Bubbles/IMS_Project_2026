@@ -229,7 +229,7 @@ if ($result_proj->num_rows > 0) {
     // include "includes/navbar.php";
     ?>
 
-<h1 class="page_title">Company admin page</h1>
+<h1 class="page_title">Company Admin Page</h1>
 
     <!-- adding a lab group -->
       <!-- Theese were under each other before, but i would like them to be ebside each other  -->

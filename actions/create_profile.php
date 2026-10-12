@@ -52,7 +52,6 @@ if (isset($_POST['register'])) {
     if ($failed_attempts >= 5) {
         $message = 'Too many failed registration attempts. Please try again later.';
         $_SESSION['register_user_message'] = $message;
-
         $toastClass = '#dc3545';  // Danger color
         $_SESSION['register_user_toastClass'] = $toastClass;
 
@@ -66,13 +65,12 @@ if (isset($_POST['register'])) {
     $checkemailStmt->bind_param('s', $email);
     $checkemailStmt->execute();
     $checkemailStmt->store_result();
-    error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
+    //error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
     // check if the number of rows are more than 0 => email exists
     if ($checkemailStmt->num_rows > 0) {
         $message = 'email ID already exists';
         $_SESSION['register_user_message'] = $message;
-
         $toastClass = '#007bff';  // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
 
@@ -123,7 +121,7 @@ if (isset($_POST['register'])) {
         }
 
         // Defining a function send mail to the user via Scriba-Gmail
-        function send_mail_by_PHPMailer($to, $from, $subject, $message)
+        function send_mail_by_PHPMailer($to, $from, $subject, $body)
         {
             $mail = new PHPMailer();
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
@@ -141,7 +139,7 @@ if (isset($_POST['register'])) {
             $mail->addReplyTo($from);  // Adress to reply
             $mail->isHTML(true);  // use HTML message
             $mail->Subject = $subject;
-            $mail->Body = $message;
+            $mail->Body = $body;
 
             // SEND
             if (!$mail->send()) {
@@ -168,10 +166,10 @@ if (isset($_POST['register'])) {
         $link = "http://localhost/actions/verify_user.php?token=$token";
         $from = 'Scribaadmin@gmail.com';
         $subject = 'Verify your Scriba account';
-        $message = 'Hi! Verify your Scriba account by clicking the following link: ';
-        $message .= "<a href=$link >Verify my scriba account";
+        $body = 'Hi! Verify your Scriba account by clicking the following link: ';
+        $body .= "<a href=$link>Verify my scriba account";
 
-        send_mail_by_PHPMailer($to, $from, $subject, $message);
+        send_mail_by_PHPMailer($to, $from, $subject, $body);
 
         // If registration is successful, log the successful registration
         // Get the profile_id of the newly registered user
