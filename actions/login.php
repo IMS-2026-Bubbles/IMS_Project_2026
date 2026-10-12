@@ -143,11 +143,11 @@ if (isset($_POST['login'])) {
                 'Login failed: User not verified'
             );
 
-//We didn't have an error message for if the email is not verified. This can be useful to inform the user. But should we show WHAT the problem is by security resons?? 
+            // We didn't have an error message for if the email is not verified. This can be useful to inform the user. But should we show WHAT the problem is by security resons??
 
-        // $_SESSION['login_error'] = 'Please verify your email before logging in.';  
-        // $toastClass = '#dc3545';  // Danger color as the other ones 
- 
+            // $_SESSION['login_error'] = 'Please verify your email before logging in.';
+            // $toastClass = '#dc3545';  // Danger color as the other ones
+
             // Redirect back to the login page (with message?)
             header('Location: ../index.php');
             exit();
@@ -163,6 +163,8 @@ if (isset($_POST['login'])) {
             // and if they belong to at least one company.
             $profile_id = $_SESSION['profile_id'];
             require_once '../includes/fetch_profile_affiliation.php';  // expects $conn and $profile_id
+            // Add company_id to session if user has one.
+            $_SESSION['company_id'] = $user_affiliations['company_id'][0] ?? NULL;  // If user has no company, set to NULL
             // Add lab_id to session if user has one.
             $_SESSION['lab_id'] = $user_affiliations['lab_id'][0] ?? NULL;  // If user has no lab, set to NULL
             // Scriba admin
@@ -271,7 +273,7 @@ if (isset($_POST['login'])) {
                 header('Location:../library.php');
                 exit();
             } else {
-                // User doesn't belong to a company => user_profile.php
+                // User doesn't belong to a lab => user_profile.php
                 header('Location:../user_profile.php');
                 exit();
             }
