@@ -13,6 +13,7 @@
 // actions/join_company_lab.php (join company or lab forms)
 // actions/logout.php (delete account -> logout and redirect to index.php)
 
+//preparations
 // starts the session
 require_once 'session/init.php';
 // check user is logged in
@@ -32,6 +33,7 @@ $stmt = $conn->prepare(  // statement
 );
 
 // binds based on profile_id
+// ? is a placeholder, protects against sql injection
 $stmt->bind_param('i', $profile_id);
 $stmt->execute();
 $result = $stmt->get_result();

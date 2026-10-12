@@ -143,6 +143,11 @@ if (isset($_POST['login'])) {
                 'Login failed: User not verified'
             );
 
+//We didn't have an error message for if the email is not verified. This can be useful to inform the user. But should we show WHAT the problem is by security resons?? 
+
+        // $_SESSION['login_error'] = 'Please verify your email before logging in.';  
+        // $toastClass = '#dc3545';  // Danger color as the other ones 
+ 
             // Redirect back to the login page (with message?)
             header('Location: ../index.php');
             exit();
@@ -292,3 +297,4 @@ if (isset($_POST['login'])) {
     }
 }
 ?>
+
