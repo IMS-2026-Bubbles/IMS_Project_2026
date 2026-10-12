@@ -52,7 +52,6 @@ if (isset($_POST['register'])) {
     if ($failed_attempts >= 5) {
         $message = 'Too many failed registration attempts. Please try again later.';
         $_SESSION['register_user_message'] = $message;
-
         $toastClass = '#dc3545';  // Danger color
         $_SESSION['register_user_toastClass'] = $toastClass;
 
@@ -66,13 +65,12 @@ if (isset($_POST['register'])) {
     $checkemailStmt->bind_param('s', $email);
     $checkemailStmt->execute();
     $checkemailStmt->store_result();
-    error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
+    //error_log("Checking email [$email], num_rows = " . $checkemailStmt->num_rows);
 
     // check if the number of rows are more than 0 => email exists
     if ($checkemailStmt->num_rows > 0) {
         $message = 'email ID already exists';
         $_SESSION['register_user_message'] = $message;
-
         $toastClass = '#007bff';  // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
 
