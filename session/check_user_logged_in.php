@@ -24,7 +24,8 @@ if (!isset($_SESSION['profile_id'])) {
     exit();
 }
 
-// Set standard variables for logged-in user
+// Set standard variables for logged-in user (remove entirely or move to init.php?)
 $profile_id = $_SESSION['profile_id'];
-$project_id = $_SESSION['lab_id'] ?? null;  // Get lab_id from session if it exists
+$company_id = $_SESSION['company_id'] ?? null;  // Use null if company_id is not set
+$lab_id = $_SESSION['lab_id'] ?? null;  // Use null if lab_id is not set
 ?>
