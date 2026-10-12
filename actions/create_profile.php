@@ -69,7 +69,7 @@ if (isset($_POST['register'])) {
 
     // check if the number of rows are more than 0 => email exists
     if ($checkemailStmt->num_rows > 0) {
-        $message = 'email ID already exists';
+        $message = 'Email is already used';
         $_SESSION['register_user_message'] = $message;
         $toastClass = '#007bff';  // Primary color
         $_SESSION['register_user_toastClass'] = $toastClass;
@@ -126,6 +126,7 @@ if (isset($_POST['register'])) {
             $mail = new PHPMailer();
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;  // shows the full SMTP conversation
             $mail->SMTPDebug = SMTP::DEBUG_CONNECTION;  // or DEBUG_SERVER for more detail
+            echo "debugger was passed";
             $mail->CharSet = 'UTF-8';
             $mail->isSMTP();  // Use SMTP protocol
             $mail->Host = 'smtp.gmail.com';  // Specify  SMTP server

@@ -26,5 +26,5 @@ if (!isset($_SESSION['profile_id'])) {
 
 // Set standard variables for logged-in user
 $profile_id = $_SESSION['profile_id'];
-$company_id = $_SESSION['company_id'] ?? null;  // Get company_id from session if it exists
+$project_id = $_SESSION['lab_id'] ?? null;  // Get lab_id from session if it exists
 ?>
