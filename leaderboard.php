@@ -15,6 +15,9 @@ require_once 'session/check_user_logged_in.php';
 require_once 'session/check_user_in_company.php';
 require_once 'database/db.php';
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Get current logged-in user
 $profile_id = $_SESSION['profile_id'];
 
@@ -39,9 +42,7 @@ if ($scope === 'global') {
         'SELECT
                 profiles.profile_id,
                 profiles.first_name,
-                profile_points.scriba_points,
-                RANK() OVER (ORDER BY profile_points.scriba_points DESC) AS global_rank, -- Calculate rank based on scriba_points
-                PERCENT_RANK() OVER (ORDER BY profile_points.scriba_points DESC) AS global_percent -- Calculate percentile based on scriba_points
+                profile_points.scriba_points
             FROM profile_points
             JOIN profiles
                 ON profile_points.profile_id = profiles.profile_id
@@ -55,10 +56,16 @@ if ($scope === 'global') {
 
     // Store users in an associative array with profile_id as the key
     $users_global = [];
-    foreach ($result_global as $row) {
+    $previous_points = null;
+    $rank = 0;
+    foreach ($result_global as $index => $row) {
+        // Calculate rank based on points, handling ties
+        if ($row['scriba_points'] != $previous_points) {
+            $rank = $index + 1;  // Increment rank only if points are different
+            $previous_points = $row['scriba_points'];
+        }
         $users_global[$row['profile_id']] = [
-            'rank' => (int) $row['global_rank'],
-            'percent' => round((float) $row['global_percent'] * 100, 2),  // 0.0 = best, Convert to percentage and round to 2 decimal places
+            'rank' => $rank,
             'name' => $row['first_name'],
             'points' => (int) $row['scriba_points']
         ];
@@ -78,9 +85,7 @@ if ($scope === 'company') {
                 profiles.profile_id,
                 profiles.first_name,
                 profiles.last_name,
-                profile_points.scriba_points,
-                RANK() OVER (ORDER BY profile_points.scriba_points DESC) AS company_rank, -- Calculate rank based on scriba_points
-                PERCENT_RANK() OVER (ORDER BY profile_points.scriba_points DESC) AS company_percent -- Calculate percentile based on scriba_points
+                profile_points.scriba_points
             FROM profile_points
             JOIN profiles
                 ON profile_points.profile_id = profiles.profile_id
@@ -100,10 +105,16 @@ if ($scope === 'company') {
 
     // Store users in an associative array with profile_id as the key
     $users_company = [];
-    foreach ($result_company as $row) {
+    $previous_points = null;
+    $rank = 0;
+    foreach ($result_company as $index => $row) {
+        // Calculate rank based on points, handling ties
+        if ($row['scriba_points'] != $previous_points) {
+            $rank = $index + 1;  // Increment rank only if points are different
+            $previous_points = $row['scriba_points'];
+        }
         $users_company[$row['profile_id']] = [
-            'rank' => (int) $row['company_rank'],
-            'percent' => round((float) $row['company_percent'] * 100, 2),  // 0.0 = best, Convert to percentage and round to 2 decimal places
+            'rank' => $rank,
             'name' => $row['first_name'] . ' ' . $row['last_name'],
             'points' => (int) $row['scriba_points']
         ];
@@ -111,6 +122,16 @@ if ($scope === 'company') {
 
     // Calculate stats for the logged-in user
     $user_viewing_company = $users_company[$profile_id] ?? null;  // Should never be NULL
+
+    // Calculate percentile for the logged-in user
+    if (isset($user_viewing_company)) {
+        $below = count(array_filter(
+            $users_company,
+            fn($user) => $user['points'] < $user_viewing_company['points']
+        ));
+        $user_viewing_company['percent'] =
+            round($below / max(count($users_company), 1) * 100, 2);  // Avoid division by zero
+    }
 }
 ?>
 
@@ -326,7 +347,7 @@ if ($scope === 'company') {
         </table>
 
     <?php endif; ?>
-    <?php if ($scope === 'company' && isset($user_viewing_company['percent'])): ?>
+    <?php if ($scope === 'company' && $user_viewing_company != NULL): ?>
         <!-- Display company percentile -->
          <?php if ((int) $user_viewing_company['rank'] === 1): ?>
                 <?php echo 'You are ranked ' . $user_viewing_company['rank'] . ' in your company with ' . $user_viewing_company['points'] . ' points.'; ?>
