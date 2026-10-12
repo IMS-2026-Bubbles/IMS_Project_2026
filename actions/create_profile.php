@@ -151,7 +151,9 @@ if (isset($_POST['register'])) {
 
                 $toastClass = '#dc3545';  // Danger color
                 $_SESSION['register_user_toastClass'] = $toastClass;
-                exit;
+
+                header('Location: ../register_user.php');
+                exit();
             } else {
                 // return true if message is send
                 return true;
