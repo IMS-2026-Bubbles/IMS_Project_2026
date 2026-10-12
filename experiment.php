@@ -199,21 +199,21 @@ include_once 'includes/navbar.php';
             echo experiment_progress_badge(
                 'Plan',
                 $experiment_progress['plan_is_done']
-            ) . ' <span class="progress-status-date">('
+            ) . ' <span class="progress-status-date">(Updated: '
                 . htmlspecialchars($experiment_updated_at['plan_updated_at'])
                 . ')</span><br>';
 
             echo experiment_progress_badge(
                 'Log',
                 $experiment_progress['log_is_done']
-            ) . ' <span class="progress-status-date">('
+            ) . ' <span class="progress-status-date">(Updated: '
                 . htmlspecialchars($experiment_updated_at['log_updated_at'])
                 . ')</span><br>';
 
             echo experiment_progress_badge(
                 'Result',
                 $experiment_progress['result_is_done']
-            ) . ' <span class="progress-status-date">('
+            ) . ' <span class="progress-status-date">(Updated: '
                 . htmlspecialchars($experiment_updated_at['result_updated_at'])
                 . ')</span>';
 
