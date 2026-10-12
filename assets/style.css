@@ -1065,7 +1065,7 @@ width: 90%;
 /* add buttons for admin forms, same code as for ogin_button just samller  */
 .admin_button {
     
-  background-color:  rgb(46, 237, 119);
+  background-color:  var(--scriba-blue);
   border-radius: 13px; /* makes corners rounded*/ 
   color: white;
   padding: 10px 20px;
