@@ -1779,3 +1779,14 @@ body.scriba-experiment-body {
 }
 
 
+/* Points next to the Scriba logo */
+.navbar-points {
+    display: inline-block;
+    margin-left: 12px;
+    margin-right: auto;
+    align-self: center;
+    color: #1d5f91;
+    font-size: 22px;
+    font-weight: 700;
+    white-space: nowrap;
+}
