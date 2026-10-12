@@ -143,7 +143,7 @@ if (isset($_SESSION['toastClass'])) {
        <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
        <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
         <?php if ($message): ?>
-            <p><?php echo htmlspecialchars($message); ?></p>
+            <p class="error_message" > <?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
 
 
