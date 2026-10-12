@@ -12,9 +12,9 @@
 // project.php (after creating a new experiment)
 // experiment.php (after renaming)
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 
 // Start session
 require_once '../session/init.php';
