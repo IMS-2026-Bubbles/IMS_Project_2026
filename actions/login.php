@@ -99,7 +99,6 @@ if (isset($_POST['login'])) {
         $_SESSION['toastClass'] = $toastClass;
         header('Location: ../index.php');
         exit();
-
     } else {
         // use placeholders to protect against sql injection
 
@@ -170,9 +169,9 @@ if (isset($_POST['login'])) {
 
             require_once '../includes/fetch_profile_affiliation.php';  // expects $conn and $profile_id
             // Add company_id to session if user has one.
-            $_SESSION['company_id'] = $user_affiliations['company_id'][0] ?? NULL;  // If user has no company, set to NULL
+            $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL;  // If user has no company, set to NULL
             // Add lab_id to session if user has one.
-            $_SESSION['lab_id'] = $user_affiliations['lab_id'][0] ?? NULL;  // If user has no lab, set to NULL
+            $_SESSION['lab_id'] = $user_affiliations['labs'][$_SESSION['company_id']] ?? NULL;  // If user has no lab, set to NULL
             // Scriba admin
             $user_is_scriba_admin = $user_affiliations['is_scriba_admin'] ?? 0;  // One value, 1 or 0
 

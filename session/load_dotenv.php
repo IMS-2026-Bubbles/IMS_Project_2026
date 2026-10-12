@@ -6,24 +6,25 @@
 function load_dotenv()
 {
     // Path to the .env file
-    $dotenv_path = __DIR__ . '/.env';
-    // Check if the .env file exists
-    if (!file_exists($dotenv_path)) {
-        return false;  // .env file not found, return false
-    }
+    $dotenv_path = __DIR__ . '/../.env';
 
     // Read lines (skip empty lines)
     $lines = file($dotenv_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) {
+        // Failed to read the .env file, return false
+        return false;
+    }
 
     // Filter out comments and invalid lines (lines that don't contain '=' or start with '=')
     $lines = array_filter(
         $lines,
         function ($line) {
             return strpos(trim($line), '#') !== 0 &&  // Skip comments (lines starting with '#')
-                !str_begins_with(trim($line), '=') &&  // Skip lines that begin with '=' (invalid format)
+                !str_starts_with(trim($line), '=') &&  // Skip lines that begin with '=' (invalid format)
                 str_contains(trim($line), '=');  // Only keep lines that contain at least one '='
         }
     );
+
     // Check if any valid lines were found
     if (empty($lines)) {
         return false;  // No valid lines found, return false
