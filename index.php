@@ -23,6 +23,8 @@ require_once 'database/db.php';
 
 // Retrieve login error messages from the session if they exist
 $message = '';
+// Set the color of the error messages
+$toastClass = '';
 
 if (isset($_SESSION['login_error'])) {
     $message = $_SESSION['login_error'];
@@ -39,14 +41,22 @@ if (isset($_SESSION['verify_user'])) {
     unset($_SESSION['verify_user']);
 }
 
-// Set the color of the error messages
-$toastClass = '';
+
 
 if (isset($_SESSION['toastClass'])) {
     $toastClass = $_SESSION['toastClass'];
 
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
+}
+
+
+// WHEN SOMEONE HAS DELETED A USER
+if (isset($_SESSION['delete_account_message'])) {
+    $message = $_SESSION['delete_account_message'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['delete_account_message']);
 }
 ?>
 
@@ -145,6 +155,8 @@ if (isset($_SESSION['toastClass'])) {
         <?php if ($message): ?>
             <p class="error_message" > <?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
+
+        
 
 
 <!-- Create login class-->
