@@ -198,6 +198,30 @@ if (isset($_POST['login'])) {
             $transaction_ok = true;
 
             if ($transaction_ok) {
+                // Increment login streak in profiles table
+                // Only increment if last login was yesterday
+                $sql_increment_streak = 'UPDATE profiles 
+                    SET streak = 
+                        CASE 
+                            WHEN last_login_at >= CURDATE() - INTERVAL 1 DAY -- If last login was yesterday or today (or in the future)
+                                AND last_login_at < CURDATE() -- AND last login was not today (i.e., it was yesterday)
+                                THEN streak + 1 -- THEN increment streak
+                            WHEN last_login_at >= CURDATE() -- if last login is today (or in the future)
+                                THEN streak  -- Do not increment if last login is today
+                            ELSE streak -- fallback to streak unchanged
+                        END
+                    WHERE profile_id = ?';
+                $stmt_increment_streak = $conn->prepare($sql_increment_streak);
+                $stmt_increment_streak->bind_param('i', $profile['profile_id']);
+                $transaction_ok = $stmt_increment_streak->execute();
+                if (!$transaction_ok) {
+                    // On failure, save error
+                    $error_increment_streak = $stmt_increment_streak->error;
+                }
+                $stmt_increment_streak->close();
+            }
+
+            if ($transaction_ok) {
                 // Update last login timestamp in profiles table
                 $sql_update_last_login = 'UPDATE profiles SET last_login_at = NOW() WHERE profile_id = ?';
                 $stmt_update_last_login = $conn->prepare($sql_update_last_login);
@@ -208,22 +232,6 @@ if (isset($_POST['login'])) {
                     $error_update_last_login = $stmt_update_last_login->error;
                 }
                 $stmt_update_last_login->close();
-            }
-
-            if ($transaction_ok) {
-                // Increment login streak in profiles table
-                // Only increment if last login was yesterday
-                $sql_increment_streak = 'UPDATE profiles 
-                    SET streak = streak + 1 
-                    WHERE profile_id = ? AND last_login_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
-                $stmt_increment_streak = $conn->prepare($sql_increment_streak);
-                $stmt_increment_streak->bind_param('i', $profile['profile_id']);
-                $transaction_ok = $stmt_increment_streak->execute();
-                if (!$transaction_ok) {
-                    // On failure, save error
-                    $error_increment_streak = $stmt_increment_streak->error;
-                }
-                $stmt_increment_streak->close();
             }
 
             if ($transaction_ok) {
