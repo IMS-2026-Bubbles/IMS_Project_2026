@@ -178,16 +178,8 @@ if ($result_company->num_rows > 0) {
             <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
-<!--
-    <p>This is the page that ONLY Scriba admin (superadmin) will be able to see. This is also the only page this type of admin will have access to. </p>
-
-        Look at this link on how you sort a table by clicking on header:<br> 
-        https://www.w3schools.com/howto/howto_js_sort_table.asp
-    </p> -->
-
-    <!-- adding a company -->
     
-
+<!-- adding a company -->
      <form action="actions/manage_company.php" method="POST" class="admin_form ">
           <!-- forms for all free text info that is needed-->
         <!-- required so that the field is mandatory before registering -->
