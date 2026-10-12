@@ -11,7 +11,7 @@ $message = '';
 $toastClass = '';
 
 // Check if the user is logged in
-if (!isset($_SESSION['company_id'])) {
+if (!isset($_SESSION['lab_id'])) {
     // Log the access denied event
     // This gets triggered by bots, so may want to turn off if botting becomes a problem and massively clutters the logs.
 
@@ -21,7 +21,7 @@ if (!isset($_SESSION['company_id'])) {
     //require '../includes/log_activity.php';  // Include the log_activity function
     log_activity(
         $conn,
-        $_SESSION['company_id'] ?? NULL,  // Use NULL if company_id is not set
+        $_SESSION['lab_id'] ?? NULL,  // Use NULL if lab_id is not set
         'company',
         NULL,  // No specific entity ID for this action
         'access_denied',
@@ -40,5 +40,5 @@ if (!isset($_SESSION['company_id'])) {
 
 // Set standard variables for logged-in user
 $profile_id = $_SESSION['profile_id'];
-$company_id = $_SESSION['company_id'] ?? null;  // Get company_id from session if it exists
+$lab_id = $_SESSION['lab_id'] ?? null;  // Get lab_id from session if it exists
 ?>

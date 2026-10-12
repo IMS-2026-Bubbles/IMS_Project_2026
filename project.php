@@ -29,7 +29,6 @@ require_once 'database/db.php';
 
 require_once 'includes/log_activity.php';  // Include the log_activity function
 
-
 if (isset($_SESSION['create_renamed_message'])) {
     $manage_company_message = $_SESSION['create_renamed_message'];
     unset($_SESSION['create_renamed_message']);
@@ -93,9 +92,6 @@ if ($project_id > 0) {
     $checkStmt->close();
 }
 
-
-
-
 // Search experiments
 $search = '';
 
@@ -157,21 +153,17 @@ if ($project_id > 0) {
     $stmt->close();
 }
 
-
-# store project name for the project where expermients are shown
-$sql = "SELECT projects.name
+// store project name for the project where expermients are shown
+$sql = 'SELECT projects.name
         FROM projects
-        WHERE projects.project_id = ?";
+        WHERE projects.project_id = ?';
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $project_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
-$project_name = $row['name'] ?? '';    // empty string if project not found
-
-
-
+$project_name = $row['name'] ?? '';  // empty string if project not found
 
 ?>
 

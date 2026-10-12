@@ -138,7 +138,6 @@ $stored_section_text =
     $row_experiment_section_text[$text_column] ?? '';
 
 // Load the existing encryption key and decryption function.
-require_once __DIR__ . '/encryption_key.php';
 require_once __DIR__ . '/encryption.php';
 
 // Decrypt the text. Empty database fields remain empty.

@@ -76,8 +76,8 @@ $scriba_admin_access_level =
 
             <!-- Company/lab admin page = company/lab admin only -->
             <?php
+            // Check if the user is a company admin
             if (isset($_SESSION['company_id'])) {
-                // Check if the user has company admin access level
                 $company_admin_access_level =
                     check_user_permission(
                         $conn,
@@ -85,7 +85,6 @@ $scriba_admin_access_level =
                         'company',
                         $_SESSION['company_id']
                     );
-
                 if ($company_admin_access_level >= 3) {
                     echo "<li class='nav-item'>
                             <a class='nav-link active' href='company_admin.php'>
@@ -94,13 +93,12 @@ $scriba_admin_access_level =
                           </li>";
                 }
             }
-
             ?>
-
 
             <!-- Scriba admin page = scriba admin only -->
             <?php
 
+            // Scriba admin page = scriba admin only
             if ($scriba_admin_access_level == 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='scriba_admin.php'>
@@ -109,8 +107,10 @@ $scriba_admin_access_level =
                       </li>";
             }
 
-            // Home Page/Projects (if user belongs to a company)
-            if (isset($_SESSION['company_id']) && $scriba_admin_access_level != 1) {
+            // Home Page/Projects page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='library.php'>
                             Home Page/Projects
@@ -118,8 +118,10 @@ $scriba_admin_access_level =
                       </li>";
             }
 
-            // Leaderboard (if user belongs to a company)
-            if (isset($_SESSION['company_id']) && $scriba_admin_access_level != 1) {
+            // Leaderboard page (must be member of company & lab, no scriba admin)
+            if (isset($_SESSION['company_id']) &&
+                    isset($_SESSION['lab_id']) &&
+                    $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='leaderboard.php'>
                             Leaderboard
@@ -136,6 +138,7 @@ $scriba_admin_access_level =
                   </li>";
             }
             ?>
+
    
             <!-- Logout = everyone -->
 
