@@ -29,8 +29,7 @@ if ($stmt_experiment_section_text->execute()) {
 
 // Decrypt the text content
 // Require the encryption functions to decrypt the text content after fetching from the database
-require 'encryption.php';
-
-$experiment_section_text = decrypt_text($experiment_section_text, $encryption_key);
+require_once __DIR__ . '/encryption.php';  // Include the encryption functions for decryption
+$experiment_section_text = decrypt_text($experiment_section_text, $encryption_key);  // Decrypt the text content using the provided encryption key
 
 ?>
