@@ -19,7 +19,6 @@ require_once 'database/db.php';
 // Get user access level for the current page
 require_once 'check_user_permission.php';
 
-
 ?>
 
 
@@ -52,12 +51,9 @@ require_once 'check_user_permission.php';
         <ul class="navbar-nav scriba-nav-links">
 
             <!-- Company/lab admin page = company/lab admin only -->
-
             <?php
-
-            // $company_id = $_SESSION['company_id'] ?? null;
-
             if (isset($_SESSION['company_id'])) {
+                // Check if the user has company admin access level
                 $company_admin_access_level =
                     check_user_permission(
                         $conn,
@@ -79,9 +75,7 @@ require_once 'check_user_permission.php';
 
 
             <!-- Scriba admin page = scriba admin only -->
-
             <?php
-
             $scriba_admin_access_level =
                 check_user_permission(
                     $conn,
@@ -96,51 +90,55 @@ require_once 'check_user_permission.php';
                             Scriba Admin
                         </a>
                       </li>";
-            } elseif (isset($_SESSION['company_id'])) {
-                // Home Page/Projects
+            }
 
+            // Home Page/Projects (if user belongs to a company)
+            if (isset($_SESSION['company_id'])) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='library.php'>
                             Home Page/Projects
                         </a>
                       </li>";
+            }
 
-                // Leaderboard
-
+            // Leaderboard (if user belongs to a company)
+            if (isset($_SESSION['company_id'])) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='leaderboard.php'>
                             Leaderboard
                         </a>
                       </li>";
             }
-            // Profile page
 
-            echo "<li class='nav-item'>
+            // Profile page (everyone, except if you are a scriba admin)
+            if ($scriba_admin_access_level != 1) {
+                echo "<li class='nav-item'>
                     <a class='nav-link active' href='user_profile.php'>
                         User Profile
                     </a>
                   </li>";
-
+            }
             ?>
 
             
             <!-- points for user and company admin, excluding scriba admin -->
             <?php
-            // requirement for type of user, ! = 1 excludes scriba admin 
+            // requirement for type of user, ! = 1 excludes scriba admin
             // https://www.php.net/manual/en/language.operators.logical.php
             // https://www.w3schools.com/php/func_mysqli_fetch_assoc.asp
 
-            if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) { //comp id = all users that belongs to company
+            if ($scriba_admin_access_level != 1 && isset($_SESSION['company_id'])) {  // comp id = all users that belongs to company
                 // prepare q, protect ag sql injection, fills the place w the users id in the ? place
-                 $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?'); $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
-                 $stmt_navbar_points->execute();
-                // get result 
+                $stmt_navbar_points = $conn->prepare('SELECT scriba_points FROM profile_points WHERE profile_id = ?');
+                $stmt_navbar_points->bind_param('i', $_SESSION['profile_id']);
+                $stmt_navbar_points->execute();
+                // get result
                 $row_navbar = $stmt_navbar_points->get_result()->fetch_assoc();
                 $navbar_points = $row_navbar['scriba_points'] ?? 0;
                 // echo
 
-                 echo "<li class='nav-item'> <span class='nav-link active'>$navbar_points points</span> </li>";
-                 }  
+                echo "<li class='nav-item'> <span class='nav-link active'>$navbar_points points</span> </li>";
+            }
             ?>
 
    
