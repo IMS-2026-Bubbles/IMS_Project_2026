@@ -110,7 +110,7 @@ $scriba_admin_access_level =
             }
 
             // Home Page/Projects (if user belongs to a company)
-            if (isset($_SESSION['company_id'])) {
+            if (isset($_SESSION['company_id']) && $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='library.php'>
                             Home Page/Projects
@@ -119,7 +119,7 @@ $scriba_admin_access_level =
             }
 
             // Leaderboard (if user belongs to a company)
-            if (isset($_SESSION['company_id'])) {
+            if (isset($_SESSION['company_id']) && $scriba_admin_access_level != 1) {
                 echo "<li class='nav-item'>
                         <a class='nav-link active' href='leaderboard.php'>
                             Leaderboard
