@@ -16,6 +16,8 @@
 require_once 'session/init.php';  // Start the session and initialize session variables
 require_once 'session/check_user_logged_in.php';  // Check if the user is logged in
 require_once 'database/db.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 
 $manage_company_message = '';
 // if these variables have gotten updated messages - they are displayed (see where down in HTML)

@@ -20,6 +20,8 @@ require_once 'session/init.php';  // Make the session available
 require_once 'session/check_user_logged_in.php';  // Check if the user is logged in
 // connect to database
 require_once 'database/db.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 
 $profile_ID = $_SESSION['profile_id'];
 $admin_company_ID = $_SESSION['company_id'];

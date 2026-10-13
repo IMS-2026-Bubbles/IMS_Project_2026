@@ -22,6 +22,8 @@
 require_once 'session/init.php';  // Make the session available
 // Check if the user is logged in
 require_once 'session/check_user_logged_in.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 
 // Variables
 // $experiment_id from URL (URL is always a GET request)

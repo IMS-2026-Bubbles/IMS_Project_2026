@@ -15,6 +15,7 @@ error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
+require_once 'cookies/cookie.php'; //cookies
 // No check for user logged in here, registration page
 require_once 'database/db.php';
 

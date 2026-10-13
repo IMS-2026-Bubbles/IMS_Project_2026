@@ -18,6 +18,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
+require_once 'cookies/cookie.php';
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
@@ -85,6 +86,8 @@ if (isset($_SESSION['delete_account_message'])) {
     }  </style>
 
 -->
+
+
 
 <!-- Linked to bootstrap -->
  <!-- According to w3 schools:-->
@@ -158,6 +161,9 @@ if (isset($_SESSION['delete_account_message'])) {
 
     <!-- get directed to register user page if the person wants to make an account  -->
     </form>
+
+    <!-- will be implemented in later upload to github-->
+    <p><a href="http://localhost/forgot_password.php">Forgot you password?</a></p>    
 
 
  <div class="scriba_card register_user">

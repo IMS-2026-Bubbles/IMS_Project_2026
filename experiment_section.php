@@ -17,6 +17,8 @@
 require_once 'session/init.php';  // Make the session available
 // Check if the user is logged in
 require_once 'session/check_user_logged_in.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 
 // Variables
 // $profile_id from session
