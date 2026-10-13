@@ -38,6 +38,8 @@ if (isset($_SESSION['register_user_toastClass'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+        <p><a href="http://localhost/index.php"> ↩ Go back</a></p>  
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register account</title> <!-- This is what you see on the tab in safari/chrome -->
