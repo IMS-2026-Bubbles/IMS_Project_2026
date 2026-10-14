@@ -42,13 +42,6 @@ if (isset($_SESSION['verify_user'])) {
     unset($_SESSION['verify_user']);
 }
 
-if (isset($_SESSION['toastClass'])) {
-    $toastClass = $_SESSION['toastClass'];
-
-    // Clear the toast class from the session after retrieving it
-    unset($_SESSION['toastClass']);
-}
-
 // WHEN SOMEONE HAS DELETED A USER
 if (isset($_SESSION['delete_account_message'])) {
     $message = $_SESSION['delete_account_message'];
@@ -56,6 +49,21 @@ if (isset($_SESSION['delete_account_message'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['delete_account_message']);
 }
+
+if (isset($_SESSION['forgot_password'])) {
+    $message = $_SESSION['forgot_password'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['forgot_password']);
+}
+
+if (isset($_SESSION['toastClass'])) {
+    $toastClass = $_SESSION['toastClass'];
+
+    // Clear the toast class from the session after retrieving it
+    unset($_SESSION['toastClass']);
+}
+
 ?>
 
 
