@@ -18,19 +18,16 @@ require_once 'session/init.php';  // Start the session and initialize session va
 require_once 'cookies/cookie.php'; //cookies
 // No check for user logged in here, registration page
 require_once 'database/db.php';
-
-if (isset($_SESSION['register_user_message'])) {
-    $message = $_SESSION['register_user_message'];
-    unset($_SESSION['register_user_message']);
-} else {
-    $message = '';
+$message = '';
+if (isset($_SESSION['register_user'])) {
+    $message = $_SESSION['register_user'];
+    unset($_SESSION['register_user']);
 }
 
-if (isset($_SESSION['register_user_toastClass'])) {
-    $toastClass = $_SESSION['register_user_toastClass'];
-    unset($_SESSION['register_user_toastClass']);
-} else {
-    $toastClass = '';
+$toastClass = '';
+if (isset($_SESSION['toastClass'])) {
+    $toastClass = $_SESSION['toastClass'];
+    unset($_SESSION['toastClass']);
 }
 
 ?>
