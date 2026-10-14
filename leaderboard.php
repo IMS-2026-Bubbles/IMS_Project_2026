@@ -13,6 +13,8 @@
 require_once 'session/init.php';
 require_once 'session/check_user_logged_in.php';
 require_once 'session/check_user_in_company.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 require_once 'database/db.php';
 
 error_reporting(E_ALL);

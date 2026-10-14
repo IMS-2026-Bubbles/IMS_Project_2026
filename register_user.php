@@ -15,21 +15,19 @@ error_reporting(E_ALL);
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
+require_once 'cookies/cookie.php'; //cookies
 // No check for user logged in here, registration page
 require_once 'database/db.php';
-
-if (isset($_SESSION['register_user_message'])) {
-    $message = $_SESSION['register_user_message'];
-    unset($_SESSION['register_user_message']);
-} else {
-    $message = '';
+$message = '';
+if (isset($_SESSION['register_user'])) {
+    $message = $_SESSION['register_user'];
+    unset($_SESSION['register_user']);
 }
 
-if (isset($_SESSION['register_user_toastClass'])) {
-    $toastClass = $_SESSION['register_user_toastClass'];
-    unset($_SESSION['register_user_toastClass']);
-} else {
-    $toastClass = '';
+$toastClass = '';
+if (isset($_SESSION['toastClass'])) {
+    $toastClass = $_SESSION['toastClass'];
+    unset($_SESSION['toastClass']);
 }
 
 ?>
@@ -37,6 +35,8 @@ if (isset($_SESSION['register_user_toastClass'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+        <p><a href="http://localhost/index.php"> ↩ Go back</a></p>  
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register account</title> <!-- This is what you see on the tab in safari/chrome -->

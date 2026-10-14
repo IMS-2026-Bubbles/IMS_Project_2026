@@ -24,6 +24,8 @@ ini_set('display_startup_errors', 1);
 // Start session
 require_once 'session/init.php';
 require_once 'session/check_user_logged_in.php';
+// Start cookies
+require_once 'cookies/cookie.php';
 // Connect to database
 require_once 'database/db.php';
 

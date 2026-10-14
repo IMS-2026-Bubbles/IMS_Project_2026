@@ -18,6 +18,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
+require_once 'cookies/cookie.php';
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
@@ -41,13 +42,6 @@ if (isset($_SESSION['verify_user'])) {
     unset($_SESSION['verify_user']);
 }
 
-if (isset($_SESSION['toastClass'])) {
-    $toastClass = $_SESSION['toastClass'];
-
-    // Clear the toast class from the session after retrieving it
-    unset($_SESSION['toastClass']);
-}
-
 // WHEN SOMEONE HAS DELETED A USER
 if (isset($_SESSION['delete_account_message'])) {
     $message = $_SESSION['delete_account_message'];
@@ -55,6 +49,21 @@ if (isset($_SESSION['delete_account_message'])) {
     // Clear the messages from the session after retrieving them
     unset($_SESSION['delete_account_message']);
 }
+
+if (isset($_SESSION['forgot_password'])) {
+    $message = $_SESSION['forgot_password'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['forgot_password']);
+}
+
+if (isset($_SESSION['toastClass'])) {
+    $toastClass = $_SESSION['toastClass'];
+
+    // Clear the toast class from the session after retrieving it
+    unset($_SESSION['toastClass']);
+}
+
 ?>
 
 
@@ -85,6 +94,8 @@ if (isset($_SESSION['delete_account_message'])) {
     }  </style>
 
 -->
+
+
 
 <!-- Linked to bootstrap -->
  <!-- According to w3 schools:-->
@@ -158,6 +169,9 @@ if (isset($_SESSION['delete_account_message'])) {
 
     <!-- get directed to register user page if the person wants to make an account  -->
     </form>
+
+    <!-- will be implemented in later upload to github-->
+    <p><a href="http://localhost/forgot_password.php">Forgot your password?</a></p>    
 
 
  <div class="scriba_card register_user">

@@ -18,6 +18,7 @@
 require_once 'session/init.php';
 // check user is logged in
 require_once 'session/check_user_logged_in.php';
+require_once 'cookies/cookie.php'; //cookies
 // Connect to database
 require_once 'database/db.php';
 

@@ -51,9 +51,9 @@ if (isset($_POST['register'])) {
 
     if ($failed_attempts >= 5) {
         $message = 'Too many failed registration attempts. Please try again later.';
-        $_SESSION['register_user_message'] = $message;
+        $_SESSION['register_user'] = $message;
         $toastClass = '#dc3545';  // Danger color
-        $_SESSION['register_user_toastClass'] = $toastClass;
+        $_SESSION['toastClass'] = $toastClass;
 
         header('Location: ../register_user.php');
         exit();
@@ -70,9 +70,9 @@ if (isset($_POST['register'])) {
     // check if the number of rows are more than 0 => email exists
     if ($checkemailStmt->num_rows > 0) {
         $message = 'Email is already used';
-        $_SESSION['register_user_message'] = $message;
+        $_SESSION['register_user'] = $message;
         $toastClass = '#007bff';  // Primary color
-        $_SESSION['register_user_toastClass'] = $toastClass;
+        $_SESSION['toastClass'] = $toastClass;
 
         // Log failed registration due to existing email
         log_login(
@@ -102,9 +102,9 @@ if (isset($_POST['register'])) {
 
         if ($result == False) {
             $message = 'Error: ' . $stmt->error;
-            $_SESSION['register_user_message'] = $message;
+            $_SESSION['register_user'] = $message;
             $toastClass = '#dc3545';  // Danger color
-            $_SESSION['register_user_toastClass'] = $toastClass;
+            $_SESSION['toastClass'] = $toastClass;
 
             // Log "login" for failed registration due to database error
             log_login(
@@ -147,10 +147,10 @@ if (isset($_POST['register'])) {
             if (!$mail->send()) {
                 // error message if email failed to send
                 $message = 'Error: ' . $mail->ErrorInfo;
-                $_SESSION['register_user_message'] = $message;
+                $_SESSION['register_user'] = $message;
 
                 $toastClass = '#dc3545';  // Danger color
-                $_SESSION['register_user_toastClass'] = $toastClass;
+                $_SESSION['toastClass'] = $toastClass;
 
                 header('Location: ../register_user.php');
                 exit();
@@ -178,13 +178,6 @@ if (isset($_POST['register'])) {
         // If registration is successful, log the successful registration
         // Get the profile_id of the newly registered user
         // Replace the next query with $conn->insert_id to get the last inserted ID = new profile ID
-        // $sql_get_profile_id = "SELECT profile_id FROM profiles WHERE email = ?";
-        // $stmt_get_profile_id = $conn->prepare($sql_get_profile_id);
-        // $stmt_get_profile_id->bind_param("s", $email);
-        // $stmt_get_profile_id->execute();
-        // $result = $stmt_get_profile_id->get_result();
-        // $profile = $result->fetch_assoc();
-        // $profile_id = $profile['profile_id'];
         $profile_id = $conn->insert_id;  // last inserted ID = new profile ID
 
         // Log "login" for successful registration
@@ -205,8 +198,8 @@ if (isset($_POST['register'])) {
     // Directing the user back to the index page
     // user should get email, where they have to click the link and verify
     if (isset($result) && $result) {
-        $_SESSION['register_user_message'] = $message;
-        $_SESSION['register_user_toastClass'] = $toastClass;
+        $_SESSION['register_user'] = $message;
+        $_SESSION['toastClass'] = $toastClass;
         header('Location: ../index.php');
         // session_destroy(); // don't destroy session to allow the message to be displayed on the index.php page
         exit();

@@ -89,7 +89,13 @@ $conn->begin_transaction();
 // If any operation fails, we will roll back the transaction.
 $transaction_ok = true;
 
+// flag for if the progress flag has changed, to log activity later
+$progress_flag_changed = false;
+
 if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+    // The progress flag has changed, so we need to update the database (and log the activity later)
+    $progress_flag_changed = true;
+
     if ($transaction_ok) {  // technically redundant, but keeps the logic clear
         // Update the progress flag in the database if it has changed
         $sql_update_progress = 'UPDATE experiments SET ' . $experiment_section . '_is_done = ? WHERE experiment_id = ?';
@@ -118,9 +124,13 @@ if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
 // Update the text content for the specified section in the database
 // Compare the hash of the new text with the hash of the existing text (from POST) to determine if an update is necessary
 $text_fingerprint = $_POST['text_fingerprint'] ?? '';
-if (hash('sha256', $text) === $text_fingerprint) {
+if ($text === NULL) {
+    // No text, e.g. from the "uncheck done" form
+    // Skip the text update
+    $messages[] = 'Text not submitted for section ' . $experiment_section . '. Updating progress flag only.';
+} elseif (hash('sha256', $text) === $text_fingerprint) {
     // No changes detected in the text content, skip updating the database
-    $messages[] = 'No changes detected in the text content for section ' . $experiment_section . '. Skipping database update.<br>';
+    $messages[] = 'No changes detected in the text content for section ' . $experiment_section . '. Skipping database update.';
 } else {
     // Changes detected, proceed to update the database
 
@@ -158,9 +168,9 @@ if (hash('sha256', $text) === $text_fingerprint) {
 if ($transaction_ok) {
     // All operations succeeded, commit the transaction
     $conn->commit();
-    $messages[] = 'Experiment section ' . $experiment_section . ' updated successfully.<br>';
+    $messages[] = 'Experiment section ' . $experiment_section . ' updated successfully.';
 
-    if ($done_flag !== $experiment_progress[$experiment_section . '_is_done']) {
+    if ($progress_flag_changed) {
         // Log the successful progress flag update if it was changed
         log_activity(
             $conn,
@@ -196,7 +206,7 @@ if ($transaction_ok) {
 } else {
     // An error occurred during one of the operations, rollback the transaction
     $conn->rollback();
-    $messages[] = 'Error updating experiment section ' . $experiment_section . '. Transaction rolled back.<br>';
+    $messages[] = 'Error updating experiment section ' . $experiment_section . '. Transaction rolled back.';
 
     // Determine which operation failed and log the appropriate error message
     if (isset($error_update_progress)) {
