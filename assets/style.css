@@ -89,11 +89,11 @@ body {
 .library-title {
     text-align: center;
 
-    font-size: 32px;
+    font-size: 28px;
 
     font-weight: bold;
 
-    margin-bottom: 35px;
+    margin-bottom: 28px;
 
     color: var(--scriba-dark);
 }
@@ -384,22 +384,33 @@ body {
    8. BACK BUTTON
    ========================================================= */
 
-.back-button {
-    display: inline-block;
 
+/* Back buttons - shared style across pages */
+.back-button,
+.experiment-back {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
     margin-bottom: 25px;
-
-    color: var(--scriba-dark);
-
-    text-decoration: none;
-
-    font-size: 17px;
+    background: #ffffff;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    color: #315f9b !important;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-
-.back-button:hover {
-    text-decoration: underline;
+.back-button:hover,
+.experiment-back:hover {
+    background: #eef7ff;
+    color: #173f73 !important;
 }
+
 
 
 
@@ -417,7 +428,7 @@ body {
 .leaderboard-title {
     text-align: center;
     font-size: 36px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.5px;
     color: var(--scriba-dark);
     margin-bottom: 32px;
@@ -828,9 +839,9 @@ body {
 .page_title {
     color: var(--scriba-dark);
     text-align: center;
-    font-size: 60px;
-    font-weight: bold;
-    margin-top: 80px; 
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 80px;
     margin-bottom: 40px;
 }
 
@@ -1491,10 +1502,10 @@ width: 90%;
 .experiment-page .experiment-rename-form .add-button {
     min-height: 42px;
     padding: 10px 20px;
-    border: 0;
-    border-radius: 10px;
-    background: #7794b6;
-    color: #ffffff;
+    border: 1px solid #b9d4f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #315f9b !important;;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
@@ -1567,12 +1578,14 @@ width: 90%;
 }
 
 .experiment-rename-toggle {
+    min-height: 42px;
     padding: 10px 20px;
-    border: 1px solid #263c55;
-    border-radius: 10px;
-    background: #7794b6;
-    color: #ffffff;
+    border: 1px solid #b9d4f5;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #315f9b !important;;
     font: inherit;
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -1972,3 +1985,14 @@ main.experiment-section-page {
     color: #263c55;
 }
 
+.experiment-page .experiment-tag-form input[type="submit"],
+.experiment-page .experiment-rename-toggle {
+    transition: background-color 0.25s ease,
+                border-color 0.25s ease;
+}
+
+.experiment-page .experiment-tag-form input[type="submit"]:hover,
+.experiment-page .experiment-rename-toggle:hover {
+    background: #eef7ff;
+    border-color: #7794b6;
+}

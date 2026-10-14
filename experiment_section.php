@@ -135,7 +135,11 @@ echo '</div>';
 ?>
 
 <!-- Link back to main experiment page -->
-<a href="experiment.php?experiment_id=<?php echo urlencode($experiment_id); ?>">Back to: <?php echo htmlspecialchars($project_experiment_name['experiment_name']); ?></a><br><br>
+<a class="experiment-back"
+   href="experiment.php?experiment_id=<?php echo urlencode($experiment_id); ?>">
+    Back to: <?php echo htmlspecialchars($project_experiment_name['experiment_name']); ?>
+</a>
+<br><br>
 
 <!-- Tags (static), Done toggle, save/submit -->
 <?php

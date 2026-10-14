@@ -139,12 +139,12 @@ include_once 'includes/navbar.php';
             // Retrieve experiment tags from the database
             include 'includes/fetch_experiment_tags.php';  // Fetches the tags for the specified experiment ID
             // Display current tags
-            echo '<p class="experiment-tag-list">'
-                . htmlspecialchars(implode(', ', $experiment_tags))
-                . '</p>';
-            ?>
+            if (!empty($experiment_tags)) {
+                echo '<p class="experiment-tag-list">'
+                    . htmlspecialchars(implode(', ', $experiment_tags))
+                    . '</p>';
+            }
 
-            <?php
             // If user has permission to edit tags, display the form for adding/removing tags
             if ($user_access >= 2) {
                 echo "<form class='experiment-tag-form' action='actions/save_experiment_tags.php' method='post'>"
@@ -163,7 +163,9 @@ include_once 'includes/navbar.php';
             // Display messages from save_experiment_tags.php if they exist
             if (isset($messages_save_experiment_tags)) {
                 foreach ($messages_save_experiment_tags as $message) {
-                    echo '<div class="experiment-message">' . $message . '</div>';
+                    if (trim(strip_tags($message)) !== '') {
+                        echo '<div class="experiment-message">' . $message . '</div>';
+                    }
                 }
             }
             ?>
@@ -230,17 +232,17 @@ include_once 'includes/navbar.php';
         <div class="experiment-section-links">
             <a class="experiment-section-link"
                href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&amp;section=plan">
-                Experiment Plan
+                Plan the Experiment
             </a>
 
             <a class="experiment-section-link"
                href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&amp;section=log">
-                Experiment Log
+                Record the Experiment
             </a>
 
             <a class="experiment-section-link"
                href="experiment_section.php?experiment_id=<?php echo urlencode($experiment_id); ?>&amp;section=result">
-                Experiment Result
+                View the Results
             </a>
         </div>
     </section>
