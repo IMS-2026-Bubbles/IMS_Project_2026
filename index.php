@@ -171,7 +171,7 @@ if (isset($_SESSION['toastClass'])) {
     </form>
 
     <!-- will be implemented in later upload to github-->
-    <p><a href="http://localhost/forgot_password.php">Forgot you password?</a></p>    
+    <p><a href="http://localhost/forgot_password.php">Forgot your password?</a></p>    
 
 
  <div class="scriba_card register_user">
