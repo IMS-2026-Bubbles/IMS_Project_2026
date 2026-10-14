@@ -463,10 +463,8 @@ body {
 }
 
 .leaderboard-button:hover {
-    background: var(--scriba-light-blue);
-    color: var(--scriba-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(38, 60, 85, 0.14);
+    background: #eef7ff;
+    border-color: #7794b6;
 }
 
 .leaderboard-table {
@@ -1939,20 +1937,20 @@ body.scriba-experiment-body {
 
 /* Buttons */
 .experiment-section-page input[type="submit"] {
-    min-height: 44px;
-    padding: 10px 22px;
-    border: none;
-    border-radius: 10px;
-    background: #7794b6;
-    color: #ffffff;
-    font-family: inherit;
-    font-size: 16px;
+    min-height: 42px;
+    padding: 10px 20px;
+    border: 1px solid #b9d4f5;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #315f9b !important;;
+    font: inherit;
     font-weight: 600;
     cursor: pointer;
 }
 
 .experiment-section-page input[type="submit"]:hover {
-    background: #627fa1;
+    background: #eef7ff;
+    border-color: #7794b6;
 }
 
 .experiment-section-page input[type="checkbox"] {
