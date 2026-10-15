@@ -116,6 +116,7 @@ if (isset($_POST['add_to_company'])) {
 
     if ($result) {
         $_SESSION['manage_company_message'] = 'User added to company successfully.';
+        $_SESSION['manage_company_toastClass'] = '#1ea324';
 
         // Log the activity of adding a user to a company
         log_activity(

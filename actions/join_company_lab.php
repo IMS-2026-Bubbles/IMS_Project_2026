@@ -4,12 +4,14 @@
 // Arrive from:
 // company_admin.php (join company or lab form)
 // user_profile.php
+
 // Action:
 // user can accept invite/deny to company
 // company admin can invite someone to company
 // company admin can assign someone to a lab group
 // company admin can create lab groups
 // company admin can assign an orphaned project to a person
+
 // Redirect to:
 // company_admin.php for company actions
 // user_profile.php for user actions
