@@ -25,7 +25,7 @@ require_once '../includes/log_activity.php';
 
 // Get the profile ID from the session
 $profile_id = $_SESSION['profile_id'];
-$admin_company_ID = $_SESSION['company_id'];
+$admin_company_ID = $_SESSION['company_id'] ?? NULL;
 
 // ----------- THIS PART IS FOR ADMIN -----------
 
@@ -34,12 +34,12 @@ $admin_company_ID = $_SESSION['company_id'];
 if (isset($_POST['add_to_lab'])) {
     // fetch data from POST request (the dropdown table)
     $labcode_to_join = $_POST['add_to_lab'];
-    $profile_id = $_POST['profile_id'];  // did you mean to overwrite the $profile_id from session?
+    $profile_id_target = $_POST['profile_id'];  // did you mean to overwrite the $profile_id from session?
 
     // join the lab group
     $sql = "INSERT INTO lab_members (lab_id, profile_id, role) VALUES (?, ?, 'member')";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ii', $labcode_to_join, $profile_id);
+    $stmt->bind_param('ii', $labcode_to_join, $profile_id_target);
     $result = $stmt->execute();
 
     if ($result === TRUE) {
@@ -53,7 +53,7 @@ if (isset($_POST['add_to_lab'])) {
             'lab',  // entity type
             $labcode_to_join,  // entity ID (lab ID)
             'add_member',  // activity type
-            "Added user with profile ID $profile_id to lab group $labcode_to_join"  // detail
+            "Added user with profile ID $profile_id_target to lab group $labcode_to_join"  // detail
         );
     } else {
         // Execution failed
@@ -66,7 +66,7 @@ if (isset($_POST['add_to_lab'])) {
             'lab',  // entity type
             $labcode_to_join,  // entity ID (lab ID)
             'add_member_failed',  // activity type
-            "Failed to add user with profile ID $profile_id to lab group $labcode_to_join: " . $conn->error  // detail
+            "Failed to add user with profile ID $profile_id_target to lab group $labcode_to_join: " . $conn->error  // detail
         );
     }
     $stmt->close();
@@ -174,15 +174,15 @@ if (isset($_POST['invite_person'])) {
 if (isset($_POST['orphan_proj'])) {
     // fetch data from POST request
     $project_id = $_POST['orphan_proj'];
-    $profile_id = $_POST['new_owner'];
-    $old_profile_id = $_POST['old_owner'];
+    $profile_id_new = $_POST['new_owner'];
+    $profile_id_old = $_POST['old_owner'];
 
     // change owner of project
     $sql = 'UPDATE project_members 
             SET profile_id = ?  # profile_id
             WHERE project_members.project_id = ? AND project_members.profile_id = ?';  // project_id, old_profile_id
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param('iii', $profile_id, $project_id, $old_profile_id);
+    $stmt->bind_param('iii', $profile_id_new, $project_id, $profile_id_old);
     $result = $stmt->execute();
 
     if ($stmt->error) {
@@ -193,7 +193,7 @@ if (isset($_POST['orphan_proj'])) {
             'project',  // entity type
             $project_id,  // entity ID (project ID)
             'update',  // activity type
-            "Failed to transfer ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id: Database error - " . $stmt->error  // detail
+            "Failed to transfer ownership of project $project_id from profile ID $profile_id_old to profile ID $profile_id_new: Database error - " . $stmt->error  // detail
         );
 
         $message = 'Error transferring project ownership: ' . $stmt->error;
@@ -208,7 +208,7 @@ if (isset($_POST['orphan_proj'])) {
             'project',  // entity type
             $project_id,  // entity ID (project ID)
             'update',  // activity type
-            "Successfully transferred ownership of project $project_id from profile ID $old_profile_id to profile ID $profile_id"  // detail
+            "Successfully transferred ownership of project $project_id from profile ID $profile_id_old to profile ID $profile_id_new"  // detail
         );
 
         $_SESSION['assign_project_message'] = 'Successfully transferred ownership of project.';
@@ -228,23 +228,48 @@ if (isset($_POST['orphan_proj'])) {
 // THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
 if (isset($_POST['submit_type'])) {
     // if user accept, change it's company belonging to member
+
+    // get the company id the user is trying to join
+    $stmt = $conn->prepare(
+        'SELECT companies.name, company_members.role, companies.company_id
+        FROM companies 
+        JOIN company_members 
+        ON companies.company_id = company_members.company_id 
+        WHERE company_members.profile_id = ?
+            AND company_members.role = "pending"'
+    );
+    $stmt->bind_param('i', $_SESSION['profile_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $company = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$company) {
+        // No pending invitation found for the user
+        $_SESSION['invitation_response_message'] = 'No pending invitation found for your account.';
+        header('Location: ../user_profile.php');
+        exit();
+    }
+
     if ($_POST['submit_type'] == 'accept') {
+        // user accepted the invitation, change role to member
         $sql_accept = "UPDATE company_members 
                 SET role = 'member' 
-                WHERE company_members.profile_id = ?";  // THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
+                WHERE company_members.profile_id = ?
+                    AND company_members.company_id = ?";  // THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
         $stmt = $conn->prepare($sql_accept);
-        $stmt->bind_param('i', $profile_id);
+        $stmt->bind_param('ii', $_SESSION['profile_id'], $company['company_id']);
         $result = $stmt->execute();
 
         if ($stmt->error) {
             // Log the failed attempt to accept the invitation due to database error
             log_activity(
                 $conn,
-                $profile_id,  // user's profile ID who attempted to accept the invitation
+                $_SESSION['profile_id'],  // user's profile ID who attempted to accept the invitation
                 'company',  // entity type
-                $admin_company_ID,  // entity ID (company ID)
+                $company['company_id'],  // entity ID (company ID)
                 'add_member',  // activity type
-                "Failed to accept invitation to join company $admin_company_ID: " . $stmt->error  // detail
+                'Failed to accept invitation to join company ' . $company['company_id'] . ': ' . $stmt->error  // detail
             );
 
             $_SESSION['invitation_response_message'] = 'Error accepting invitation: ' . $stmt->error;
@@ -254,22 +279,25 @@ if (isset($_POST['submit_type'])) {
             // Log the successful acceptance of the invitation
             log_activity(
                 $conn,
-                $profile_id,  // user's profile ID who accepted the invitation
+                $_SESSION['profile_id'],  // user's profile ID who accepted the invitation
                 'company',  // entity type
-                $admin_company_ID,  // entity ID (company ID)
+                $company['company_id'],  // entity ID (company ID)
                 'add_member',  // activity type
-                "User with profile ID $profile_id accepted invitation to join company $admin_company_ID"  // detail
+                'User with profile ID ' . $_SESSION['profile_id'] . ' accepted invitation to join company ' . $company['company_id']  // detail
             );
 
             $_SESSION['invitation_response_message'] = 'Successfully accepted invitation to join company.';
 
-            // TODO(session-refresh): company_id/lab_id in $_SESSION are only set at login
-            // (actions/login.php). The user just joined a company, but their session still
-            // has no company_id, so the navbar (Projects/Leaderboard buttons) and
-            // permission checks won't see it until they log out and back in.
-            // Fix: re-fetch affiliations (includes/fetch_profile_affiliation.php) and
-            // update $_SESSION['company_id'] / $_SESSION['lab_id'] here, or centralize
-            // the refresh in a helper called after any membership change.
+            // Refresh the user's affiliations and session variables after accepting the invitation
+            // Fetch the user's affiliation
+            require __DIR__ . '/../includes/fetch_profile_affiliation.php';
+            // Update the session with the new company_id and lab_id if available
+            $_SESSION['affiliations'] = $user_affiliations;
+            if (isset($user_affiliations)) {
+                $_SESSION['company_id'] = $user_affiliations['companies'][0] ?? NULL;  // Use NULL if no company affiliation
+                $_SESSION['lab_id'] = $user_affiliations['labs'][$_SESSION['company_id']] ?? NULL;  // Use NULL if no lab affiliation for the company
+                // NOTE: This assumes that the user can only belong to one company and one lab at a time. Adjust logic if multiple affiliations are allowed.
+            }
         }
 
         $stmt->close();
@@ -281,20 +309,21 @@ if (isset($_POST['submit_type'])) {
     // if you don't want to join company - then delete entry in table with all users part of company
     if ($_POST['submit_type'] == 'decline') {
         $sql_decline = 'DELETE FROM company_members 
-                    WHERE company_members.profile_id = ?';  // THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
+                    WHERE company_members.profile_id = ? 
+                        AND company_members.company_id = ?';  // THIS ONLY WORKS IF WE HAVE ONE PERSON PER COMPANY
         $stmt = $conn->prepare($sql_decline);
-        $stmt->bind_param('i', $profile_id);
+        $stmt->bind_param('ii', $_SESSION['profile_id'], $company['company_id']);
         $result = $stmt->execute();
 
         if ($stmt->error) {
             // Log the failed attempt to decline the invitation due to database error
             log_activity(
                 $conn,
-                $profile_id,  // user's profile ID who attempted to decline the invitation
+                $_SESSION['profile_id'],  // user's profile ID who attempted to decline the invitation
                 'company',  // entity type
-                $admin_company_ID,  // entity ID (company ID)
+                $company['company_id'],  // entity ID (company ID)
                 'remove_member',  // activity type
-                "Failed to decline invitation to join company $admin_company_ID: " . $stmt->error  // detail
+                'Failed to decline invitation to join company ' . $company['company_id'] . ': ' . $stmt->error  // detail
             );
 
             $_SESSION['invitation_response_message'] = 'Error declining invitation: ' . $stmt->error;
@@ -304,11 +333,11 @@ if (isset($_POST['submit_type'])) {
             // Log the successful decline of the invitation
             log_activity(
                 $conn,
-                $profile_id,  // user's profile ID who declined the invitation
+                $_SESSION['profile_id'],  // user's profile ID who declined the invitation
                 'company',  // entity type
-                $admin_company_ID,  // entity ID (company ID)
+                $company['company_id'],  // entity ID (company ID)
                 'remove_member',  // activity type
-                "User with profile ID $profile_id declined invitation to join company $admin_company_ID"  // detail
+                'User with profile ID ' . $_SESSION['profile_id'] . ' declined invitation to join company ' . $company['company_id']  // detail
             );
 
             $_SESSION['invitation_response_message'] = 'Successfully declined invitation to join company.';

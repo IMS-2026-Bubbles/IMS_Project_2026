@@ -18,7 +18,7 @@
 require_once 'session/init.php';
 // check user is logged in
 require_once 'session/check_user_logged_in.php';
-require_once 'cookies/cookie.php'; //cookies
+require_once 'cookies/cookie.php';  // cookies
 // Connect to database
 require_once 'database/db.php';
 
@@ -53,7 +53,7 @@ $stmt->close();
 
 // selecting company
 $stmt = $conn->prepare(
-    'SELECT companies.name, company_members.role 
+    'SELECT companies.name, company_members.role
      FROM companies 
      JOIN company_members 
      ON companies.company_id = company_members.company_id 
@@ -163,6 +163,7 @@ $stmt->close();
 
 <body>
 <!-- readfile() - reads a file and writes it to the output buffer -->
+
 
 <header>  <?php include 'includes/navbar.php'; ?>  </header> 
 
