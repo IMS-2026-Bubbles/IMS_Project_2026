@@ -352,35 +352,17 @@ if ($scope === 'company') {
 
     <?php endif; ?>
     <?php if ($scope === 'company' && $user_viewing_company != NULL): ?>
-        <h2 class="leaderboard-subtitle">Company Rankings</h2>
 
-        <table class="leaderboard-table">
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($users_company as $user): ?>
-                <tr>
-                    <td class="rank">
-                        <?php echo $user['rank']; ?>
-                    </td>
-                <td>
-                    <?php echo htmlspecialchars($user['name']); ?>
-                </td>
-                <td class="points">
-                    <?php echo $user['points']; ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+        
         <!-- Display company percentile -->
          <?php if ((int) $user_viewing_company['rank'] === 1): ?>
-                <?php echo 'You are ranked ' . $user_viewing_company['rank'] . ' in your company with ' . $user_viewing_company['points'] . ' points.'; ?>
+                <p class="leaderboard-percent">
+                You are ranked nr   
+                <strong><?php echo $user_viewing_company['rank'] ; ?></strong>
+                in your company with
+                <strong><?php echo $user_viewing_company['points'] ; ?></strong>
+                points. 
+                
         <?php else: ?>
             <!-- Ugly percentile -->
             <p class="leaderboard-percent">
