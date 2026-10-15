@@ -179,12 +179,35 @@ if (isset($_POST['orphan_proj'])) {
     $profile_id_new = $_POST['new_owner'];
     $profile_id_old = $_POST['old_owner'];
 
+    // get lab_id for new owner
+    $sql = "SELECT lab_id 
+            FROM lab_members
+            WHERE profile_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $profile_id_new);
+    $stmt->execute();
+    $result_lab_name = $stmt->get_result();
+    $row = $result_lab_name->fetch_assoc();
+    $stmt->close();
+
+    // store lab_id
+    $lab_id = (int) $row['lab_id'];  
+
     // change owner of project
     $sql = 'UPDATE project_members 
             SET profile_id = ?  # profile_id
             WHERE project_members.project_id = ? AND project_members.profile_id = ?';  // project_id, old_profile_id
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('iii', $profile_id_new, $project_id, $profile_id_old);
+    $result = $stmt->execute();
+
+
+    // assign new lab to project as well 
+    $sql = 'UPDATE projects 
+            SET lab_id = ?  # lab_id
+            WHERE projects.project_id = ?';  // project_id, 
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $lab_id, $project_id);
     $result = $stmt->execute();
 
     if ($stmt->error) {
@@ -212,6 +235,9 @@ if (isset($_POST['orphan_proj'])) {
             'update',  // activity type
             "Successfully transferred ownership of project $project_id from profile ID $profile_id_old to profile ID $profile_id_new"  // detail
         );
+
+
+
 
         $_SESSION['assign_project_message'] = 'Successfully transferred ownership of project.';
     }
