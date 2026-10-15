@@ -68,12 +68,14 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
             "SELECT MAX(GREATEST( -- Highest permission => access level
                 -- Scriba admin => no access for privacy reasons
                 -- Company admin => edit (Company member -> no access)
-                CASE 
-                    WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
+
+                -- THESE CAN BE UNCOMMENTED TO PREPARE FOR THE FUTURE
+                -- CASE 
+                    -- WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
                 -- Lab group admin => edit, member => read
-                CASE 
-                    WHEN lab_members.role = 'admin'        THEN 2
-                    WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
+                -- CASE 
+                    -- WHEN lab_members.role = 'admin'        THEN 2
+                    -- WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
                 -- Project
                 CASE
                     WHEN project_members.role = 'owner'    THEN 3
@@ -122,15 +124,20 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException('`access` column missing');
             } elseif ($exp_permission_level['access'] === null) {
                 // 'access' is null => invalid Experiment_ID
+                $exp_permission_level['access'] = 0;
                 // NOTE: message still uses the old identifier spelling (Experiment_ID);
                 // update to experiment_id for consistency with the schema vocabulary.
-                throw new RunTimeException('Invalid Experiment_ID: ' . $entity_id);
+
+                // this was removed - because of security, don't want to show what experiments are there or not
+                //throw new RunTimeException('Invalid Experiment_ID: ' . $entity_id);
             }
             // Return the permission level
             return (int) $exp_permission_level['access'];  // Need to use (int) to convert from string to integer
         } else {
             throw new RunTimeException('Permission query failed: ' . $stmt_exp_permission->error);  // Error executing query
         }
+
+
     } elseif ($entity_type === 'project') {
         // project_id == NULL => no access
         if ($entity_id === null) {

@@ -71,45 +71,116 @@ if (isset($_POST['change_experiment_name'])) {
 
 // Add experiment
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_experiment'])) {
-    // Get current project
-    $project_id = (int) $_POST['project_id'] ?? NULL;
 
+    // Get current project + experiment
+    $project_id = (int) $_POST['project_id'] ?? NULL;
     $experimentName = trim($_POST['experiment_name']);
 
-    if (!is_null($project_id) && $experimentName != '') {
-        // Add new experiment
-        $sql = 'INSERT INTO experiments (name, project_id, plan_updated_at, log_updated_at, result_updated_at) VALUES (?, ?, NOW(), NOW(), NOW())';
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('si', $experimentName, $project_id);
-        $stmt->execute();
+    
+    
+    // $transaction_ok is a flag to track if all database operations succeed for a given transaction.
+    // If any operation fails, we will roll back the transaction.
+    $transaction_ok = true;
+    $error_update_progress = '';
 
-        // Log experiment creation
-        if ($stmt->affected_rows > 0) {
-            log_activity(
-                $conn,
-                $_SESSION['profile_id'],  // profile ID who performed the action
-                'experiment',  // entity type
-                $conn->insert_id,  // entity ID (experiment ID) of the newly created experiment
-                'create',  // activity type
-                "Successfully created experiment $conn->insert_id with name $experimentName in project $project_id"  // detail
-            );
-        } else {
-            log_activity(
-                $conn,
-                $_SESSION['profile_id'],  // profile ID who performed the action
-                'experiment',  // entity type
-                NULL,  // entity ID (experiment ID) not available since creation failed
-                'create',  // activity type
-                "Failed to create experiment with name $experimentName in project $project_id: " . $stmt->error  // detail
-            );
+    // start of transaction
+    if($transaction_ok){ 
+        if (!is_null($project_id) && $experimentName != '') {
+
+            // Begin transaction to ensure atomicity of updates
+            $conn->begin_transaction();
+
+            // Add new experiment
+            $sql = 'INSERT INTO experiments (name, project_id, plan_updated_at, log_updated_at, result_updated_at) VALUES (?, ?, NOW(), NOW(), NOW())';
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('si', $experimentName, $project_id);
+         
+
+            $transaction_ok = $stmt->execute();  // transaction flag updated
+            if (!$transaction_ok) {
+                // On failure, capture error for logging
+                $error_update_progress = $stmt->error;
+            }
+            else{
+                $newExperimentId = $stmt->insert_id;}
+            $stmt->close();}
+
+
+            // second query
+            if($transaction_ok){
+                // Add current user as experiment editor
+                $sql =
+                    "INSERT INTO experiment_members
+                    (experiment_id, profile_id, role)
+                    VALUES (?, ?, 'edit')
+                ";
+
+                $stmt = $conn->prepare($sql);
+
+                $stmt->bind_param(
+                    'ii',
+                    $newExperimentId,
+                    $profile_id
+                );
+
+                $transaction_ok = $stmt->execute();  // transaction flag updated
+                if (!$transaction_ok) {
+                // On failure, capture error for logging
+                $error_update_progress = $stmt->error;
+                }
+                $stmt->close();}
+
+                if ($transaction_ok) {
+                    $conn->commit();
+            
+                    // Log experiment creation
+                    log_activity(
+                        $conn,
+                        $_SESSION['profile_id'],  // profile ID who performed the action
+                        'experiment',  // entity type
+                        $newExperimentId,  // entity ID (experiment ID) of the newly created experiment
+                        'create',  // activity type
+                        "Successfully created experiment $newExperimentId with name $experimentName in project $project_id"  // detail
+                        );
+                        
+                    // Log successful addition of user as experiment editor
+                    log_activity(
+                        $conn,
+                        $_SESSION['profile_id'],
+                        'project',
+                        $newExperimentId,
+                        'add_member',
+                        'User ' . $_SESSION['profile_id'] . ' added as experiment editor'
+                    );    
+                    }
+
+            else {
+                $conn->rollback();
+
+                log_activity(
+                    $conn,
+                    $_SESSION['profile_id'],  // profile ID who performed the action
+                    'experiment',  // entity type
+                    NULL,  // entity ID (experiment ID) not available since creation failed
+                    'create',  // activity type
+                    "Failed to create experiment with name $experimentName in project $project_id: " . $stmt->error  // detail
+                );
+            
+                // Log the error
+                log_activity(
+                    $conn,
+                    $_SESSION['profile_id'],
+                    'project',
+                    $newExperimentId,
+                    'add_member',
+                    'Error adding user as experiment editor: ' . $stmt->error
+                );
+            } 
+
+            // Return to current project
+            header('Location: ../project.php?project_id=' . urlencode($project_id));
+            exit();
         }
-
-        $stmt->close();
-
-        // Return to current project
-        header('Location: ../project.php?project_id=' . urlencode($project_id));
-        exit();
-    }
 }
 
 ?>
