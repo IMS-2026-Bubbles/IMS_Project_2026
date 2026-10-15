@@ -18,7 +18,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
-require_once 'cookies/cookie.php';
+require_once 'cookies/cookie.php'; //Start cookies
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
@@ -55,6 +55,13 @@ if (isset($_SESSION['forgot_password'])) {
 
     // Clear the messages from the session after retrieving them
     unset($_SESSION['forgot_password']);
+}
+
+if (isset($_SESSION['change_password'])) {
+    $message = $_SESSION['change_password'];
+
+    // Clear the messages from the session after retrieving them
+    unset($_SESSION['change_password']);
 }
 
 if (isset($_SESSION['toastClass'])) {
