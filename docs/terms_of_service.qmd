@@ -116,11 +116,11 @@ Scriba collects and processes the following personal data:
 
 | Data Type | Purpose | Retention |
 |-----------|---------|-----------|
-| Email address | Account identification, communication | Account duration + 90 days |
-| First and last name | User identification, collaboration | Account duration + 90 days |
-| Password (hashed) | Authentication | Account duration + 90 days |
+| Email address | Account identification, communication | Account duration |
+| First and last name | User identification, collaboration | Account duration |
+| Password (hashed) | Authentication | Account duration |
 | IP address (login logs) | Security, fraud prevention | 90 days |
-| Experiment/project data | Service functionality | Account duration |
+| Experiment/project data | Service functionality | Indefinitely |
 | Timestamps (account creation, updates) | Audit trail, security | Account duration + 90 days |
 
 [CUSTOMIZE: Adjust retention periods and data types based on your final policies.]
