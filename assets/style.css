@@ -1010,6 +1010,8 @@ body {
 
 /*regiater user page */
 
+
+
 .register_user_page {
     width: 100%;
     max-width: 600px;
@@ -1027,6 +1029,37 @@ body {
             width: 100%; /*uses 100 of the width in register_user_page form*/
 
         } 
+
+
+/* a butten that redirects to the index.php
+its suns back-button but i needed to change a little so it's placed better on the page  */
+
+
+ .register_user_back_button{
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    align-self: flex-start;
+    /* changed the position so its not exactly in the corners, some pixels further to right and left  */
+    /* https://www.w3schools.com/css/css_position.asp */
+    position: relative;
+    top: 30px;    
+    left: 40px;   
+    background: #ffffff;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    color: #315f9b !important;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+} 
+
+
+
 
 
 
