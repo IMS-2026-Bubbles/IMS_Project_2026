@@ -35,7 +35,7 @@ if (isset($_SESSION['toastClass'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <p><a href="http://localhost/index.php"> ↩ Go back</a></p>  
+      
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,6 +55,10 @@ if (isset($_SESSION['toastClass'])) {
 
 
 <body>
+
+<!-- moved back button to body and removed <p> cause it isnt needed  -->
+    <a class = "register_user_back_button"  href="http://localhost/index.php"> ↩ Go back to log in  </a>  
+
      <main class="register_user_page"> <!-- makes the form centered from css class  -->
      <h1 class = "page_title" > Welcome to Scriba!</h1>
   
