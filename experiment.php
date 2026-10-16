@@ -177,14 +177,14 @@ include_once 'includes/navbar.php';
     // project's experiments), filtered by the project_id parameter.
     echo "<a class='experiment-back' href='project.php?project_id="
         . urlencode($project_id)
-        . "'>&larr; Back to project</a>";
+        . "'>&larr; Back to Project</a>";
     ?>
 
     <!-- tags field/form -->
     <div class="experiment-content-grid" style="align-items: stretch;">
 
         <section class="experiment-panel" style="height: 100%; min-height: 340px;">
-            <h2>Experiment tags</h2>
+            <h2>Experiment Tags</h2>
 
             <?php
             // Retrieve experiment tags from the database
@@ -200,12 +200,12 @@ include_once 'includes/navbar.php';
             if ($user_access >= 2) {
                 echo "<form class='experiment-tag-form' action='actions/save_experiment_tags.php' method='post'>"
                     // Input fields for new and remove tags
-                    . "<input type='text' name='add_tags' placeholder='Add new tags (comma separated)'>"
-                    . "<input type='text' name='remove_tags' placeholder='Remove tags (comma separated)'>"
+                    . "<input type='text' name='add_tags' placeholder='Add New Tags (comma separated)'>"
+                    . "<input type='text' name='remove_tags' placeholder='Remove Tags (comma separated)'>"
                     // Experiment_ID
                     . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
                     // Submit button
-                    . "<input type='submit' value='Save tags'>"
+                    . "<input type='submit' value='Save Tags'>"
                     . '</form>';
             }
             ?>
@@ -224,7 +224,7 @@ include_once 'includes/navbar.php';
 
         <!-- markers for partial/total progress and last update -->
         <section class="experiment-panel" style="height: 100%; min-height: 340px;">
-            <h2>Progress and updates</h2>
+            <h2>Progress and Updates</h2>
 
             <?php
             // Retrieve and display progress flags for the experiment
@@ -238,7 +238,7 @@ include_once 'includes/navbar.php';
                 . htmlspecialchars($experiment_updated_at['created_at'])
                 . '</p>';
 
-            echo '<p><strong>Last updated:</strong> '
+            echo '<p><strong>Last Updated:</strong> '
                 . htmlspecialchars($experiment_updated_at['updated_at'])
                 . '</p>';
 
@@ -278,7 +278,7 @@ include_once 'includes/navbar.php';
 
     <!-- Create links for sub-pages, plan/log/result -->
     <section class="experiment-panel experiment-sections-panel">
-        <h2>Experiment sections</h2>
+        <h2>Experiment Sections</h2>
 
         <div class="experiment-section-links">
             <a class="experiment-section-link"
@@ -318,12 +318,12 @@ include_once 'includes/navbar.php';
     <?php if ($user_access >= 2): ?>
         <section class="experiment-panel experiment-rename-panel">
 
-            <h2>Change name of experiment</h2>
+            <h2>Change Name of Experiment</h2>
 
             <button type="button"
                     class="experiment-rename-toggle"
                     onclick="showAddForm('change_experiment_name')">
-                Change name of experiment
+                Change Name of Experiment
             </button>
 
             <form id="change_experiment_name"
