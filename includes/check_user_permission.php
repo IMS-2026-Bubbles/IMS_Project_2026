@@ -146,21 +146,22 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
         // Check permission for a project
         // Create query
         $sql_proj_permission =
-            "SELECT MAX(GREATEST( -- Highest permission => access level
+            "SELECT MAX( -- Highest permission => access level
+            -- PREPARED FOR FUTURE IMPLEMENTATIONS
                 -- Scriba admin => no access for privacy reasons
                 -- Company admin => edit (Company member -> no access)
-                CASE 
-                    WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
+                -- CASE 
+                    -- WHEN company_members.role = 'admin'    THEN 2 ELSE 0 END,
                 -- Lab group admin => edit, member => read
-                CASE
-                    WHEN lab_members.role = 'admin'        THEN 2
-                    WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
+                -- CASE
+                    -- WHEN lab_members.role = 'admin'        THEN 2
+                    -- WHEN lab_members.role = 'member'       THEN 1 ELSE 0 END,
                 -- Project
                 CASE
-                    WHEN project_members.role = 'owner'    THEN 3
-                    WHEN project_members.role = 'edit'     THEN 2
-                    WHEN project_members.role = 'read'     THEN 1 ELSE 0 END
-                ) -- End of GREATEST
+                    WHEN project_members.role = 'owner'    THEN 3 ELSE 0 END
+                    -- WHEN project_members.role = 'edit'     THEN 2 -- atm these can't be created
+                    -- WHEN project_members.role = 'read'     THEN 1 ELSE 0 END -- atm these can't be created
+                
                 ) AS `access`
             FROM projects
             -- Add tables for bridging towards member tables
@@ -195,9 +196,11 @@ function check_user_permission(mysqli $conn, string|NULL $profile_id, string $en
                 throw new RunTimeException('`access` column missing');
             } elseif ($proj_permission_level['access'] === null) {
                 // 'access' is null => invalid Project_ID
+                
+                $exp_permission_level['access'] = 0;
                 // NOTE: message still uses the old identifier spelling (Project_ID);
                 // update to project_id for consistency with the schema vocabulary.
-                throw new RunTimeException('Invalid Project_ID: ' . $entity_id);
+                // throw new RunTimeException('Invalid Project_ID: ' . $entity_id);
             }
             // Return the permission level
             return (int) $proj_permission_level['access'];  // Need to use (int) to convert from string to integer

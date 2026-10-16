@@ -41,47 +41,6 @@ require_once 'includes/log_activity.php';
 $profile_id = (int) $_SESSION['profile_id'];
 
 
-
-// Displays the experiment if user is the owner
-// # Same check as to see if you can view projects
-// if ($experiment_id !== NULL) {
-//     $checkSql = "SELECT experiments.experiment_id, experiments.name
-//         FROM experiments
-//         JOIN experiment_members
-//     	ON experiment_members.experiment_id = experiments.experiment_id
-//         WHERE experiments.experiment_id = ? AND experiment_members.profile_id = ? AND experiment_members.role = 'edit';";
-
-//     $checkStmt = $conn->prepare($checkSql);
-
-//     $checkStmt->bind_param(
-//         'ii',
-//         $experiment_id,
-//         $profile_id
-//     );
-
-//     $checkStmt->execute();
-
-//     $checkResult = $checkStmt->get_result();
-
-//     if ($checkResult->num_rows == 0) {
-//         // Log the access denied attempt
-//         log_activity(
-//             $conn,
-//             $profile_id,
-//             'project',
-//             $experiment_id,
-//             'access_denied',
-//             'User attempted to access experiment without permission'
-//         );
-
-//         die('You do not have permission to access this experiment.');
-//     }
-
-//     $checkStmt->close();
-// }
-
-
-# OLD CODE!!!
 require_once 'includes/check_user_permission.php';  // Include the user permission check function
 // $exp_ID becomes $experiment_id; the $project_experiment_name / $experiment_progress /
 // $experiment_updated_at keys used below follow the new column names
