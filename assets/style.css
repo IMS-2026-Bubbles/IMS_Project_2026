@@ -895,11 +895,41 @@ body {
 /* Style the side navigation with inspiration from w3 schools*/
 /* Divides the page into two parts so this is just where the logo and ewlcome text*/
 
+/* Cookie banner! uses the scriba card-style but added elements to that the card is
+ centered in the middle of the page */
+.cookie_banner {
+    background: linear-gradient(100deg, var(--scriba-soft-blue), var(--scriba-white));
+    border: 2px solid var(--scriba-blueborder);
+    border-radius: 25px;
+    padding: 30px;
+
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    width: 90%;
+    
+    margin: 0 auto;  /*centers the banner in the middle of the page */
+    box-sizing: border-box; /*makes the padding counted into 90%*/
+    position: fixed;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+
+}
+/* Here for hiding the cookie banner after clicking yes or no */
+.cookie_banner.hide,
+#consentBox.hide {
+    display: none !important;
+}
+
+
+
 /* changed my mind and using flexbox for this page aswell, the other version was hardcoded and bad to use on another size screen */
 .login_page {
     display: flex; align-items: flex-start; 
 
 }
+
 
 .left_side_loginpage,
 .right_side_loginpage {
@@ -921,7 +951,6 @@ body {
     width: 90%; display: block;  /*makes the text be over the logo*/ max-width: 550px;  margin: 0 auto; /*centering the logo*/
    
 }
-
 
 
 

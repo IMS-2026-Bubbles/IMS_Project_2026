@@ -8,8 +8,8 @@ const rejectBtn =
     document.querySelector(".rejectButton");
 
 acceptBtn.onclick = () => {
-    document.cookie = "CookieBy=GeeksForGeeks; max-age="
-        + 60 * 60 * 24;
+    document.cookie = "CookieBy=Scriba; max-age="
+        + 60 * 60 * 24; "path=/";
     if (document.cookie) {
         consentBox.classList.add("hide");
     } else {
@@ -27,6 +27,6 @@ rejectBtn.onclick = () => {
 };
 
 let checkCookie = 
-    document.cookie.indexOf("CookieBy=GeeksForGeeks");
+    document.cookie.indexOf("CookieBy=Scriba");
 checkCookie !== -1 ? consentBox.classList.add("hide") :
     consentBox.classList.remove("hide");

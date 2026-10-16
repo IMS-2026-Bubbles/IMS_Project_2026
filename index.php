@@ -70,7 +70,8 @@ if (isset($_SESSION['toastClass'])) {
     unset($_SESSION['toastClass']);
 }
 
-require_once "cookies/cookie_html.html";
+require_once 'cookies/cookie_html.html';
+require_once 'cookies/cookie.php';
 
 ?>
 
@@ -105,6 +106,7 @@ require_once "cookies/cookie_html.html";
 
 
 
+
 <!-- Linked to bootstrap -->
  <!-- According to w3 schools:-->
   <!-- Bootstrap also gives you the ability to easily create responsive designs, Bootstrap is a free front-end framework for faster and easier web development  -->
@@ -116,12 +118,12 @@ require_once "cookies/cookie_html.html";
 
 
 <body>
-
 <!-- Plan to have the nav bar in the nav element for all pages and maybe the cookies thing in the footer-->
  <!-- Main class is just for all main content in the page-->
    <!-- Can also make section elements but i think that all information we have is in the main?? we'll see-->
 
 <!--  https://www.youtube.com/watch?v=pAl7TrV7gpg  this series of making a webpage by Dani Krossing-->
+
 
 
 <!-- <nav> </nav> 
@@ -133,7 +135,7 @@ require_once "cookies/cookie_html.html";
 
    <!--Note for myself; can always have elements in the elements but i need to make sure i have a open and closing tag for everythign -->
 
-    
+
 
   <!-- Want the title + logo on the left side, making a class for left side and further a class for right side for login forms etc-->
     
@@ -148,6 +150,9 @@ require_once "cookies/cookie_html.html";
                 class="loginpage_logo"
             >
       </section>
+
+
+
 
 
 <!-- Divide right side-->
@@ -192,6 +197,8 @@ require_once "cookies/cookie_html.html";
          <!-- Apply global buttons in css and reuse everything -->
 
 </main>
+
+
 
 
 </body>
