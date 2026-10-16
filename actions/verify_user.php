@@ -21,6 +21,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // sessions
 require_once '../session/init.php';  // Start the session and initialize session variables
+require_once '../cookies/cookie.php'; //Include cookies
 // No check for user logged in here, verification page
 require '../database/db.php';
 

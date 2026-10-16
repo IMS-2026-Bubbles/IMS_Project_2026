@@ -54,16 +54,13 @@ if (isset($_POST['project_id'])) {
     $project_id = (int) $_POST['project_id'];
 }
 
-// Check that the project belongs to the user's company
+// Displays the project if user is the owner
 if ($project_id > 0) {
-    $checkSql = 'SELECT projects.project_id
+    $checkSql = "SELECT projects.project_id, projects.name
         FROM projects
-        JOIN labs
-            ON projects.lab_id = labs.lab_id
-        JOIN company_members
-            ON labs.company_id = company_members.company_id
-        WHERE projects.project_id = ?
-          AND company_members.profile_id = ?';
+        JOIN project_members
+    	ON project_members.project_id = projects.project_id
+        WHERE projects.project_id = ? AND project_members.profile_id = ? AND project_members.role = 'owner'";
 
     $checkStmt = $conn->prepare($checkSql);
 
