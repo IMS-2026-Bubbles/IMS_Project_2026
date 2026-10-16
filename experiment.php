@@ -205,7 +205,7 @@ include_once 'includes/navbar.php';
                     // Experiment_ID
                     . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
                     // Submit button
-                    . "<input type='submit' value='Save tags'>"
+                    . "<input type='submit' value='Save Tags'>"
                     . '</form>';
             }
             ?>
@@ -278,7 +278,7 @@ include_once 'includes/navbar.php';
 
     <!-- Create links for sub-pages, plan/log/result -->
     <section class="experiment-panel experiment-sections-panel">
-        <h2>Experiment sections</h2>
+        <h2>Experiment Sections</h2>
 
         <div class="experiment-section-links">
             <a class="experiment-section-link"
@@ -318,7 +318,7 @@ include_once 'includes/navbar.php';
     <?php if ($user_access >= 2): ?>
         <section class="experiment-panel experiment-rename-panel">
 
-            <h2>Change name of experiment</h2>
+            <h2>Change Name of Experiment</h2>
 
             <button type="button"
                     class="experiment-rename-toggle"
