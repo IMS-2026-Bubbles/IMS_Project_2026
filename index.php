@@ -18,7 +18,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
 require_once 'session/init.php';  // Start the session and initialize session variables
-require_once 'cookies/cookie.php'; //Start cookies
 // No check for user logged in here, front page
 require_once 'database/db.php';
 
@@ -70,6 +69,8 @@ if (isset($_SESSION['toastClass'])) {
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 }
+
+require_once "cookies/cookie_html.html";
 
 ?>
 
@@ -192,7 +193,7 @@ if (isset($_SESSION['toastClass'])) {
 
 </main>
 
+
 </body>
+
 </html>
-
-

@@ -7,7 +7,7 @@ $cookie_value = $_SESSION['profile_id'] ?? '';
 
 //if the cookie is not already created, create it and make it valid for 1 day
 if(!isset($_COOKIE[$cookie_name])) {
-    setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "../"); // 86400 = 1 day
+    setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "/"); // 86400 = 1 day
 }
 //echo "$cookie_value";
 
