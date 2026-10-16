@@ -334,7 +334,7 @@ $stmt_projects->close();
                 type="text"
                 name="search"
                 class="form-control search-box"
-                placeholder="search project"
+                placeholder="Search Project"
                 value="<?php echo htmlspecialchars($search); ?>"
             >
 
@@ -347,7 +347,7 @@ $stmt_projects->close();
             class="add-project d-flex justify-content-center align-items-center mb-4"
             onclick="showAddForm()"
         >
-            add project
+            Add Project
         </button>
 
         <!-- Add project form -->
@@ -370,7 +370,7 @@ $stmt_projects->close();
                         type="text"
                         name="project_name"
                         class="form-control add-input"
-                        placeholder="project name"
+                        placeholder="Project Name"
                         required
                     >
 
@@ -387,7 +387,7 @@ $stmt_projects->close();
                     >
 
                         <option value="">
-                            select lab
+                            Select Lab
                         </option>
 
                         <?php foreach ($labs as $lab): ?>
