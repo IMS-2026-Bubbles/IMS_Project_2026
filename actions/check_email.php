@@ -64,7 +64,7 @@ if (isset($_POST['forgot_password'])) {
         $failed_attempts = $row['failed_attempts'];
     }
 
-    if ($failed_attempts >= 5) {
+    if ($failed_attempts >= 50) {
         echo "too many failed attempts";
         $message = 'Too many failed login attempts. Please try again later.';
         $toastClass = '#dc3545';  // Danger color

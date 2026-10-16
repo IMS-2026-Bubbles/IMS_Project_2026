@@ -61,7 +61,7 @@ if ($result_failed_attempts) {
     $failed_attempts = $row['failed_attempts'];
 }
 
-if ($failed_attempts >= 3) {
+if ($failed_attempts >= 5) {
     echo "too many failed attempts";
     $message = 'Too many failed token entries. Click "forgot password" and get a new link.';
     $toastClass = '#dc3545';  // Danger color
@@ -83,7 +83,6 @@ if ($failed_attempts >= 3) {
 }
 
 if (!isset($token) || empty($token) || strlen($token) != 32) {
-    echo" token is $token";
     // If the token is invalid, send the user to the homepage
     header('Location: ../index.php');
     exit();
@@ -107,7 +106,7 @@ if ($transaction_ok) {
 
     // check if the number of rows >0 => token exists
     if ($checkStmt->num_rows > 0) {
-        //the token exists
+        //the token exists, check the following
         if ((int) $profile['is_verified'] == 0) {
             //user is not verified
             $message = 'Verify your email before chaning the password.';
@@ -144,29 +143,11 @@ if ($transaction_ok) {
             $transaction_ok = False;
         }
     $checkStmt->close();
-    } else {
-        //token in URL is incorrect
-            $message = 'Invalid token.';
-            $toastClass = '#007bff';  // Primary color
-            $_SESSION['change_password'] = $message;
-            $_SESSION['toastClass'] = $toastClass;
-
-            // Log failed registration due to existing email
-            log_login(
-                $conn,
-                NULL,  // profile_id is NULL since registration failed
-                NULL,
-                $ip_address,
-                0,  // success = 0 for failure
-                'Failed: Wrong token in URL'
-            );
-            $transaction_ok = False;
-
     }
 }
 if ($transaction_ok) {
     // otherwise the user will now get their pasword changed
-    $password = htmlspecialchars($_POST['password1']); //fetch the password from the HTML form
+    $password = $_POST['password1']; //fetch the password from the HTML form
     $hashed_password = password_hash($password, PASSWORD_BCRYPT); //hash the password with BCRYPT
 
     //Insert the new password into profiles, and update pwd_change to todays date and time
