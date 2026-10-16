@@ -63,9 +63,8 @@ if ($result_failed_attempts) {
 
 if ($failed_attempts >= 3) {
     echo "too many failed attempts";
-    $message = 'Too many failed token entries. Do you have the correct link?';
+    $message = 'Too many failed token entries. Click "forgot password" and get a new link.';
     $toastClass = '#dc3545';  // Danger color
-
     // Log a failed verification attempt (verification locked)
     log_login(
         $conn,
@@ -181,7 +180,6 @@ if ($transaction_ok) {
         $error_update_pwd = $pwdStmt->error;
     }
     $pwdStmt->close();
-    // $pwdStmt->store_result(); // results are never used?
 }
 
 if ($transaction_ok) {
