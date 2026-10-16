@@ -88,6 +88,7 @@ CREATE TABLE `profiles` (
   `first_name` VARCHAR(255),
   `last_name` VARCHAR(255),
   `password` VARCHAR(255) NOT NULL,
+  `password_changed_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on password change
   `agreed_to_tos` BOOLEAN NOT NULL DEFAULT FALSE, -- agreed to terms and conditions and GDPR
   `saved_changes` INT NOT NULL DEFAULT 0, -- start from 0
   `last_login_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Update manually on login
