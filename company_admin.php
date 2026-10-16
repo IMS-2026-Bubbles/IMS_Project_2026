@@ -96,7 +96,7 @@ if ($result->num_rows > 0) {
                 "<form action='actions/join_company_lab.php' method= 'POST' style='display:inline;'>"
                 . "<input type='hidden' name='profile_id' value='" . htmlspecialchars($row['profile_id']) . "'>"
                 . "<select name='add_to_lab'>"
-                . "<option value='' disabled selected >Assign to a lab</option>"
+                . "<option value='' disabled selected >Assign to a lab </option>"
                 . $lab_options
                 . '</select> '
                 . "<button type='submit' class = 'admin_button' >Add</button>"
@@ -227,10 +227,7 @@ if ($result_proj->num_rows > 0) {
     </div>
 <?php endif; ?>
 
-<!-- i want nav bar here -->
-    <?php
-    // include "includes/navbar.php";
-    ?>
+
 
 <h1 class="page_title">Company Admin Page</h1>
 
@@ -258,10 +255,32 @@ if ($result_proj->num_rows > 0) {
     </form>
 </div>
 
+
+
+    <!-- Table 3 -->
+     <!-- moved table 3 first so it looked more strucutred without changing so many forms  -->
+    <div class = "admin_box" >
+        <table class = "table table-striped table-hoveradmin_table"> <!-- update to another class maybe -->
+            <thead>
+            <tr>
+                <!-- specifying the column names names -->
+            <th scope="col">Projects without owner</th>
+            <th scope="col">Action</th>
+            </tr>
+        <thead> 
+        <tbody>
+            <?php echo $rows_to_display_proj; ?>
+            
+        </tbody>
+        
+        </table>
+        
+    </div>
+
     <!-- Table 1 -->
     <div class = "admin_container">
     <div>
-    <table class = "table table-striped table-hover  "> <!-- update to another class maybe -->
+    <table class = "table table-striped table-hover admin_table  "> <!-- update to another class maybe -->
         <thead>
         <tr>
             <!-- specifying the column names names -->
@@ -280,8 +299,8 @@ if ($result_proj->num_rows > 0) {
     </div>
 
     <!-- Table 2 -->
-    <div>
-        <table class = "table table-striped table-hover "> <!-- update to another class maybe -->
+    <div class = "admin_box">
+        <table class = "table table-striped table-hover admin_table "> <!-- update to another class maybe -->
             <thead>
             <tr>
                 <!-- specifying the column names names -->
@@ -296,27 +315,9 @@ if ($result_proj->num_rows > 0) {
     </div>
 
 
-    <!-- Table 3 -->
-    <div>
-        <table class = "table table-striped table-hover "> <!-- update to another class maybe -->
-            <thead>
-            <tr>
-                <!-- specifying the column names names -->
-            <th scope="col">Projects without owner</th>
-            <th scope="col">Action</th>
-            </tr>
-        <thead> 
-        <tbody>
-            <?php echo $rows_to_display_proj; ?>
-            
-        </tbody>
-        
-        </table>
-        
-    </div>
 
    
-    
+    </main>
 </body>
 </html>
 

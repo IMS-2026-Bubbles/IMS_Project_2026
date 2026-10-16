@@ -49,7 +49,7 @@ Each HTML page must include a reference to the external style sheet file inside 
     --scriba-card-blue: #a0bef6;
     --scriba-white: #ffffff;
     --scriba-border: #263c55;
-    --scriba-blueborder: #2d67a8;
+    --scriba-blueborder: #7794b6;
 }
 
 /* Page */
@@ -974,6 +974,29 @@ body {
 }
 
 
+/* back-button that sun made just changed where the button is positioned  */
+ .forgot_password_button{
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    align-self: flex-start;
+/* rearranged the button but it's the same as the back to login page  */
+    margin-top: 10px; align-self: flex-start;
+    background: #ffffff;
+    border: 1px solid #d6e5f6;
+    border-radius: 12px;
+    color: #315f9b !important;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+} 
+
+
+
 /* https://www.youtube.com/watch?v=wsTv9y931o8 describes block element and it's useful to take up the entire width of the screen so next element is forced to nex line  */
 
 .login_button {
@@ -1112,11 +1135,6 @@ its suns back-button but i needed to change a little so it's placed better on th
 
 
 
-
-
-
-
-
 .add_company_button{
 height: 48px;
 
@@ -1142,6 +1160,8 @@ height: 48px;
 }
 
 
+
+
 /* admin page  */
 .admin_page{
 width: 90%;
@@ -1154,7 +1174,6 @@ width: 90%;
 .table {
     --bs-table-hover-bg: var(--scriba-light-blue); /* hover gets light blue colour*/ 
     border-radius: 15px;
-    max-width: 400px;
     overflow: hidden;
  } /* this makes the corners round, deleted the oevrflow*/ 
 
@@ -1210,7 +1229,7 @@ width: 90%;
 /* add buttons for admin forms, same code as for ogin_button just samller  */
 .admin_button {
     
-  background-color:  var(--scriba-blue);
+  background-color:  var(--scriba-blueborder);
   border-radius: 13px; /* makes corners rounded*/ 
   color: white;
   padding: 10px 20px;
@@ -1340,65 +1359,7 @@ width: 90%;
 
 
 
-/* drafts i might use, or not, then we delete them  */
 
-
-/* old  */
-
-/* .left_side_loginpage_draft {
-  height: 100%;
-  width: 900px;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-} */
-
-/* right side */ 
-/* .right_side_loginpage_draft {
-  height: 100%;
-  width: 850px;
-  position: fixed;
-  z-index: 1; 
-  top: 0;
-  right: 0;
-  overflow-x: hidden;
-} */
-
-
-.login_form_old {
-  color: var(--scriba-dark); /* colour of text */
-  
-  text-align: center;
-  width: 600px;
-  padding: 50px;
-  margin-top: 200px;
-  margin-left: 100px;
-  display: flex; /*flexible layout*/ 
-  flex-direction: column; /*makes the email + password be under each other*/ 
-  gap: 10px;
-
-    border: 2px solid var(--scriba-dark);
-    border-radius: 30px;
-    background:linear-gradient(
-            100deg,
-            var(--scriba-soft-blue), var(--scriba-white));}
-
-
-
-
- .button_OLD_DRaft {
-  background-color: var(--scriba-light-blue); /* makes bakcground colour on the btutton light blues*/
-   border: none; /* no border around the button  */
-  color: white; 
-  padding: 15px 32px; /* mkaes space between text and borders*/ 
-  text-align: center; /* centrera texten*/ 
-  text-decoration: none; /* if the button is a link or similar then the text will look normal */
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-} 
 
 
 
@@ -2056,3 +2017,5 @@ main.experiment-section-page {
     background: #eef7ff;
     border-color: #7794b6;
 }
+
+

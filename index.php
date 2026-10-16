@@ -181,10 +181,11 @@ require_once 'cookies/cookie.php';
     <input type="submit" class="login_button" name="login" value="Log in"> 
 
     <!-- get directed to register user page if the person wants to make an account  -->
+         <!-- will be implemented in later upload to github-->
+    <a class = "forgot_password_button"  href="http://localhost/forgot_password.php"> Forgot your password ?</a>   
     </form>
 
-    <!-- will be implemented in later upload to github-->
-    <p><a href="http://localhost/forgot_password.php">Forgot your password?</a></p>    
+
 
 
  <div class="scriba_card register_user">
