@@ -163,9 +163,12 @@ require_once 'cookies/cookie.php';
 
        <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
        <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
-        <?php if ($message): ?>
-            <p class="error_message" > <?php echo htmlspecialchars($message); ?></p>
-        <?php endif; ?>
+        <!-- The error message that Tilda uses in company admin page is mor intutitve so i just copied in here instead  -->
+    <?php if ($message !== ''): ?>
+    <div class="toast-message" style="background-color: <?php echo htmlspecialchars($toastClass); ?>; color: white; padding: 10px; margin: 10px 0;">
+        <?php echo htmlspecialchars($message); ?>
+    </div>
+<?php endif; ?>
 
         
 
