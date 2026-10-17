@@ -167,10 +167,10 @@ $stmt->close();
             You have been invited to join <?php echo htmlspecialchars($company['name']); ?> 
             <form action="actions/join_company_lab.php" method="POST"> 
             <!-- Accept button -->
-            <button type="submit" name="submit_type" value="accept">Accept</button>
+            <button class = "admin_button" type="submit" name="submit_type" value="accept">Accept</button>
 
             <!-- Decline Button -->
-            <button type="submit" name="submit_type" value="decline">Decline</button>
+            <button class "admin_button" type="submit" name="submit_type" value="decline">Decline</button>
             </form> 
             <?php
         } else {
