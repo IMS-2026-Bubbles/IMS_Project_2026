@@ -108,51 +108,6 @@ $stmt->close();
 
 
 
-    
-<!--
-/*.welcome {
-    background-color: lightblue;
-    color: white;
-    border: 4px solid white;
-    margin: 50px 45% 50px 5%; top, right, bottom, left 
-    margin-top: 50px;
-    margin-bottom: 50px;
-    margin-right: 1200px;
-    margin-left: 70px; 
-    padding: 10px; 
-    } 
-*/
-
-
-    /* .user {
-    background-color: lightblue;
-    color: white;
-    border: 4px solid white;
-    margin: 50px 40% 50px 70%;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    margin-right: 50px;
-    margin-left: 1200px;
-    padding: 10px;
-    } */
-
-
-    /* Gjorde alla till buttons.. får fixa det sen : )  */
-   /* .user {
-    background-color: #8bc1e3;
-    color: white;
-    font-size: 15px;
-    padding: 16px 20px;
-    border: none;
-    width: 50%;
-    max-width: 700px;
-    margin: 25px 0 25px 5%;
-    border-radius: 8px;
-    box-sizing: border-box; */
-}
-
--->
-
 
 </head>
 
@@ -175,8 +130,8 @@ $stmt->close();
 <section class="profile_left">
     <div class="profile_card">
     <!-- I added so that the display name is showed up here instead / Tilda -->
-    <h2>Welcome to your user page <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?> </h2>
-    <p>You have possibilities to overview your profile, add experiments and view your points. Log it or it didn't happen! </p>
+    <h2>Welcome  <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?> </h2>
+    <p>You have possibilities to overview your profile, see which company and lab gorup you belong to, and follow your Scriba points. Log it or it didn't happen! </p>
 
 </div>
 </section>
@@ -245,7 +200,7 @@ $stmt->close();
 <h2>Points</h2>
 <p>
         You have
-        <?php echo htmlspecialchars($points['scriba_points']); ?> points
+        <?php echo htmlspecialchars($points['scriba_points']); ?> points. Your earn points by saving changes, logging in and completing experiments (10 points each) and projects (100 points each)
     </p>
 </div>
 
@@ -253,8 +208,9 @@ $stmt->close();
 
 <!-- suns project card  -->
 <div class="profile_card">
-    <h2>Delete account</h2>
-    <p>You can choose to delete your account here </p>
+    <h2>Delete Account</h2>
+    <p>By deleting your account the personal information is removed from Scriba. Your projects and experiments are not deleted but are no longer linked to your name. This step is irreversible.   </p>
+    <p>You can choose to delete your account here: </p>
 <!--  this is a form, thought abou making a button but it is better to send a form to PHP that answers with f (isset($_POST["delete_account"])) { --> 
    <form method="POST" action="actions/delete_profile.php" onsubmit="return confirm('Are you sure you want to delete your account?');">
     <button type="submit" class = "btn-81"  name="delete_account">Delete account</button>
