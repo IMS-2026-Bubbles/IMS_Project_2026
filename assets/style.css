@@ -1298,6 +1298,12 @@ width: 90%;
 
 }
 
+/* theese two are the two sides in profile_user page and the containers are aligned in columns with 20 px gap between */
+.profile_left {
+    display: flex;
+    flex-direction: column;    /* "The column value displays the flex items vertically (from top to bottom)" W3 schools */
+    gap: 20px;                 /* space between boxes */
+} 
 .profile_right {
     display: flex;
     flex-direction: column;    /* "The column value displays the flex items vertically (from top to bottom)" W3 schools */

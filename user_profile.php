@@ -91,6 +91,7 @@ $stmt->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- loads a CSS library, bootstrap -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- <title>Document</title> -->
 
@@ -134,6 +135,22 @@ $stmt->close();
     <p>You have possibilities to overview your profile, see which company and lab gorup you belong to, and follow your Scriba points. Log it or it didn't happen! </p>
 
 </div>
+
+
+<div class = "profile_card" >
+<h2>Points</h2>
+<p>
+        You have
+        <?php echo htmlspecialchars($points['scriba_points']); ?> points. Your earn points by saving changes, logging in and completing experiments (10 points each) and projects (100 points each)
+        
+    </p>
+
+    <!-- boostrap icons  from https://icons.getbootstrap.com-->
+<i class="bi bi-fire"></i>
+
+    
+</div>
+
 </section>
 
 
@@ -196,13 +213,7 @@ $stmt->close();
 
 
 
-<div class = "profile_card" >
-<h2>Points</h2>
-<p>
-        You have
-        <?php echo htmlspecialchars($points['scriba_points']); ?> points. Your earn points by saving changes, logging in and completing experiments (10 points each) and projects (100 points each)
-    </p>
-</div>
+
 
 
 
