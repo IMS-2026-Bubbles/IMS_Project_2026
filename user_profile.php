@@ -93,6 +93,11 @@ $stmt->close();
     <!-- loads a CSS library, bootstrap -->
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+<!-- the icons from official open source SVG https://www.jsdelivr.com/package/npm/bootstrap-icons -->
+<link href="
+https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css
+" rel="stylesheet">
     <!-- <title>Document</title> -->
 
 
@@ -139,14 +144,16 @@ $stmt->close();
 
 <div class = "profile_card" >
 <h2>Points</h2>
+    <!-- boostrap icons from https://icons.getbootstrap.com and scriba colour -->
+
+<div class="text-center"> <i class="bi bi-flask-florence-fill" style="font-size:200px; color:var(--scriba-lightblue);"></i> </div>
 <p>
         You have
         <?php echo htmlspecialchars($points['scriba_points']); ?> points. Your earn points by saving changes, logging in and completing experiments (10 points each) and projects (100 points each)
         
     </p>
 
-    <!-- boostrap icons  from https://icons.getbootstrap.com-->
-<i class="bi bi-fire"></i>
+
 
     
 </div>
