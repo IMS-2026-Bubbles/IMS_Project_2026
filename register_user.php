@@ -65,10 +65,12 @@ if (isset($_SESSION['toastClass'])) {
 
 
     <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
-    <?php if ($message): ?>
-        <p class="error_message"><?php echo htmlspecialchars($message); ?></p>
-  
-    <?php endif; ?>
+        <!-- messages are unified at all pages -->
+   <?php if ($message !== ''): ?>
+    <div class="toast-message" style="background-color: <?php echo htmlspecialchars($toastClass); ?>; color: white; padding: 10px; margin: 10px 0;">
+        <?php echo htmlspecialchars($message); ?>
+    </div>
+<?php endif; ?>
 
 
     <!-- put all elemnts in one box..  -->
