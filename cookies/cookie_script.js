@@ -22,7 +22,7 @@ acceptBtn.onclick = () => {
 
 rejectBtn.onclick = () => {
     alert(
-        "Cookies rejected. Some functionality may be limited.");
+        "Cookies must be accepted in order to use Scriba.");
     consentBox.classList.add("hide");
 };
 
