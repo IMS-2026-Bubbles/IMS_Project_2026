@@ -68,9 +68,19 @@ if (isset($_SESSION['toastClass'])) {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
 <!-- Linked to our stylesheet, linked is often used to link to the stylesheet but also other files  -->
  <link rel="stylesheet" href="assets/style.css">
-    <p><a href="http://localhost/index.php"> ↩ Go back</a></p> 
+
 </head>
+
+
+
 <main class = "forgot_password " >
+
+<!-- added same deisgn on the back button as in the register_user page /cornelia  -->
+<a class = "register_user_back_button"  href="http://localhost/index.php"> ↩ Go back to log in  </a>  
+
+
+
+
 <h1 class = "page_title" > Enter the Email for your account</h1>
 <body>
     <form class="scriba_card forgot_password" action = "actions/check_email.php" method="POST">
