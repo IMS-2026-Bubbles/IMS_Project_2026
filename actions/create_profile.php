@@ -175,6 +175,11 @@ if (isset($_POST['register'])) {
 
         send_mail_by_PHPMailer($to, $from, $subject, $body);
 
+        // a message for registration wasnt sent before. Now, this is sent via the session further down. 
+        // makes sucess message show on index.php /cornelia 
+        $message = 'We have sent a confirmation mail to your email address.';
+        $toastClass = '#198754';  //can change colour to another 
+
         // If registration is successful, log the successful registration
         // Get the profile_id of the newly registered user
         // Replace the next query with $conn->insert_id to get the last inserted ID = new profile ID
@@ -189,6 +194,8 @@ if (isset($_POST['register'])) {
             1,  // success = 1 for success
             'Registration successful'
         );
+
+   
 
         $stmt->close();
     }

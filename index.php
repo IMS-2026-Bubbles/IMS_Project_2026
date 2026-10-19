@@ -70,6 +70,11 @@ if (isset($_SESSION['toastClass'])) {
     unset($_SESSION['toastClass']);
 }
 
+// create_profile.php creates register_user, but index page didn't have this key so it couldnt read it /cornelia 
+// https://www.phptutorial.net/php-tutorial/php-flash-messages/ were unset makes the message dissapear if you reload the page 
+
+if (isset($_SESSION['register_user'])) { $message = $_SESSION['register_user']; unset($_SESSION['register_user']);}
+
 require_once 'cookies/cookie_html.html';
 require_once 'cookies/cookie.php';
 
@@ -118,6 +123,27 @@ require_once 'cookies/cookie.php';
 
 
 <body>
+
+
+
+
+       <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
+       <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
+        <!-- The error message that Tilda uses in company admin page is mor intutitve so i just copied in here instead  -->
+         <!-- moved the m,essages so they covers the whole index.php page -->
+    <?php if ($message !== ''): ?>
+    <div class="toast-message" style="background-color: <?php echo htmlspecialchars($toastClass); ?>; color: white; padding: 10px; margin: 10px 0;">
+        <?php echo htmlspecialchars($message); ?>
+    </div>
+<?php endif; ?>
+
+
+
+
+
+
+
+
 <!-- Plan to have the nav bar in the nav element for all pages and maybe the cookies thing in the footer-->
  <!-- Main class is just for all main content in the page-->
    <!-- Can also make section elements but i think that all information we have is in the main?? we'll see-->
@@ -160,15 +186,6 @@ require_once 'cookies/cookie.php';
 
     <section class = "right_side_loginpage">
           <h1 class = "page_title" > Sign up or log in </h1>
-
-       <!-- These are for error messages: code from https://www.geeksforgeeks.org/php/creating-a-registration-and-login-system-with-php-and-mysql/ -->
-       <!-- If password wrong / email doesnt exist, this enables error text to show on the screen, or reutrning an error message -->
-        <!-- The error message that Tilda uses in company admin page is mor intutitve so i just copied in here instead  -->
-    <?php if ($message !== ''): ?>
-    <div class="toast-message" style="background-color: <?php echo htmlspecialchars($toastClass); ?>; color: white; padding: 10px; margin: 10px 0;">
-        <?php echo htmlspecialchars($message); ?>
-    </div>
-<?php endif; ?>
 
         
 
