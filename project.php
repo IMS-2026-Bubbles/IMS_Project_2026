@@ -419,13 +419,13 @@ $project_name = $row['name'] ?? '';  // empty string if project not found
         <!-- CHANGE NAME OF PROJECT -->
         <!-- this calls a function ased on id, it opens up field where text field is-->
         <!-- just copied from other fields -->
-        <button type="button" class="add-experiment d-flex justify-content-center align-items-center mb-4" onclick="showAddForm('Change_Project_Name')"> Change Name of Project</button>
+        <button type="button" class="add-experiment d-flex justify-content-center align-items-center mb-4" onclick="showAddForm('change_project_name')"> Change Name of Project</button>
 
-        <div id="Change_Project_Name" class="add-form"> <!-- Same style as add experiment -->
+        <div id="change_project_name" class="add-form"> <!-- Same style as add experiment -->
             <form action="actions/create_project.php" method="POST">
                 <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
                 <input type="text" name="new_project_name" class="form-control add-input mb-3" placeholder="Enter new name" required>
-                <button type="submit" name="Change_Project_Name" class="add-button">Add</button>
+                <button type="submit" name="change_project_name" class="add-button">Add</button>
             </form>
         </div>
 
