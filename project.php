@@ -175,7 +175,7 @@ if ($project_id > 0) {
 }
 
 // store project name for the project where expermients are shown
-$sql = 'SELECT projects.name
+$sql = 'SELECT projects.name, projects.is_done
         FROM projects
         WHERE projects.project_id = ?';
 
@@ -185,6 +185,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 $project_name = $row['name'] ?? '';  // empty string if project not found
+$project_is_done = $row['is_done'] ?? 0;  // 0 if project not found
 
 ?>
 
@@ -430,7 +431,14 @@ $project_name = $row['name'] ?? '';  // empty string if project not found
         </div>
 
 
-
+        <!-- Mark project as done -->
+        <form action="actions/complete_project.php" method="POST" class="mb-4">
+            <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
+            <input type="hidden" name="done_flag" value="<?php echo $project_is_done ? 0 : 1; ?>">
+            <button type="submit" class="add-experiment d-flex justify-content-center align-items-center mb-4">
+                <?php echo $project_is_done ? 'Re-open Project' : 'Mark Project as Done'; ?>
+            </button>
+        </form>
 
 
 
