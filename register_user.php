@@ -132,8 +132,8 @@ if (isset($_SESSION['toastClass'])) {
             <!-- # so that you don't change page -->
 
 
-        I accept the Terms of Service and GDPR policy
-        </label>
+        I accept the Terms of Service 
+        </label><br>
         <a class = "" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a>
 
 
