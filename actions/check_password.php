@@ -139,11 +139,11 @@ if ($transaction_ok) {
                 'Failed: Token does not exists'
             );
             $transaction_ok = False;
-        } else {
-            // Token not found, cancel transaction
-            $transaction_ok = False;
         }
         $checkStmt->close();
+    } else {
+        // Token not found, cancel transaction
+        $transaction_ok = False;
     }
 }
 if ($transaction_ok) {
