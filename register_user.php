@@ -130,16 +130,10 @@ if (isset($_SESSION['toastClass'])) {
             <!-- # so that you don't change page -->
 
 
-        I accept the <a class = "" href=# onclick="return GDPR();">Terms of Service and GDPR policy</a> 
+        I accept the Terms of Service and GDPR policy
         </label>
         <a class = "" href="docs/terms_of_service.pdf?file=terms_of_service" download=>Download Terms of Service</a>
 
-        <script>
-        function GDPR() {
-            alert("Write a fancy text about GDPR usage here")
-            return false;;
-        }
-        </script>
 
         <input type="submit" class="login_button" name="register" value="Register">
     </form>
