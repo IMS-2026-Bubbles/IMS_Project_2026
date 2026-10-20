@@ -194,7 +194,7 @@ https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.min.css
             <button class = "admin_button" type="submit" name="submit_type" value="accept">Accept</button>
 
             <!-- Decline Button -->
-            <button class "admin_button" type="submit" name="submit_type" value="decline">Decline</button>
+            <button class = "admin_button" type="submit" name="submit_type" value="decline">Decline</button>
             </form> 
             <?php
         } else {
