@@ -897,7 +897,14 @@ body {
 
 /* Cookie banner! uses the scriba card-style but added elements to that the card is
  centered in the middle of the page */
+
+/* fixed so default is that it is not displayed to mitigate it flashing when loading page */
 .cookie_banner {
+    display: none;
+}
+
+.cookie_banner.show {
+    display: flex;
     background: linear-gradient(100deg, var(--scriba-soft-blue), var(--scriba-white));
     border: 2px solid var(--scriba-blueborder);
     border-radius: 25px;
@@ -914,12 +921,16 @@ body {
     justify-content: space-between;
     align-items: center;
     text-align: center;
-
 }
+
 /* Here for hiding the cookie banner after clicking yes or no */
 .cookie_banner.hide,
 #consentBox.hide {
     display: none !important;
+}
+/* To make all the things in the consent box be centered */
+#consentContent {
+    width: 100%;
 }
 
 
