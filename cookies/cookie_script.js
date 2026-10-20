@@ -1,18 +1,29 @@
-
 //FROM geeksforgeeks https://www.geeksforgeeks.org/javascript/how-to-create-cookie-consent-box-using-html-css-and-javascript/
-const consentBox = 
-    document.getElementById("consentBox");
-const acceptBtn = 
-    document.querySelector(".consentButton");
-const rejectBtn = 
-    document.querySelector(".rejectButton");
+const consentBox = document.getElementById("consentBox");
+const acceptBtn = document.querySelector(".consentButton");
+const rejectBtn = document.querySelector(".rejectButton");
+
+//checks if cookie is already set, hides banner
+if (document.cookie.includes("CookieBy=")) {
+    consentBox.classList.add("hide");
+}
+
+//for how long the cookies will be saved
+const ONE_DAY = 60 * 60 *24
+
+function saveChoice(value) {
+  //checks if the cookies have been accepted already
+  document.cookie = `CookieBy=${value}; max-age=${ONE_DAY}; path=/; SameSite=Lax`;
+  consentBox.classList.add("hide");
+}
 
 acceptBtn.onclick = () => {
-    document.cookie = "CookieBy=Scriba; max-age="
-        + 60 * 60 * 24; "path=/";
+    saveChoice("Scriba")
     if (document.cookie) {
+        //if the cookie was set
         consentBox.classList.add("hide");
     } else {
+        // if something went wrong
         alert
             ("Cookie can't be set! Please"+
               " unblock this site from the cookie"+
@@ -21,12 +32,8 @@ acceptBtn.onclick = () => {
 };
 
 rejectBtn.onclick = () => {
-    alert(
-        "Cookies must be accepted in order to use Scriba.");
+    //just accept necessary cookies
+    saveChoice("rejected")
+    //alert removed since necessary cookies are accepted
     consentBox.classList.add("hide");
 };
-
-let checkCookie = 
-    document.cookie.indexOf("CookieBy=Scriba");
-checkCookie !== -1 ? consentBox.classList.add("hide") :
-    consentBox.classList.remove("hide");
