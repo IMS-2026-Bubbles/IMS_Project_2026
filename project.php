@@ -425,7 +425,7 @@ $project_name = $row['name'] ?? '';  // empty string if project not found
             <form action="actions/create_project.php" method="POST">
                 <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
                 <input type="text" name="new_project_name" class="form-control add-input mb-3" placeholder="Enter new name" required>
-                <button type="submit" name="Change_Project_Name" class="add-button">Add</button>
+                <button type="submit" name="change_project_name" class="add-button">Add</button>
             </form>
         </div>
 
