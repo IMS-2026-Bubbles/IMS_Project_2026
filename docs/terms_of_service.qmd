@@ -15,7 +15,7 @@ format:
         \AddToHook{cmd/tableofcontents/before}{\newpage}
 ---
 
-**Last Updated: September 26, 2026**
+**Last Updated: October 20, 2026**
 
 ::: {.content-hidden}
 This is a placeholder for page break spacing

@@ -42,7 +42,7 @@ if (isset($_POST['login'])) {
     require_once '../includes/fetch_ip_address.php';  // provides $ip_address and $ip_address_proxy
 
     // Rate limiting and lockout to prevent brute-force attacks
-    // If 5 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
+    // If 150 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
     $sql_failed_attempts =
         'SELECT COUNT(*) as failed_attempts 
         FROM login_log 
@@ -59,7 +59,7 @@ if (isset($_POST['login'])) {
         $failed_attempts = $row['failed_attempts'];
     }
 
-    if ($failed_attempts >= 5) {
+    if ($failed_attempts >= 150) {  // TODO: change back to 15 after testing
         $message = 'Too many failed login attempts. Please try again later.';
         $toastClass = '#dc3545';  // Danger color
 

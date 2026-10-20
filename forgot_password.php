@@ -9,16 +9,15 @@
 // Redirect to:
 // actions/check_email.php (on form submission)
 
-//showing all error messages on the page
+// showing all error messages on the page
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 
-
 require_once 'session/init.php';  // Start the session and initialize session variables
 // No check for user logged in here
-require_once 'cookies/cookie.php'; //Include cookies
-require_once 'database/db.php'; //Include database
+require_once 'cookies/cookie.php';  // Include cookies
+require_once 'database/db.php';  // Include database
 require_once 'includes/log_activity.php';  // Include the log_activity function
 
 // Retrieve login error messages from the session if they exist
@@ -39,7 +38,6 @@ if (isset($_SESSION['toastClass'])) {
     // Clear the toast class from the session after retrieving it
     unset($_SESSION['toastClass']);
 }
-
 
 ?>
 <!DOCTYPE html>

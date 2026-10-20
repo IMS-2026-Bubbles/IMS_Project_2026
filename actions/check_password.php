@@ -23,7 +23,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // sessions
 require_once '../session/init.php';  // Start the session and initialize session variables
-require_once '../cookies/cookie.php'; //Include cookies
+require_once '../cookies/cookie.php';  // Include cookies
 // No check for user logged in here, check password page
 require '../database/db.php';
 
@@ -33,10 +33,9 @@ require_once '../includes/log_activity.php';  // Log login attempts
 // require ip address functions
 require_once '../includes/fetch_ip_address.php';  // provides $ip_address and $ip_address_proxy
 
-//set message and toastclass so messages can be conveyed to other pages
+// set message and toastclass so messages can be conveyed to other pages
 $message = '';
 $toastClass = '';
-
 
 $token = $_GET['token'] ?? '';  // set to empty to prevent possible undefined variable error
 
@@ -44,7 +43,7 @@ $token = $_GET['token'] ?? '';  // set to empty to prevent possible undefined va
 require_once '../includes/fetch_ip_address.php';  // provides $ip_address and $ip_address_proxy
 
 // Rate limiting and lockout to prevent brute-force attacks
-// If 5 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
+// If 15 failed login attempts from the same IP address within 15 minutes (running), lock out for max 15 minutes
 $sql_failed_attempts =
     'SELECT COUNT(*) as failed_attempts 
     FROM login_log 
@@ -61,8 +60,8 @@ if ($result_failed_attempts) {
     $failed_attempts = $row['failed_attempts'];
 }
 
-if ($failed_attempts >= 5) {
-    echo "too many failed attempts";
+if ($failed_attempts >= 150) {  // TODO: Change back to 15 after testing
+    echo 'too many failed attempts';
     $message = 'Too many failed token entries. Click "forgot password" and get a new link.';
     $toastClass = '#dc3545';  // Danger color
     // Log a failed verification attempt (verification locked)
@@ -88,8 +87,8 @@ if (!isset($token) || empty($token) || strlen($token) != 32) {
     exit();
 }
 
-echo" token is $token";
-echo" transaction started";
+echo " token is $token";
+echo ' transaction started';
 $conn->begin_transaction();  // Start a transaction to ensure atomicity of the verification process
 $transaction_ok = true;  // Flag to track if the transaction is successful
 
@@ -104,11 +103,11 @@ if ($transaction_ok) {
     $result = $checkStmt->get_result();
     $profile = $result->fetch_assoc();
 
-    // check if the number of rows >0 => token exists
-    if ($checkStmt->num_rows > 0) {
-        //the token exists, check the following
+    // check if $profile exists => the number of rows >0 => token exists
+    if ($profile != NULL) {
+        // the token exists, check the following
         if ((int) $profile['is_verified'] == 0) {
-            //user is not verified
+            // user is not verified
             $message = 'Verify your email before chaning the password.';
             $toastClass = '#007bff';  // Primary color
             $_SESSION['change_password'] = $message;
@@ -124,8 +123,7 @@ if ($transaction_ok) {
                 'Failed: Password change, User not verified'
             );
             $transaction_ok = False;
-        }
-        elseif ($profile['verify_token']== NULL) {
+        } elseif ($profile['verify_token'] == NULL) {
             $message = 'You have already changed your password.';
             $toastClass = '#007bff';  // Primary color
             $_SESSION['change_password'] = $message;
@@ -142,16 +140,19 @@ if ($transaction_ok) {
             );
             $transaction_ok = False;
         }
-    $checkStmt->close();
+        $checkStmt->close();
+    } else {
+        // Token not found, cancel transaction
+        $transaction_ok = False;
     }
 }
 if ($transaction_ok) {
     // otherwise the user will now get their pasword changed
-    $password = $_POST['password1']; //fetch the password from the HTML form
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT); //hash the password with BCRYPT
+    $password = $_POST['password1'];  // fetch the password from the HTML form
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);  // hash the password with BCRYPT
 
-    //Insert the new password into profiles, and update pwd_change to todays date and time
-    $sql = 'UPDATE profiles SET password = ?, pwd_change=NOW() WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
+    // Insert the new password into profiles, and update pwd_change to todays date and time
+    $sql = 'UPDATE profiles SET password = ?, password_changed_at = NOW() WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
     // Then the earlier check for already verified users would merge with the check for invalid token.
     $pwdStmt = $conn->prepare($sql);
     $pwdStmt->bind_param('ss', $hashed_password, $token);
@@ -164,7 +165,7 @@ if ($transaction_ok) {
 }
 
 if ($transaction_ok) {
-    //the change of password went ok, continue with nullifying the token
+    // the change of password went ok, continue with nullifying the token
     $sql_token_to_null = 'UPDATE profiles SET verify_token=NULL WHERE verify_token = ?';
     $stmt_token_to_null = $conn->prepare($sql_token_to_null);
     $stmt_token_to_null->bind_param('s', $token);
