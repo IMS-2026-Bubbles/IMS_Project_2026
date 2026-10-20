@@ -152,7 +152,7 @@ if ($transaction_ok) {
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);  // hash the password with BCRYPT
 
     // Insert the new password into profiles, and update pwd_change to todays date and time
-    $sql = 'UPDATE profiles SET password = ?, pwd_change=NOW() WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
+    $sql = 'UPDATE profiles SET password = ?, password_changed_at = NOW() WHERE verify_token = ?';  // set the token to NULL after verification to prevent re-use?
     // Then the earlier check for already verified users would merge with the check for invalid token.
     $pwdStmt = $conn->prepare($sql);
     $pwdStmt->bind_param('ss', $hashed_password, $token);
