@@ -92,12 +92,14 @@ if (isset($_SESSION['toastClass'])) {
         <label for="email">Email adress</label>
         <input type="email" class="scriba_input" name="email" required> <!-- @ is needed -->
 
-        <!-- setting type as Password makes characters hidden + supports Password control -->
-        <label for="password">Password</label>
-        <input type="password" class="scriba_input" name="password1" minlength= "8" required>  <!-- must use 8 characters -->
+      <!-- setting type as Password makes characters hidden + supports Password control -->
+        <label for="password">Repeat Password</label>
+        <input type="password" class="scriba_input" name="password1" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
 
         <label for="password2">Repeat Password</label>
-        <input type="password" class="scriba_input" name="password2" minlength= "8" required>
+        <input type="password" class="scriba_input" name="password2" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+
+
 
         <!-- https://www.geeksforgeeks.org/javascript/Password-matching-using-javascript/ -->
         
