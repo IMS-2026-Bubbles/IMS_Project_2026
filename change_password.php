@@ -80,11 +80,10 @@ $link = "actions/check_password.php?token=$token";
     <form class="scriba_card change_password" action="<?= htmlspecialchars($link, ENT_QUOTES, 'UTF-8') ?>" method="POST" onsubmit ="return checkPassword(this)">
             <!-- think email address could be required https://www.w3schools.com/jsref/prop_email_required.asp on both -->
         <label for="password">Password</label>
-        <input type="password" class="scriba_input" name="password1" minlength= "8" required>  <!-- must use 8 characters -->
-
+        <input type="password" class="scriba_input" name="password1" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+        
         <label for="password2">Repeat Password</label>
-        <input type="password" class="scriba_input" name="password2" minlength= "8" required>
-
+        <input type="password" class="scriba_input" name="password2" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
         <input type="submit" class="login_button" name="change password" value="change password">
 
 
