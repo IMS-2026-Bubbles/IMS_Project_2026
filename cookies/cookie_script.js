@@ -6,6 +6,9 @@ const rejectBtn = document.querySelector(".rejectButton");
 //checks if cookie is already set, hides banner
 if (document.cookie.includes("CookieBy=")) {
     consentBox.classList.add("hide");
+} else {
+    // to mitigate the banner flashing on the page when loading the page
+  consentBox.classList.add("show");
 }
 
 //for how long the cookies will be saved
