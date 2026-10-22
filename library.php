@@ -2,17 +2,17 @@
 // Library (project list) page
 
 // Arrive from:
-//  actions/login.php (after logging in)
-//  navigation bar (project library button)
-//  library.php (after adding a new project)
+// - actions/login.php (after logging in)
+// - navigation bar (project library button)
+// - library.php (after adding a new project)
 
 // Action:
-//  Display all projects user has view access to
-//  Add new project
+// - Display all projects user has view access to
+// - Add new project
 
 // Redirect to:
-//  navigation bar options
-//  project.php (after clicking on a project)
+// - navigation bar options
+// - project.php (after clicking on a project)
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

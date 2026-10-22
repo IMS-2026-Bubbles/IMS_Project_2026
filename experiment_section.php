@@ -17,6 +17,7 @@
 require_once 'session/init.php';  // Make the session available
 // Check if the user is logged in
 require_once 'session/check_user_logged_in.php';
+require_once 'session/check_user_in_company.php';
 // Start cookies
 require_once 'cookies/cookie.php';
 

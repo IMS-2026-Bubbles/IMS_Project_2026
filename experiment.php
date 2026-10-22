@@ -2,26 +2,28 @@
 // Experiment page
 
 // Arrive from:
-// project.php (click on experiment link)
-// experiment_section.php (click on plan/log/result link)
-// actions/save_experiment_tags.php (after adding/removing tags)
+// - project.php (click on experiment link)
+// - experiment_section.php (click on plan/log/result link)
+// - actions/save_experiment_tags.php (after adding/removing tags)
 
 // Action:
-// Display experiment information, including tags, progress flags, and last updated timestamps
-// Allow users with sufficient permissions to add/remove tags
-// Rename experiments
+// - Display experiment information, including tags, progress flags, and last updated timestamps
+// - Allow users with sufficient permissions to add/remove tags
+// - Rename experiments
 
 // Redirect to:
-// navbar options
-// experiment_section.php (click on plan/log/result link)
-// actions/save_experiment_tags.php (after adding/removing tags)
-// project.php (click on "Back to parent project" link)
-// actions/create_experiment.php (to change name)
+// - navbar options
+// - experiment_section.php (click on plan/log/result link)
+// - actions/save_experiment_tags.php (after adding/removing tags)
+// - project.php (click on "Back to parent project" link)
+// - actions/create_experiment.php (to change name)
 
 // Session initialization
 require_once 'session/init.php';  // Make the session available
 // Check if the user is logged in
 require_once 'session/check_user_logged_in.php';
+// Check if the user is in a company
+require_once 'session/check_user_in_company.php';
 // Start cookies
 require_once 'cookies/cookie.php';
 
@@ -36,10 +38,8 @@ require_once 'includes/log_activity.php';
 
 // Check if the user has permission to view this experiment
 
-
 // Get current user
 $profile_id = (int) $_SESSION['profile_id'];
-
 
 require_once 'includes/check_user_permission.php';  // Include the user permission check function
 // $exp_ID becomes $experiment_id; the $project_experiment_name / $experiment_progress /
@@ -69,8 +69,6 @@ if (isset($_SESSION['messages_save_experiment_tags'])) {
     unset($_SESSION['messages_save_experiment_tags']);
 }
 
-
-
 // to display error messages
 if (isset($_SESSION['create_renamed_message'])) {
     $manage_company_message = $_SESSION['create_renamed_message'];
@@ -79,8 +77,8 @@ if (isset($_SESSION['create_renamed_message'])) {
 if (isset($_SESSION['create_renamed_toastClass'])) {
     $manage_company_toastClass = $_SESSION['create_renamed_toastClass'];
     unset($_SESSION['create_renamed_toastClass']);
-}
-;?>
+};
+?>
 
 <!--  -->
 <!-- Front end starts here -->
@@ -265,7 +263,7 @@ include_once 'includes/navbar.php';
     <!-- Makes sure that the message is actually displayed -->
     <?php if (!empty($manage_company_message)): ?>
         <div class="experiment-message"
-             style="background-color: <?php echo htmlspecialchars((string)($manage_company_toastClass ?? '#7794b6'), ENT_QUOTES, 'UTF-8'); ?>; color: white;">
+             style="background-color: <?php echo htmlspecialchars((string) ($manage_company_toastClass ?? '#7794b6'), ENT_QUOTES, 'UTF-8'); ?>; color: white;">
             <?php echo htmlspecialchars($manage_company_message); ?>
         </div>
     <?php endif; ?>
