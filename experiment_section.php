@@ -131,7 +131,7 @@ echo '<p class="experiment-info-name">Experiment: '
     . htmlspecialchars($project_experiment_name['experiment_name'])
     . '</p>';
 echo '<p class="experiment-info-section">Section: '
-    . htmlspecialchars($experiment_section)
+    . ucwords(htmlspecialchars($experiment_section))
     . '</p>';
 echo '</div>';
 
