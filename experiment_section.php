@@ -168,7 +168,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '>Mark as Done<br>'
         . '<br>'
         . '<p style="color: red;">Note: Once you mark this section as done, it cannot be edited.</p>'
         . '<br>'
