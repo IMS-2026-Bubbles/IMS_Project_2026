@@ -17,6 +17,7 @@
 require_once 'session/init.php';  // Make the session available
 // Check if the user is logged in
 require_once 'session/check_user_logged_in.php';
+require_once 'session/check_user_in_company.php';
 // Start cookies
 require_once 'cookies/cookie.php';
 
@@ -130,7 +131,7 @@ echo '<p class="experiment-info-name">Experiment: '
     . htmlspecialchars($project_experiment_name['experiment_name'])
     . '</p>';
 echo '<p class="experiment-info-section">Section: '
-    . htmlspecialchars($experiment_section)
+    . ucwords(htmlspecialchars($experiment_section))
     . '</p>';
 echo '</div>';
 
@@ -167,7 +168,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Progress flag
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '>Mark Section as Done<br>'
         . '<br>'
         . '<p style="color: red;">Note: Once you mark this section as done, it cannot be edited.</p>'
         . '<br>'
@@ -187,7 +188,7 @@ if ($user_access >= 2 && $experiment_progress[$experiment_section . '_is_done'] 
         . "<input type='hidden' name='experiment_id' value='" . htmlspecialchars($experiment_id) . "'>"
         . "<input type='hidden' name='section' value='" . htmlspecialchars($experiment_section) . "'>"
         // Checkbox for progress flag (checked, allowing to uncheck the section => editable again)
-        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '> ' . htmlspecialchars($experiment_section) . '<br>'
+        . "<input type='checkbox' name='done_flag' value='1' " . ($experiment_progress[$experiment_section . '_is_done'] ? 'checked' : '') . '>Re-open Section<br>'
         . '<br>'
         // Save button
         . "<input type='submit' value='Save Changes'>"

@@ -59,7 +59,7 @@ if (isset($_POST['login'])) {
         $failed_attempts = $row['failed_attempts'];
     }
 
-    if ($failed_attempts >= 150) {  // TODO: change back to 15 after testing
+    if ($failed_attempts >= 5) {  // TODO: change back to 15 after testing
         $message = 'Too many failed login attempts. Please try again later.';
         $toastClass = '#dc3545';  // Danger color
 

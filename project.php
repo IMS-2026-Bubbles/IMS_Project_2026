@@ -24,6 +24,7 @@ ini_set('display_startup_errors', 1);
 // Start session
 require_once 'session/init.php';
 require_once 'session/check_user_logged_in.php';
+require_once 'session/check_user_in_company.php';
 // Start cookies
 require_once 'cookies/cookie.php';
 // Connect to database
@@ -53,44 +54,6 @@ if (isset($_GET['project_id'])) {
 if (isset($_POST['project_id'])) {
     $project_id = (int) $_POST['project_id'];
 }
-
-// OLD WAY OF CHECKING ACCESS - didn't want to remove if errors occur close to presentation / Tilda
-// Displays the project if user is the owner
-// if ($project_id > 0) {
-//     $checkSql = "SELECT projects.project_id, projects.name
-//         FROM projects
-//         JOIN project_members
-//     	ON project_members.project_id = projects.project_id
-//         WHERE projects.project_id = ? AND project_members.profile_id = ? AND project_members.role = 'owner'";
-
-//     $checkStmt = $conn->prepare($checkSql);
-
-//     $checkStmt->bind_param(
-//         'ii',
-//         $project_id,
-//         $profile_id
-//     );
-
-//     $checkStmt->execute();
-
-//     $checkResult = $checkStmt->get_result();
-
-//     if ($checkResult->num_rows == 0) {
-//         // Log the access denied attempt
-//         log_activity(
-//             $conn,
-//             $profile_id,
-//             'project',
-//             $project_id,
-//             'access_denied',
-//             'User attempted to access project without permission'
-//         );
-
-//         die('You do not have permission to access this project.');
-//     }
-
-//     $checkStmt->close();
-// }
 
 // check permission the same way as experiments
 require_once 'includes/check_user_permission.php';  // Include the user permission check function
