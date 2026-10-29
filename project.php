@@ -530,6 +530,38 @@ $project_is_done = $row['is_done'] ?? 0;  // 0 if project not found
                             href="experiment.php?experiment_id=<?php echo $experiment['experiment_id']; ?>"
                             class="experiment-card"
                         >
+                        </a>
+
+                        <?php if ($user_access >= 3): ?>
+                            <form
+                                action="actions/delete_experiment.php"
+                                method="POST"
+                                class="mt-2"
+                                onsubmit="return confirm(
+                                    'WARNING: Are you sure you want to delete this experiment?\n\n' +
+                                    'All experiment data and related records will be deleted.\n' +
+                                    'This action cannot be undone.'
+                                );"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="experiment_id"
+                                    value="<?php echo (int) $experiment['experiment_id']; ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="project_id"
+                                    value="<?php echo (int) $project_id; ?>"
+                                >
+
+                                <button type="submit" class="delete-button">
+                                    Delete Experiment
+                                </button>
+                            </form>
+                        <?php endif; ?>
+
+                    </div>
 
                             <div class="experiment-title">
 

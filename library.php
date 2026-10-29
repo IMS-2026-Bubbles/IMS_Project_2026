@@ -434,7 +434,32 @@ $stmt_projects->close();
                             href="project.php?project_id=<?php echo $project['project_id']; ?>"
                             class="project-card"
                         >
+                        ```php
+                        <?php
+                        // Check whether the current user owns the project.
+                        $can_delete_project = ($project['role'] === 'owner');
+                        ?>
 
+                        <?php if ($can_delete_project): ?>
+                            <form action="actions/delete_project.php"
+                                method="POST"
+                                class="mt-2"
+                                onsubmit="return confirm(
+                                    'WARNING: Are you sure you want to delete this project?\n\n' +
+                                    'All experiments and related project data will also be deleted.\n' +
+                                    'This action cannot be undone.'
+                                );">
+
+                                <input type="hidden"
+                                    name="project_id"
+                                    value="<?php echo (int) $project['project_id']; ?>">
+
+                                <button type="submit" class="delete-button">
+                                    Delete Project
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                        ```
                             <div class="project-title">
 
                                 <?php
